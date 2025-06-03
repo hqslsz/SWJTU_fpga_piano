@@ -1,5 +1,5 @@
 Flow report for fpga
-Tue Jun 03 19:36:49 2025
+Tue Jun 03 23:25:39 2025
 Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
 
 
@@ -40,20 +40,20 @@ refer to the applicable agreement for further details.
 +----------------------------------------------------------------------------------+
 ; Flow Summary                                                                     ;
 +------------------------------------+---------------------------------------------+
-; Flow Status                        ; Successful - Tue Jun 03 19:36:45 2025       ;
+; Flow Status                        ; Successful - Tue Jun 03 23:25:35 2025       ;
 ; Quartus Prime Version              ; 18.1.0 Build 625 09/12/2018 SJ Lite Edition ;
 ; Revision Name                      ; fpga                                        ;
 ; Top-level Entity Name              ; fpga                                        ;
 ; Family                             ; Cyclone IV E                                ;
 ; Device                             ; EP4CE10E22C8                                ;
 ; Timing Models                      ; Final                                       ;
-; Total logic elements               ; 472 / 10,320 ( 5 % )                        ;
-;     Total combinational functions  ; 462 / 10,320 ( 4 % )                        ;
-;     Dedicated logic registers      ; 246 / 10,320 ( 2 % )                        ;
-; Total registers                    ; 246                                         ;
-; Total pins                         ; 28 / 92 ( 30 % )                            ;
+; Total logic elements               ; 730 / 10,320 ( 7 % )                        ;
+;     Total combinational functions  ; 707 / 10,320 ( 7 % )                        ;
+;     Dedicated logic registers      ; 380 / 10,320 ( 4 % )                        ;
+; Total registers                    ; 380                                         ;
+; Total pins                         ; 30 / 92 ( 33 % )                            ;
 ; Total virtual pins                 ; 0                                           ;
-; Total memory bits                  ; 0 / 423,936 ( 0 % )                         ;
+; Total memory bits                  ; 3,072 / 423,936 ( < 1 % )                   ;
 ; Embedded Multiplier 9-bit elements ; 0 / 46 ( 0 % )                              ;
 ; Total PLLs                         ; 0 / 2 ( 0 % )                               ;
 +------------------------------------+---------------------------------------------+
@@ -64,7 +64,7 @@ refer to the applicable agreement for further details.
 +-------------------+---------------------+
 ; Option            ; Setting             ;
 +-------------------+---------------------+
-; Start date & time ; 06/03/2025 19:36:26 ;
+; Start date & time ; 06/03/2025 23:25:11 ;
 ; Main task         ; Compilation         ;
 ; Revision Name     ; fpga                ;
 +-------------------+---------------------+
@@ -75,7 +75,7 @@ refer to the applicable agreement for further details.
 +-------------------------------------+----------------------------------------+---------------+-------------+------------+
 ; Assignment Name                     ; Value                                  ; Default Value ; Entity Name ; Section Id ;
 +-------------------------------------+----------------------------------------+---------------+-------------+------------+
-; COMPILER_SIGNATURE_ID               ; 71205089810806.174895058604356         ; --            ; --          ; --         ;
+; COMPILER_SIGNATURE_ID               ; 71205089810806.174896431129584         ; --            ; --          ; --         ;
 ; MAX_CORE_JUNCTION_TEMP              ; 85                                     ; --            ; --          ; --         ;
 ; MIN_CORE_JUNCTION_TEMP              ; 0                                      ; --            ; --          ; --         ;
 ; NOMINAL_CORE_SUPPLY_VOLTAGE         ; 1.2V                                   ; --            ; --          ; --         ;
@@ -95,11 +95,11 @@ refer to the applicable agreement for further details.
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
 ; Module Name          ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Analysis & Synthesis ; 00:00:11     ; 1.0                     ; 4817 MB             ; 00:00:07                           ;
-; Fitter               ; 00:00:06     ; 1.1                     ; 5937 MB             ; 00:00:03                           ;
-; Assembler            ; 00:00:00     ; 1.0                     ; 4674 MB             ; 00:00:00                           ;
-; Timing Analyzer      ; 00:00:01     ; 1.2                     ; 4829 MB             ; 00:00:01                           ;
-; Total                ; 00:00:18     ; --                      ; --                  ; 00:00:11                           ;
+; Analysis & Synthesis ; 00:00:13     ; 1.0                     ; 4826 MB             ; 00:00:07                           ;
+; Fitter               ; 00:00:08     ; 1.1                     ; 5944 MB             ; 00:00:03                           ;
+; Assembler            ; 00:00:01     ; 1.0                     ; 4676 MB             ; 00:00:00                           ;
+; Timing Analyzer      ; 00:00:03     ; 1.2                     ; 4836 MB             ; 00:00:00                           ;
+; Total                ; 00:00:25     ; --                      ; --                  ; 00:00:10                           ;
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
 
 

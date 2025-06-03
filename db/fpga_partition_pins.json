@@ -52,18 +52,6 @@
 					"strict" : false
 				},
 				{
-					"name" : "note_keys_physical_in[0]",
-					"strict" : false
-				},
-				{
-					"name" : "note_keys_physical_in[1]",
-					"strict" : false
-				},
-				{
-					"name" : "note_keys_physical_in[2]",
-					"strict" : false
-				},
-				{
 					"name" : "note_keys_physical_in[3]",
 					"strict" : false
 				},
@@ -80,11 +68,31 @@
 					"strict" : false
 				},
 				{
+					"name" : "note_keys_physical_in[0]",
+					"strict" : false
+				},
+				{
+					"name" : "note_keys_physical_in[1]",
+					"strict" : false
+				},
+				{
+					"name" : "note_keys_physical_in[2]",
+					"strict" : false
+				},
+				{
 					"name" : "sw15_octave_up_raw",
 					"strict" : false
 				},
 				{
 					"name" : "sw13_octave_down_raw",
+					"strict" : false
+				},
+				{
+					"name" : "sw17_playback_raw",
+					"strict" : false
+				},
+				{
+					"name" : "sw16_record_raw",
 					"strict" : false
 				}
 			]

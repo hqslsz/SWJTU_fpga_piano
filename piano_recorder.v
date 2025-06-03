@@ -1,0 +1,165 @@
+// File: piano_recorder.v
+module piano_recorder #(
+    parameter CLK_FREQ_HZ      = 50_000_000, // 50MHz
+    parameter RECORD_INTERVAL_MS = 20,       // Record a sample every 20ms
+    parameter MAX_RECORD_SAMPLES = 512,    // Max number of samples (e.g., 512 * 20ms = ~10 seconds)
+    parameter KEY_ID_BITS      = 3,          // For 0-7 key IDs
+    parameter OCTAVE_BITS      = 2           // 00: normal, 01: up, 10: down, 11: unused
+) (
+    input clk,
+    input rst_n,
+
+    // Control signals (debounced)
+    input record_start_stop_edge,  // 1 when SW16 is pressed (rising edge to start), 0 when released (falling to stop) - Simplified: use level for now
+    input record_active_level,     // SW16 level (high for recording)
+    input playback_start_pulse,    // A pulse when SW17 is pressed
+
+    // Inputs from main piano logic
+    input [KEY_ID_BITS-1:0] live_key_id,       // Current key being pressed (0 if none)
+    input live_key_is_pressed,
+    input live_octave_up,
+    input live_octave_down,
+
+    // Outputs to drive buzzer and display during playback
+    output reg [KEY_ID_BITS-1:0] playback_key_id,
+    output reg playback_key_is_pressed,
+    output wire playback_octave_up,
+    output wire playback_octave_down,
+
+    // Status outputs (optional, for LEDs or debugging)
+    output reg is_recording,
+    output reg is_playing
+);
+
+// ---Derived Parameters---
+localparam RECORD_INTERVAL_CYCLES = (RECORD_INTERVAL_MS * CLK_FREQ_HZ) / 1000;
+localparam ADDR_WIDTH = $clog2(MAX_RECORD_SAMPLES); // Width for memory address
+// Data format: {octave_up (1), octave_down (1), key_is_pressed (1), key_id (3)} = 6 bits
+localparam DATA_WIDTH = OCTAVE_BITS + 1 + KEY_ID_BITS; // octave_state + key_pressed_flag + key_id
+
+// ---Memory for Recording---
+// Each entry stores: {octave_state[1:0], key_pressed, key_id[2:0]}
+// octave_state: 00=normal, 01=up, 10=down
+reg [DATA_WIDTH-1:0] recorded_data_memory [0:MAX_RECORD_SAMPLES-1];
+reg [ADDR_WIDTH-1:0] record_write_ptr;
+reg [ADDR_WIDTH-1:0] playback_read_ptr;
+reg [ADDR_WIDTH-1:0] last_recorded_ptr; // To know how much was recorded
+
+// ---Timers and Counters---
+reg [$clog2(RECORD_INTERVAL_CYCLES)-1:0] sample_timer_reg;
+
+// ---State Machine---
+localparam S_IDLE      = 2'b00;
+localparam S_RECORDING = 2'b01;
+localparam S_PLAYBACK  = 2'b10;
+reg [1:0] current_state_reg;
+
+// --- Internal signals for octave encoding ---
+wire [OCTAVE_BITS-1:0] live_octave_encoded;
+assign live_octave_encoded = (live_octave_up && !live_octave_down) ? 2'b01 :
+                             (!live_octave_up && live_octave_down) ? 2'b10 :
+                             2'b00; // Normal or both pressed
+
+reg [OCTAVE_BITS-1:0] playback_octave_encoded;
+assign playback_octave_up   = (playback_octave_encoded == 2'b01);
+assign playback_octave_down = (playback_octave_encoded == 2'b10);
+
+
+initial begin
+    is_recording = 1'b0;
+    is_playing = 1'b0;
+    playback_key_id = 0;
+    playback_key_is_pressed = 1'b0;
+    // playback_octave_up and playback_octave_down are driven by assignments
+    current_state_reg = S_IDLE;
+    record_write_ptr = 0;
+    playback_read_ptr = 0;
+    last_recorded_ptr = 0;
+    sample_timer_reg = 0;
+end
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        is_recording <= 1'b0;
+        is_playing <= 1'b0;
+        playback_key_id <= 0;
+        playback_key_is_pressed <= 1'b0;
+        current_state_reg <= S_IDLE;
+        record_write_ptr <= 0;
+        playback_read_ptr <= 0;
+        last_recorded_ptr <= 0;
+        sample_timer_reg <= 0;
+    end else begin
+        // Default outputs for playback
+        if (!is_playing) begin // only reset if not actively playing, to avoid glitches
+             playback_key_is_pressed <= 1'b0;
+        end
+
+        case (current_state_reg)
+            S_IDLE: begin
+                is_recording <= 1'b0;
+                is_playing <= 1'b0;
+                sample_timer_reg <= 0; // Reset timer
+
+                if (record_active_level) begin // SW16 pressed
+                    current_state_reg <= S_RECORDING;
+                    record_write_ptr <= 0; // Start recording from the beginning
+                    is_recording <= 1'b1;
+                    last_recorded_ptr <= 0; // Reset length of current recording
+                end else if (playback_start_pulse && last_recorded_ptr > 0) begin // SW17 pressed and there's something to play
+                    current_state_reg <= S_PLAYBACK;
+                    playback_read_ptr <= 0; // Start playback from the beginning
+                    is_playing <= 1'b1;
+                end
+            end
+
+            S_RECORDING: begin
+                if (!record_active_level || record_write_ptr >= MAX_RECORD_SAMPLES) begin // SW16 released or memory full
+                    current_state_reg <= S_IDLE;
+                    is_recording <= 1'b0;
+                    last_recorded_ptr <= record_write_ptr; // Save how much we recorded
+                end else begin
+                    if (sample_timer_reg == RECORD_INTERVAL_CYCLES - 1) begin
+                        sample_timer_reg <= 0;
+                        // Store: {octave_state[1:0], live_key_is_pressed, live_key_id[2:0]}
+                        recorded_data_memory[record_write_ptr] <= {live_octave_encoded, live_key_is_pressed, live_key_id};
+                        if (record_write_ptr < MAX_RECORD_SAMPLES -1 ) begin // Check to prevent overflow on ptr itself
+                           record_write_ptr <= record_write_ptr + 1;
+                        end else begin // Memory is now full
+                           current_state_reg <= S_IDLE; // Stop recording
+                           is_recording <= 1'b0;
+                           last_recorded_ptr <= MAX_RECORD_SAMPLES;
+                        end
+                    end else begin
+                        sample_timer_reg <= sample_timer_reg + 1;
+                    end
+                end
+            end
+
+            S_PLAYBACK: begin
+                if (playback_read_ptr >= last_recorded_ptr || playback_read_ptr >= MAX_RECORD_SAMPLES ) begin // Reached end of recorded data or max memory
+                    current_state_reg <= S_IDLE;
+                    is_playing <= 1'b0;
+                    playback_key_is_pressed <= 1'b0; // Ensure sound stops
+                end else begin
+                    if (sample_timer_reg == RECORD_INTERVAL_CYCLES - 1) begin
+                        sample_timer_reg <= 0;
+                        // Read data: {octave_state, key_pressed, key_id}
+                        {playback_octave_encoded, playback_key_is_pressed, playback_key_id} <= recorded_data_memory[playback_read_ptr];
+                        if (playback_read_ptr < MAX_RECORD_SAMPLES -1 && playback_read_ptr < last_recorded_ptr -1) begin
+                            playback_read_ptr <= playback_read_ptr + 1;
+                        end else begin // Reached end of data to play
+                            current_state_reg <= S_IDLE;
+                            is_playing <= 1'b0;
+                            playback_key_is_pressed <= 1'b0;
+                        end
+                    end else begin
+                        sample_timer_reg <= sample_timer_reg + 1;
+                    end
+                end
+            end
+            default: current_state_reg <= S_IDLE;
+        endcase
+    end
+end
+endmodule

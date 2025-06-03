@@ -1,0 +1,6 @@
+
+State Machine - |fpga|piano_recorder:piano_recorder_inst|current_state_reg
+Name current_state_reg.S_IDLE current_state_reg.S_PLAYBACK current_state_reg.S_RECORDING 
+current_state_reg.S_IDLE 0 0 0 
+current_state_reg.S_RECORDING 1 0 1 
+current_state_reg.S_PLAYBACK 1 1 0 
