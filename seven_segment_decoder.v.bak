@@ -1,0 +1,68 @@
+// File: seven_segment_decoder.v
+module seven_segment_decoder (
+    input       [3:0] char_code,        // Character/symbol to display (e.g., 0-9 for numbers, specific codes for octave)
+    input       [2:0] display_mode,     // 0: Octave Down (d), 1: Normal (g), 2: Octave Up (a)
+                                        // 3: Number 1, 4: Number 2, ... 9: Number 7
+                                        // 10: Blank
+    output reg  [6:0] segments_out      // 7-segment output [g,f,e,d,c,b,a] (a=LSB)
+);
+
+// Segment patterns (Common Cathode: 1 = ON, 0 = OFF)
+// segments_out = {g, f, e, d, c, b, a}
+localparam SEG_A = 7'b0000001;
+localparam SEG_B = 7'b0000010;
+localparam SEG_C = 7'b0000100;
+localparam SEG_D = 7'b0001000;
+localparam SEG_E = 7'b0010000;
+localparam SEG_F = 7'b0100000;
+localparam SEG_G = 7'b1000000;
+
+localparam NUM_0 = 7'b0111111; // For reference, not used directly for notes 1-7
+localparam NUM_1 = 7'b0000110;
+localparam NUM_2 = 7'b1011011;
+localparam NUM_3 = 7'b1001111;
+localparam NUM_4 = 7'b1100110;
+localparam NUM_5 = 7'b1101101;
+localparam NUM_6 = 7'b1111101;
+localparam NUM_7 = 7'b0000111;
+localparam BLANK = 7'b0000000;
+
+// display_mode definitions
+localparam MODE_OCT_DOWN = 3'd0;
+localparam MODE_OCT_NORM = 3'd1;
+localparam MODE_OCT_UP   = 3'd2;
+localparam MODE_NUM_1    = 3'd3;
+localparam MODE_NUM_2    = 3'd4;
+localparam MODE_NUM_3    = 3'd5;
+localparam MODE_NUM_4    = 3'd6;
+localparam MODE_NUM_5    = 3'd7;
+// Note: char_code will be used if display_mode indicates a number.
+// For octave modes, char_code is ignored for now.
+// We can combine char_code and display_mode in a more sophisticated way later if needed.
+
+always @(*) begin
+    case (display_mode)
+        MODE_OCT_DOWN: segments_out = SEG_D; // Show '-' at bottom
+        MODE_OCT_NORM: segments_out = SEG_G; // Show '-' at middle
+        MODE_OCT_UP:   segments_out = SEG_A; // Show '-' at top
+        MODE_NUM_1:    segments_out = NUM_1;
+        MODE_NUM_2:    segments_out = NUM_2;
+        MODE_NUM_3:    segments_out = NUM_3;
+        MODE_NUM_4:    segments_out = NUM_4;
+        MODE_NUM_5:    segments_out = NUM_5;
+        // Since NUM_KEYS = 7, we only need up to 7
+        default:      // Includes char_code for 6, 7 and BLANK/other
+            case(char_code) // Use char_code for numbers 1-7
+                4'd1:    segments_out = NUM_1;
+                4'd2:    segments_out = NUM_2;
+                4'd3:    segments_out = NUM_3;
+                4'd4:    segments_out = NUM_4;
+                4'd5:    segments_out = NUM_5;
+                4'd6:    segments_out = NUM_6;
+                4'd7:    segments_out = NUM_7;
+                default: segments_out = BLANK; // If no note or undefined
+            endcase
+    endcase
+end
+
+endmodule

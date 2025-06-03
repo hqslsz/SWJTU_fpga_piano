@@ -1,0 +1,93 @@
+{
+	"partitions" : [
+		{
+			"name" : "Top",
+			"pins" : [
+				{
+					"name" : "buzzer_out",
+					"strict" : false
+				},
+				{
+					"name" : "seven_seg_a",
+					"strict" : false
+				},
+				{
+					"name" : "seven_seg_b",
+					"strict" : false
+				},
+				{
+					"name" : "seven_seg_c",
+					"strict" : false
+				},
+				{
+					"name" : "seven_seg_d",
+					"strict" : false
+				},
+				{
+					"name" : "seven_seg_e",
+					"strict" : false
+				},
+				{
+					"name" : "seven_seg_f",
+					"strict" : false
+				},
+				{
+					"name" : "seven_seg_g",
+					"strict" : false
+				},
+				{
+					"name" : "seven_seg_digit_selects[1]",
+					"strict" : false
+				},
+				{
+					"name" : "seven_seg_digit_selects[2]",
+					"strict" : false
+				},
+				{
+					"name" : "clk_50mhz",
+					"strict" : false
+				},
+				{
+					"name" : "sw0_physical_reset",
+					"strict" : false
+				},
+				{
+					"name" : "note_keys_physical_in[0]",
+					"strict" : false
+				},
+				{
+					"name" : "note_keys_physical_in[1]",
+					"strict" : false
+				},
+				{
+					"name" : "note_keys_physical_in[2]",
+					"strict" : false
+				},
+				{
+					"name" : "note_keys_physical_in[3]",
+					"strict" : false
+				},
+				{
+					"name" : "note_keys_physical_in[4]",
+					"strict" : false
+				},
+				{
+					"name" : "note_keys_physical_in[5]",
+					"strict" : false
+				},
+				{
+					"name" : "note_keys_physical_in[6]",
+					"strict" : false
+				},
+				{
+					"name" : "sw15_octave_up_raw",
+					"strict" : false
+				},
+				{
+					"name" : "sw13_octave_down_raw",
+					"strict" : false
+				}
+			]
+		}
+	]
+}

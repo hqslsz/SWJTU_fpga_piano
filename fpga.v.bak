@@ -1,0 +1,39 @@
+// top.v (Verilog 示例)
+module top (
+    input wire CLK_50M,       // 50MHz 时钟输入
+    output wire BUZZER_OUT,  // 蜂鸣器输出
+    output wire LED_TEST     // 测试用LED
+);
+
+// 声明内部信号或实例化子模块（后续会用到）
+// ...
+
+// 暂时让一个LED闪烁，验证时钟和输出
+reg [24:0] counter_led = 0;
+always @(posedge CLK_50M) begin
+    if (counter_led == 25000000-1) begin // 大约0.5秒
+        counter_led <= 0;
+        LED_TEST <= ~LED_TEST;
+    end else begin
+        counter_led <= counter_led + 1;
+    end
+end
+
+// 暂时让蜂鸣器输出一个固定频率（比如440Hz，A4音）
+// 计算：50MHz / (2 * 440Hz) - 1 = 50000000 / 880 - 1 ≈ 56818 - 1 = 56817
+// 需要一个计数器来产生这个频率
+reg [16:0] counter_buzzer = 0; // 17位计数器最大值超过56817
+reg buzzer_reg = 0;
+
+always @(posedge CLK_50M) begin
+    if (counter_buzzer == 56817) begin // 计数到周期的一半
+        counter_buzzer <= 0;
+        buzzer_reg <= ~buzzer_reg; // 翻转输出
+    end else begin
+        counter_buzzer <= counter_buzzer + 1;
+    end
+end
+
+assign BUZZER_OUT = buzzer_reg; // 将内部信号连接到输出端口
+
+endmodule
