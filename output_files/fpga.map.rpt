@@ -1,5 +1,5 @@
 Analysis & Synthesis report for fpga
-Tue Jun 03 23:25:24 2025
+Wed Jun 04 00:14:48 2025
 Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
 
 
@@ -20,7 +20,7 @@ Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
  12. Inverted Register Statistics
  13. Registers Added for RAM Pass-Through Logic
  14. Multiplexer Restructuring Statistics (Restructuring Performed)
- 15. Source assignments for piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0|altsyncram_usg1:auto_generated
+ 15. Source assignments for piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0|altsyncram_0tg1:auto_generated
  16. Parameter Settings for User Entity Instance: keyboard_scanner:keyboard_scanner_inst
  17. Parameter Settings for User Entity Instance: keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer
  18. Parameter Settings for User Entity Instance: keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[1].inst_debouncer
@@ -29,17 +29,22 @@ Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
  21. Parameter Settings for User Entity Instance: keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[4].inst_debouncer
  22. Parameter Settings for User Entity Instance: keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[5].inst_debouncer
  23. Parameter Settings for User Entity Instance: keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[6].inst_debouncer
- 24. Parameter Settings for User Entity Instance: debouncer:octave_up_debouncer_inst
- 25. Parameter Settings for User Entity Instance: debouncer:octave_down_debouncer_inst
- 26. Parameter Settings for User Entity Instance: debouncer:record_debouncer_inst
- 27. Parameter Settings for User Entity Instance: debouncer:playback_debouncer_inst
- 28. Parameter Settings for User Entity Instance: piano_recorder:piano_recorder_inst
- 29. Parameter Settings for Inferred Entity Instance: piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0
- 30. altsyncram Parameter Settings by Entity Instance
- 31. Port Connectivity Checks: "piano_recorder:piano_recorder_inst"
- 32. Post-Synthesis Netlist Statistics for Top Partition
- 33. Elapsed Time Per Partition
- 34. Analysis & Synthesis Messages
+ 24. Parameter Settings for User Entity Instance: keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[7].inst_debouncer
+ 25. Parameter Settings for User Entity Instance: keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[8].inst_debouncer
+ 26. Parameter Settings for User Entity Instance: keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[9].inst_debouncer
+ 27. Parameter Settings for User Entity Instance: keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[10].inst_debouncer
+ 28. Parameter Settings for User Entity Instance: keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[11].inst_debouncer
+ 29. Parameter Settings for User Entity Instance: debouncer:octave_up_debouncer_inst
+ 30. Parameter Settings for User Entity Instance: debouncer:octave_down_debouncer_inst
+ 31. Parameter Settings for User Entity Instance: debouncer:record_debouncer_inst
+ 32. Parameter Settings for User Entity Instance: debouncer:playback_debouncer_inst
+ 33. Parameter Settings for User Entity Instance: piano_recorder:piano_recorder_inst
+ 34. Parameter Settings for Inferred Entity Instance: piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0
+ 35. altsyncram Parameter Settings by Entity Instance
+ 36. Port Connectivity Checks: "piano_recorder:piano_recorder_inst"
+ 37. Post-Synthesis Netlist Statistics for Top Partition
+ 38. Elapsed Time Per Partition
+ 39. Analysis & Synthesis Messages
 
 
 
@@ -65,18 +70,18 @@ refer to the applicable agreement for further details.
 +----------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                     ;
 +------------------------------------+---------------------------------------------+
-; Analysis & Synthesis Status        ; Successful - Tue Jun 03 23:25:24 2025       ;
+; Analysis & Synthesis Status        ; Successful - Wed Jun 04 00:14:48 2025       ;
 ; Quartus Prime Version              ; 18.1.0 Build 625 09/12/2018 SJ Lite Edition ;
 ; Revision Name                      ; fpga                                        ;
 ; Top-level Entity Name              ; fpga                                        ;
 ; Family                             ; Cyclone IV E                                ;
-; Total logic elements               ; 744                                         ;
-;     Total combinational functions  ; 706                                         ;
-;     Dedicated logic registers      ; 380                                         ;
-; Total registers                    ; 380                                         ;
-; Total pins                         ; 30                                          ;
+; Total logic elements               ; 885                                         ;
+;     Total combinational functions  ; 841                                         ;
+;     Dedicated logic registers      ; 493                                         ;
+; Total registers                    ; 493                                         ;
+; Total pins                         ; 35                                          ;
 ; Total virtual pins                 ; 0                                           ;
-; Total memory bits                  ; 3,072                                       ;
+; Total memory bits                  ; 3,584                                       ;
 ; Embedded Multiplier 9-bit elements ; 0                                           ;
 ; Total PLLs                         ; 0                                           ;
 +------------------------------------+---------------------------------------------+
@@ -211,7 +216,7 @@ refer to the applicable agreement for further details.
 ; altrom.inc                       ; yes             ; Megafunction                 ; d:/intelfpga_lite/18.1/quartus/libraries/megafunctions/altrom.inc            ;         ;
 ; altram.inc                       ; yes             ; Megafunction                 ; d:/intelfpga_lite/18.1/quartus/libraries/megafunctions/altram.inc            ;         ;
 ; altdpram.inc                     ; yes             ; Megafunction                 ; d:/intelfpga_lite/18.1/quartus/libraries/megafunctions/altdpram.inc          ;         ;
-; db/altsyncram_usg1.tdf           ; yes             ; Auto-Generated Megafunction  ; D:/github_project/fpga/db/altsyncram_usg1.tdf                                ;         ;
+; db/altsyncram_0tg1.tdf           ; yes             ; Auto-Generated Megafunction  ; D:/github_project/fpga/db/altsyncram_0tg1.tdf                                ;         ;
 +----------------------------------+-----------------+------------------------------+------------------------------------------------------------------------------+---------+
 
 
@@ -220,31 +225,31 @@ refer to the applicable agreement for further details.
 +---------------------------------------------+-----------------+
 ; Resource                                    ; Usage           ;
 +---------------------------------------------+-----------------+
-; Estimated Total logic elements              ; 744             ;
+; Estimated Total logic elements              ; 885             ;
 ;                                             ;                 ;
-; Total combinational functions               ; 706             ;
+; Total combinational functions               ; 841             ;
 ; Logic element usage by number of LUT inputs ;                 ;
-;     -- 4 input functions                    ; 219             ;
-;     -- 3 input functions                    ; 105             ;
-;     -- <=2 input functions                  ; 382             ;
+;     -- 4 input functions                    ; 245             ;
+;     -- 3 input functions                    ; 100             ;
+;     -- <=2 input functions                  ; 496             ;
 ;                                             ;                 ;
 ; Logic elements by mode                      ;                 ;
-;     -- normal mode                          ; 352             ;
-;     -- arithmetic mode                      ; 354             ;
+;     -- normal mode                          ; 392             ;
+;     -- arithmetic mode                      ; 449             ;
 ;                                             ;                 ;
-; Total registers                             ; 380             ;
-;     -- Dedicated logic registers            ; 380             ;
+; Total registers                             ; 493             ;
+;     -- Dedicated logic registers            ; 493             ;
 ;     -- I/O registers                        ; 0               ;
 ;                                             ;                 ;
-; I/O pins                                    ; 30              ;
-; Total memory bits                           ; 3072            ;
+; I/O pins                                    ; 35              ;
+; Total memory bits                           ; 3584            ;
 ;                                             ;                 ;
 ; Embedded Multiplier 9-bit elements          ; 0               ;
 ;                                             ;                 ;
 ; Maximum fan-out node                        ; clk_50mhz~input ;
-; Maximum fan-out                             ; 386             ;
-; Total fan-out                               ; 3719            ;
-; Average fan-out                             ; 3.23            ;
+; Maximum fan-out                             ; 500             ;
+; Total fan-out                               ; 4608            ;
+; Average fan-out                             ; 3.27            ;
 +---------------------------------------------+-----------------+
 
 
@@ -253,23 +258,28 @@ refer to the applicable agreement for further details.
 +----------------------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+---------------------------------------------------------------------------------------------------------------+--------------------------+--------------+
 ; Compilation Hierarchy Node                               ; Combinational ALUTs ; Dedicated Logic Registers ; Memory Bits ; DSP Elements ; DSP 9x9 ; DSP 18x18 ; Pins ; Virtual Pins ; Full Hierarchy Name                                                                                           ; Entity Name              ; Library Name ;
 +----------------------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+---------------------------------------------------------------------------------------------------------------+--------------------------+--------------+
-; |fpga                                                    ; 706 (142)           ; 380 (20)                  ; 3072        ; 0            ; 0       ; 0         ; 30   ; 0            ; |fpga                                                                                                         ; fpga                     ; work         ;
+; |fpga                                                    ; 841 (129)           ; 493 (20)                  ; 3584        ; 0            ; 0       ; 0         ; 35   ; 0            ; |fpga                                                                                                         ; fpga                     ; work         ;
 ;    |debouncer:octave_down_debouncer_inst|                ; 30 (30)             ; 22 (22)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|debouncer:octave_down_debouncer_inst                                                                    ; debouncer                ; work         ;
 ;    |debouncer:octave_up_debouncer_inst|                  ; 30 (30)             ; 22 (22)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|debouncer:octave_up_debouncer_inst                                                                      ; debouncer                ; work         ;
 ;    |debouncer:playback_debouncer_inst|                   ; 30 (30)             ; 22 (22)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|debouncer:playback_debouncer_inst                                                                       ; debouncer                ; work         ;
 ;    |debouncer:record_debouncer_inst|                     ; 30 (30)             ; 22 (22)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|debouncer:record_debouncer_inst                                                                         ; debouncer                ; work         ;
-;    |keyboard_scanner:keyboard_scanner_inst|              ; 217 (7)             ; 154 (0)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|keyboard_scanner:keyboard_scanner_inst                                                                  ; keyboard_scanner         ; work         ;
+;    |keyboard_scanner:keyboard_scanner_inst|              ; 374 (14)            ; 264 (0)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|keyboard_scanner:keyboard_scanner_inst                                                                  ; keyboard_scanner         ; work         ;
 ;       |debouncer:debounce_gen_block[0].inst_debouncer|   ; 30 (30)             ; 22 (22)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer                   ; debouncer                ; work         ;
+;       |debouncer:debounce_gen_block[10].inst_debouncer|  ; 30 (30)             ; 22 (22)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[10].inst_debouncer                  ; debouncer                ; work         ;
+;       |debouncer:debounce_gen_block[11].inst_debouncer|  ; 30 (30)             ; 22 (22)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[11].inst_debouncer                  ; debouncer                ; work         ;
 ;       |debouncer:debounce_gen_block[1].inst_debouncer|   ; 30 (30)             ; 22 (22)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[1].inst_debouncer                   ; debouncer                ; work         ;
 ;       |debouncer:debounce_gen_block[2].inst_debouncer|   ; 30 (30)             ; 22 (22)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[2].inst_debouncer                   ; debouncer                ; work         ;
 ;       |debouncer:debounce_gen_block[3].inst_debouncer|   ; 30 (30)             ; 22 (22)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[3].inst_debouncer                   ; debouncer                ; work         ;
 ;       |debouncer:debounce_gen_block[4].inst_debouncer|   ; 30 (30)             ; 22 (22)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[4].inst_debouncer                   ; debouncer                ; work         ;
 ;       |debouncer:debounce_gen_block[5].inst_debouncer|   ; 30 (30)             ; 22 (22)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[5].inst_debouncer                   ; debouncer                ; work         ;
 ;       |debouncer:debounce_gen_block[6].inst_debouncer|   ; 30 (30)             ; 22 (22)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[6].inst_debouncer                   ; debouncer                ; work         ;
-;    |piano_recorder:piano_recorder_inst|                  ; 179 (179)           ; 89 (89)                   ; 3072        ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|piano_recorder:piano_recorder_inst                                                                      ; piano_recorder           ; work         ;
-;       |altsyncram:recorded_data_memory_rtl_0|            ; 0 (0)               ; 0 (0)                     ; 3072        ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0                                ; altsyncram               ; work         ;
-;          |altsyncram_usg1:auto_generated|                ; 0 (0)               ; 0 (0)                     ; 3072        ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0|altsyncram_usg1:auto_generated ; altsyncram_usg1          ; work         ;
-;    |seven_segment_controller:seven_segment_display_inst| ; 48 (48)             ; 29 (29)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|seven_segment_controller:seven_segment_display_inst                                                     ; seven_segment_controller ; work         ;
+;       |debouncer:debounce_gen_block[7].inst_debouncer|   ; 30 (30)             ; 22 (22)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[7].inst_debouncer                   ; debouncer                ; work         ;
+;       |debouncer:debounce_gen_block[8].inst_debouncer|   ; 30 (30)             ; 22 (22)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[8].inst_debouncer                   ; debouncer                ; work         ;
+;       |debouncer:debounce_gen_block[9].inst_debouncer|   ; 30 (30)             ; 22 (22)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[9].inst_debouncer                   ; debouncer                ; work         ;
+;    |piano_recorder:piano_recorder_inst|                  ; 171 (171)           ; 92 (92)                   ; 3584        ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|piano_recorder:piano_recorder_inst                                                                      ; piano_recorder           ; work         ;
+;       |altsyncram:recorded_data_memory_rtl_0|            ; 0 (0)               ; 0 (0)                     ; 3584        ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0                                ; altsyncram               ; work         ;
+;          |altsyncram_0tg1:auto_generated|                ; 0 (0)               ; 0 (0)                     ; 3584        ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0|altsyncram_0tg1:auto_generated ; altsyncram_0tg1          ; work         ;
+;    |seven_segment_controller:seven_segment_display_inst| ; 47 (47)             ; 29 (29)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |fpga|seven_segment_controller:seven_segment_display_inst                                                     ; seven_segment_controller ; work         ;
 +----------------------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+---------------------------------------------------------------------------------------------------------------+--------------------------+--------------+
 Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
 
@@ -279,7 +289,7 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +--------------------------------------------------------------------------------------------------------------------+------+------------------+--------------+--------------+--------------+--------------+------+------+
 ; Name                                                                                                               ; Type ; Mode             ; Port A Depth ; Port A Width ; Port B Depth ; Port B Width ; Size ; MIF  ;
 +--------------------------------------------------------------------------------------------------------------------+------+------------------+--------------+--------------+--------------+--------------+------+------+
-; piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0|altsyncram_usg1:auto_generated|ALTSYNCRAM ; AUTO ; Simple Dual Port ; 512          ; 6            ; 512          ; 6            ; 3072 ; None ;
+; piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0|altsyncram_0tg1:auto_generated|ALTSYNCRAM ; AUTO ; Simple Dual Port ; 512          ; 7            ; 512          ; 7            ; 3584 ; None ;
 +--------------------------------------------------------------------------------------------------------------------+------+------------------+--------------+--------------+--------------+--------------+------+------+
 
 
@@ -311,12 +321,12 @@ Encoding Type:  One-Hot
 +----------------------------------------------+-------+
 ; Statistic                                    ; Value ;
 +----------------------------------------------+-------+
-; Total registers                              ; 380   ;
-; Number of registers using Synchronous Clear  ; 247   ;
-; Number of registers using Synchronous Load   ; 5     ;
-; Number of registers using Asynchronous Clear ; 356   ;
+; Total registers                              ; 493   ;
+; Number of registers using Synchronous Clear  ; 354   ;
+; Number of registers using Synchronous Load   ; 0     ;
+; Number of registers using Asynchronous Clear ; 469   ;
 ; Number of registers using Asynchronous Load  ; 0     ;
-; Number of registers using Clock Enable       ; 249   ;
+; Number of registers using Clock Enable       ; 364   ;
 ; Number of registers using Preset             ; 0     ;
 +----------------------------------------------+-------+
 
@@ -326,7 +336,7 @@ Encoding Type:  One-Hot
 +----------------------------------------------------------------------------------+---------+
 ; Inverted Register                                                                ; Fan out ;
 +----------------------------------------------------------------------------------+---------+
-; seven_segment_controller:seven_segment_display_inst|current_timeslot_is_for_seg1 ; 12      ;
+; seven_segment_controller:seven_segment_display_inst|current_timeslot_is_for_seg1 ; 11      ;
 ; Total number of inverted registers = 1                                           ;         ;
 +----------------------------------------------------------------------------------+---------+
 
@@ -361,6 +371,7 @@ Encoding Type:  One-Hot
 ; piano_recorder:piano_recorder_inst|recorded_data_memory_rtl_0_bypass[22] ; piano_recorder:piano_recorder_inst|recorded_data_memory_rtl_0 ;
 ; piano_recorder:piano_recorder_inst|recorded_data_memory_rtl_0_bypass[23] ; piano_recorder:piano_recorder_inst|recorded_data_memory_rtl_0 ;
 ; piano_recorder:piano_recorder_inst|recorded_data_memory_rtl_0_bypass[24] ; piano_recorder:piano_recorder_inst|recorded_data_memory_rtl_0 ;
+; piano_recorder:piano_recorder_inst|recorded_data_memory_rtl_0_bypass[25] ; piano_recorder:piano_recorder_inst|recorded_data_memory_rtl_0 ;
 +--------------------------------------------------------------------------+---------------------------------------------------------------+
 
 
@@ -369,31 +380,37 @@ Encoding Type:  One-Hot
 +--------------------+-----------+---------------+----------------------+------------------------+------------+-----------------------------------------------------------------------------------------------------------+
 ; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                                                                                ;
 +--------------------+-----------+---------------+----------------------+------------------------+------------+-----------------------------------------------------------------------------------------------------------+
-; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|debouncer:playback_debouncer_inst|count_reg[19]                                                     ;
-; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|debouncer:record_debouncer_inst|count_reg[1]                                                        ;
-; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|debouncer:octave_up_debouncer_inst|count_reg[1]                                                     ;
-; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|debouncer:octave_down_debouncer_inst|count_reg[4]                                                   ;
-; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer|count_reg[10] ;
-; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[1].inst_debouncer|count_reg[7]  ;
-; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[2].inst_debouncer|count_reg[13] ;
-; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[3].inst_debouncer|count_reg[4]  ;
-; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[4].inst_debouncer|count_reg[0]  ;
-; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[5].inst_debouncer|count_reg[1]  ;
-; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[6].inst_debouncer|count_reg[1]  ;
-; 3:1                ; 5 bits    ; 10 LEs        ; 10 LEs               ; 0 LEs                  ; Yes        ; |fpga|piano_recorder:piano_recorder_inst|playback_key_id[1]                                               ;
-; 3:1                ; 18 bits   ; 36 LEs        ; 18 LEs               ; 18 LEs                 ; Yes        ; |fpga|buzzer_counter_reg[2]                                                                               ;
+; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|debouncer:playback_debouncer_inst|count_reg[11]                                                     ;
+; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|debouncer:record_debouncer_inst|count_reg[11]                                                       ;
+; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|debouncer:octave_up_debouncer_inst|count_reg[8]                                                     ;
+; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|debouncer:octave_down_debouncer_inst|count_reg[7]                                                   ;
+; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer|count_reg[7]  ;
+; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[1].inst_debouncer|count_reg[10] ;
+; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[2].inst_debouncer|count_reg[12] ;
+; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[3].inst_debouncer|count_reg[2]  ;
+; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[4].inst_debouncer|count_reg[2]  ;
+; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[5].inst_debouncer|count_reg[11] ;
+; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[6].inst_debouncer|count_reg[19] ;
+; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[7].inst_debouncer|count_reg[1]  ;
+; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[8].inst_debouncer|count_reg[0]  ;
+; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[9].inst_debouncer|count_reg[19] ;
+; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[10].inst_debouncer|count_reg[0] ;
+; 3:1                ; 20 bits   ; 40 LEs        ; 20 LEs               ; 20 LEs                 ; Yes        ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[11].inst_debouncer|count_reg[0] ;
+; 3:1                ; 18 bits   ; 36 LEs        ; 18 LEs               ; 18 LEs                 ; Yes        ; |fpga|buzzer_counter_reg[10]                                                                              ;
 ; 3:1                ; 2 bits    ; 4 LEs         ; 2 LEs                ; 2 LEs                  ; Yes        ; |fpga|seven_segment_controller:seven_segment_display_inst|seg_c                                           ;
+; 5:1                ; 7 bits    ; 21 LEs        ; 14 LEs               ; 7 LEs                  ; Yes        ; |fpga|piano_recorder:piano_recorder_inst|playback_key_id[2]                                               ;
 ; 10:1               ; 2 bits    ; 12 LEs        ; 10 LEs               ; 2 LEs                  ; Yes        ; |fpga|seven_segment_controller:seven_segment_display_inst|seg_a                                           ;
-; 5:1                ; 9 bits    ; 27 LEs        ; 9 LEs                ; 18 LEs                 ; Yes        ; |fpga|piano_recorder:piano_recorder_inst|record_write_ptr[0]                                              ;
+; 5:1                ; 9 bits    ; 27 LEs        ; 9 LEs                ; 18 LEs                 ; Yes        ; |fpga|piano_recorder:piano_recorder_inst|record_write_ptr[3]                                              ;
+; 5:1                ; 12 bits   ; 36 LEs        ; 24 LEs               ; 12 LEs                 ; Yes        ; |fpga|piano_recorder:piano_recorder_inst|sample_timer_reg[1]                                              ;
 ; 6:1                ; 9 bits    ; 36 LEs        ; 9 LEs                ; 27 LEs                 ; Yes        ; |fpga|piano_recorder:piano_recorder_inst|last_recorded_ptr[8]                                             ;
 ; 3:1                ; 16 bits   ; 32 LEs        ; 32 LEs               ; 0 LEs                  ; No         ; |fpga|final_target_count_max[4]                                                                           ;
-; 5:1                ; 9 bits    ; 27 LEs        ; 18 LEs               ; 9 LEs                  ; No         ; |fpga|piano_recorder:piano_recorder_inst|Selector51                                                       ;
-; 9:1                ; 3 bits    ; 18 LEs        ; 6 LEs                ; 12 LEs                 ; No         ; |fpga|piano_recorder:piano_recorder_inst|Selector22                                                       ;
+; 5:1                ; 9 bits    ; 27 LEs        ; 18 LEs               ; 9 LEs                  ; No         ; |fpga|piano_recorder:piano_recorder_inst|Selector50                                                       ;
+; 9:1                ; 3 bits    ; 18 LEs        ; 6 LEs                ; 12 LEs                 ; No         ; |fpga|piano_recorder:piano_recorder_inst|Selector20                                                       ;
 +--------------------+-----------+---------------+----------------------+------------------------+------------+-----------------------------------------------------------------------------------------------------------+
 
 
 +--------------------------------------------------------------------------------------------------------------------------------+
-; Source assignments for piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0|altsyncram_usg1:auto_generated ;
+; Source assignments for piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0|altsyncram_0tg1:auto_generated ;
 +---------------------------------+--------------------+------+------------------------------------------------------------------+
 ; Assignment                      ; Value              ; From ; To                                                               ;
 +---------------------------------+--------------------+------+------------------------------------------------------------------+
@@ -406,7 +423,7 @@ Encoding Type:  One-Hot
 +------------------+-------+----------------------------------------------------------+
 ; Parameter Name   ; Value ; Type                                                     ;
 +------------------+-------+----------------------------------------------------------+
-; NUM_KEYS         ; 7     ; Signed Integer                                           ;
+; NUM_KEYS         ; 12    ; Signed Integer                                           ;
 ; DEBOUNCE_TIME_MS ; 20    ; Signed Integer                                           ;
 +------------------+-------+----------------------------------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
@@ -482,6 +499,56 @@ Note: In order to hide this table in the UI and the text report file, please set
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
++------------------------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[7].inst_debouncer ;
++-----------------+---------+--------------------------------------------------------------------------------------------------------+
+; Parameter Name  ; Value   ; Type                                                                                                   ;
++-----------------+---------+--------------------------------------------------------------------------------------------------------+
+; DEBOUNCE_CYCLES ; 1000000 ; Signed Integer                                                                                         ;
++-----------------+---------+--------------------------------------------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++------------------------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[8].inst_debouncer ;
++-----------------+---------+--------------------------------------------------------------------------------------------------------+
+; Parameter Name  ; Value   ; Type                                                                                                   ;
++-----------------+---------+--------------------------------------------------------------------------------------------------------+
+; DEBOUNCE_CYCLES ; 1000000 ; Signed Integer                                                                                         ;
++-----------------+---------+--------------------------------------------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++------------------------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[9].inst_debouncer ;
++-----------------+---------+--------------------------------------------------------------------------------------------------------+
+; Parameter Name  ; Value   ; Type                                                                                                   ;
++-----------------+---------+--------------------------------------------------------------------------------------------------------+
+; DEBOUNCE_CYCLES ; 1000000 ; Signed Integer                                                                                         ;
++-----------------+---------+--------------------------------------------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-------------------------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[10].inst_debouncer ;
++-----------------+---------+---------------------------------------------------------------------------------------------------------+
+; Parameter Name  ; Value   ; Type                                                                                                    ;
++-----------------+---------+---------------------------------------------------------------------------------------------------------+
+; DEBOUNCE_CYCLES ; 1000000 ; Signed Integer                                                                                          ;
++-----------------+---------+---------------------------------------------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
++-------------------------------------------------------------------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[11].inst_debouncer ;
++-----------------+---------+---------------------------------------------------------------------------------------------------------+
+; Parameter Name  ; Value   ; Type                                                                                                    ;
++-----------------+---------+---------------------------------------------------------------------------------------------------------+
+; DEBOUNCE_CYCLES ; 1000000 ; Signed Integer                                                                                          ;
++-----------------+---------+---------------------------------------------------------------------------------------------------------+
+Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
+
+
 +---------------------------------------------------------------------------------+
 ; Parameter Settings for User Entity Instance: debouncer:octave_up_debouncer_inst ;
 +-----------------+---------+-----------------------------------------------------+
@@ -530,7 +597,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 ; CLK_FREQ_HZ        ; 50000000 ; Signed Integer                                  ;
 ; RECORD_INTERVAL_MS ; 20       ; Signed Integer                                  ;
 ; MAX_RECORD_SAMPLES ; 512      ; Signed Integer                                  ;
-; KEY_ID_BITS        ; 3        ; Signed Integer                                  ;
+; KEY_ID_BITS        ; 4        ; Signed Integer                                  ;
 ; OCTAVE_BITS        ; 2        ; Signed Integer                                  ;
 +--------------------+----------+-------------------------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
@@ -548,7 +615,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 ; IGNORE_CASCADE_BUFFERS             ; OFF                  ; IGNORE_CASCADE                                                ;
 ; WIDTH_BYTEENA                      ; 1                    ; Untyped                                                       ;
 ; OPERATION_MODE                     ; DUAL_PORT            ; Untyped                                                       ;
-; WIDTH_A                            ; 6                    ; Untyped                                                       ;
+; WIDTH_A                            ; 7                    ; Untyped                                                       ;
 ; WIDTHAD_A                          ; 9                    ; Untyped                                                       ;
 ; NUMWORDS_A                         ; 512                  ; Untyped                                                       ;
 ; OUTDATA_REG_A                      ; UNREGISTERED         ; Untyped                                                       ;
@@ -557,7 +624,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 ; WRCONTROL_ACLR_A                   ; NONE                 ; Untyped                                                       ;
 ; INDATA_ACLR_A                      ; NONE                 ; Untyped                                                       ;
 ; BYTEENA_ACLR_A                     ; NONE                 ; Untyped                                                       ;
-; WIDTH_B                            ; 6                    ; Untyped                                                       ;
+; WIDTH_B                            ; 7                    ; Untyped                                                       ;
 ; WIDTHAD_B                          ; 9                    ; Untyped                                                       ;
 ; NUMWORDS_B                         ; 512                  ; Untyped                                                       ;
 ; INDATA_REG_B                       ; CLOCK1               ; Untyped                                                       ;
@@ -592,7 +659,7 @@ Note: In order to hide this table in the UI and the text report file, please set
 ; ECC_PIPELINE_STAGE_ENABLED         ; FALSE                ; Untyped                                                       ;
 ; WIDTH_ECCSTATUS                    ; 3                    ; Untyped                                                       ;
 ; DEVICE_FAMILY                      ; Cyclone IV E         ; Untyped                                                       ;
-; CBXI_PARAMETER                     ; altsyncram_usg1      ; Untyped                                                       ;
+; CBXI_PARAMETER                     ; altsyncram_0tg1      ; Untyped                                                       ;
 +------------------------------------+----------------------+---------------------------------------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
@@ -605,10 +672,10 @@ Note: In order to hide this table in the UI and the text report file, please set
 ; Number of entity instances                ; 1                                                                        ;
 ; Entity Instance                           ; piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0 ;
 ;     -- OPERATION_MODE                     ; DUAL_PORT                                                                ;
-;     -- WIDTH_A                            ; 6                                                                        ;
+;     -- WIDTH_A                            ; 7                                                                        ;
 ;     -- NUMWORDS_A                         ; 512                                                                      ;
 ;     -- OUTDATA_REG_A                      ; UNREGISTERED                                                             ;
-;     -- WIDTH_B                            ; 6                                                                        ;
+;     -- WIDTH_B                            ; 7                                                                        ;
 ;     -- NUMWORDS_B                         ; 512                                                                      ;
 ;     -- ADDRESS_REG_B                      ; CLOCK0                                                                   ;
 ;     -- OUTDATA_REG_B                      ; UNREGISTERED                                                             ;
@@ -617,14 +684,13 @@ Note: In order to hide this table in the UI and the text report file, please set
 +-------------------------------------------+--------------------------------------------------------------------------+
 
 
-+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Port Connectivity Checks: "piano_recorder:piano_recorder_inst"                                                                                                                            ;
-+------------------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
-; Port                   ; Type   ; Severity ; Details                                                                                                                                      ;
-+------------------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
-; is_recording           ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed.                                                          ;
-; record_start_stop_edge ; Input  ; Warning  ; Declared by entity but not connected by instance. If a default value exists, it will be used.  Otherwise, the port will be connected to GND. ;
-+------------------------+--------+----------+----------------------------------------------------------------------------------------------------------------------------------------------+
++------------------------------------------------------------------------------------------------------------------------+
+; Port Connectivity Checks: "piano_recorder:piano_recorder_inst"                                                         ;
++--------------+--------+----------+-------------------------------------------------------------------------------------+
+; Port         ; Type   ; Severity ; Details                                                                             ;
++--------------+--------+----------+-------------------------------------------------------------------------------------+
+; is_recording ; Output ; Info     ; Connected to dangling logic. Logic that only feeds a dangling port will be removed. ;
++--------------+--------+----------+-------------------------------------------------------------------------------------+
 
 
 +-----------------------------------------------------+
@@ -632,30 +698,28 @@ Note: In order to hide this table in the UI and the text report file, please set
 +-----------------------+-----------------------------+
 ; Type                  ; Count                       ;
 +-----------------------+-----------------------------+
-; boundary_port         ; 30                          ;
-; cycloneiii_ff         ; 380                         ;
-;     CLR               ; 97                          ;
+; boundary_port         ; 35                          ;
+; cycloneiii_ff         ; 493                         ;
+;     CLR               ; 94                          ;
 ;     CLR SCLR          ; 18                          ;
-;     ENA               ; 6                           ;
-;     ENA CLR           ; 9                           ;
-;     ENA CLR SCLR      ; 229                         ;
-;     ENA CLR SLD       ; 3                           ;
-;     ENA SLD           ; 2                           ;
-;     plain             ; 16                          ;
-; cycloneiii_lcell_comb ; 707                         ;
-;     arith             ; 354                         ;
-;         2 data inputs ; 311                         ;
-;         3 data inputs ; 43                          ;
-;     normal            ; 353                         ;
+;     ENA               ; 7                           ;
+;     ENA CLR           ; 21                          ;
+;     ENA CLR SCLR      ; 336                         ;
+;     plain             ; 17                          ;
+; cycloneiii_lcell_comb ; 842                         ;
+;     arith             ; 449                         ;
+;         2 data inputs ; 415                         ;
+;         3 data inputs ; 34                          ;
+;     normal            ; 393                         ;
 ;         0 data inputs ; 4                           ;
-;         1 data inputs ; 17                          ;
-;         2 data inputs ; 51                          ;
-;         3 data inputs ; 62                          ;
-;         4 data inputs ; 219                         ;
-; cycloneiii_ram_block  ; 6                           ;
+;         1 data inputs ; 22                          ;
+;         2 data inputs ; 56                          ;
+;         3 data inputs ; 66                          ;
+;         4 data inputs ; 245                         ;
+; cycloneiii_ram_block  ; 7                           ;
 ;                       ;                             ;
-; Max LUT depth         ; 10.70                       ;
-; Average LUT depth     ; 4.22                        ;
+; Max LUT depth         ; 11.70                       ;
+; Average LUT depth     ; 4.05                        ;
 +-----------------------+-----------------------------+
 
 
@@ -674,42 +738,43 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
-    Info: Processing started: Tue Jun 03 23:25:11 2025
+    Info: Processing started: Wed Jun 04 00:14:35 2025
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off fpga -c fpga
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 10 of the 10 processors detected
 Info (12021): Found 1 design units, including 1 entities, in source file fpga.v
-    Info (12023): Found entity 1: fpga File: D:/github_project/fpga/fpga.v Line: 2
+    Info (12023): Found entity 1: fpga File: D:/github_project/fpga/fpga.v Line: 4
 Info (12021): Found 1 design units, including 1 entities, in source file debouncer.v
     Info (12023): Found entity 1: debouncer File: D:/github_project/fpga/debouncer.v Line: 2
 Info (12021): Found 1 design units, including 1 entities, in source file keyboard_scanner.v
-    Info (12023): Found entity 1: keyboard_scanner File: D:/github_project/fpga/keyboard_scanner.v Line: 2
+    Info (12023): Found entity 1: keyboard_scanner File: D:/github_project/fpga/keyboard_scanner.v Line: 4
 Info (12021): Found 1 design units, including 1 entities, in source file seven_segment_decoder.v
     Info (12023): Found entity 1: seven_segment_controller File: D:/github_project/fpga/seven_segment_decoder.v Line: 2
 Info (12021): Found 1 design units, including 1 entities, in source file piano_recorder.v
-    Info (12023): Found entity 1: piano_recorder File: D:/github_project/fpga/piano_recorder.v Line: 2
+    Info (12023): Found entity 1: piano_recorder File: D:/github_project/fpga/piano_recorder.v Line: 4
 Info (12127): Elaborating entity "fpga" for the top level hierarchy
-Warning (10230): Verilog HDL assignment warning at fpga.v(145): truncated value with size 32 to match size of target (18) File: D:/github_project/fpga/fpga.v Line: 145
-Warning (10230): Verilog HDL assignment warning at fpga.v(147): truncated value with size 32 to match size of target (18) File: D:/github_project/fpga/fpga.v Line: 147
-Info (12128): Elaborating entity "keyboard_scanner" for hierarchy "keyboard_scanner:keyboard_scanner_inst" File: D:/github_project/fpga/fpga.v Line: 44
-Warning (10230): Verilog HDL assignment warning at keyboard_scanner.v(51): truncated value with size 32 to match size of target (3) File: D:/github_project/fpga/keyboard_scanner.v Line: 51
-Info (12128): Elaborating entity "debouncer" for hierarchy "keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer" File: D:/github_project/fpga/keyboard_scanner.v Line: 32
-Info (12128): Elaborating entity "piano_recorder" for hierarchy "piano_recorder:piano_recorder_inst" File: D:/github_project/fpga/fpga.v Line: 107
-Warning (10230): Verilog HDL assignment warning at piano_recorder.v(127): truncated value with size 32 to match size of target (9) File: D:/github_project/fpga/piano_recorder.v Line: 127
-Warning (10230): Verilog HDL assignment warning at piano_recorder.v(131): truncated value with size 32 to match size of target (9) File: D:/github_project/fpga/piano_recorder.v Line: 131
-Warning (10230): Verilog HDL assignment warning at piano_recorder.v(134): truncated value with size 32 to match size of target (20) File: D:/github_project/fpga/piano_recorder.v Line: 134
-Warning (10230): Verilog HDL assignment warning at piano_recorder.v(150): truncated value with size 32 to match size of target (9) File: D:/github_project/fpga/piano_recorder.v Line: 150
-Warning (10230): Verilog HDL assignment warning at piano_recorder.v(157): truncated value with size 32 to match size of target (20) File: D:/github_project/fpga/piano_recorder.v Line: 157
-Info (12128): Elaborating entity "seven_segment_controller" for hierarchy "seven_segment_controller:seven_segment_display_inst" File: D:/github_project/fpga/fpga.v Line: 180
+Warning (10230): Verilog HDL assignment warning at fpga.v(208): truncated value with size 32 to match size of target (18) File: D:/github_project/fpga/fpga.v Line: 208
+Warning (10230): Verilog HDL assignment warning at fpga.v(211): truncated value with size 32 to match size of target (18) File: D:/github_project/fpga/fpga.v Line: 211
+Info (12128): Elaborating entity "keyboard_scanner" for hierarchy "keyboard_scanner:keyboard_scanner_inst" File: D:/github_project/fpga/fpga.v Line: 83
+Warning (10230): Verilog HDL assignment warning at keyboard_scanner.v(59): truncated value with size 32 to match size of target (4) File: D:/github_project/fpga/keyboard_scanner.v Line: 59
+Info (12128): Elaborating entity "debouncer" for hierarchy "keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer" File: D:/github_project/fpga/keyboard_scanner.v Line: 38
+Info (12128): Elaborating entity "piano_recorder" for hierarchy "piano_recorder:piano_recorder_inst" File: D:/github_project/fpga/fpga.v Line: 149
+Warning (10230): Verilog HDL assignment warning at piano_recorder.v(121): truncated value with size 32 to match size of target (20) File: D:/github_project/fpga/piano_recorder.v Line: 121
+Warning (10230): Verilog HDL assignment warning at piano_recorder.v(138): truncated value with size 32 to match size of target (9) File: D:/github_project/fpga/piano_recorder.v Line: 138
+Warning (10230): Verilog HDL assignment warning at piano_recorder.v(141): truncated value with size 32 to match size of target (9) File: D:/github_project/fpga/piano_recorder.v Line: 141
+Warning (10230): Verilog HDL assignment warning at piano_recorder.v(144): truncated value with size 32 to match size of target (20) File: D:/github_project/fpga/piano_recorder.v Line: 144
+Warning (10230): Verilog HDL assignment warning at piano_recorder.v(162): truncated value with size 32 to match size of target (9) File: D:/github_project/fpga/piano_recorder.v Line: 162
+Warning (10230): Verilog HDL assignment warning at piano_recorder.v(167): truncated value with size 32 to match size of target (20) File: D:/github_project/fpga/piano_recorder.v Line: 167
+Info (12128): Elaborating entity "seven_segment_controller" for hierarchy "seven_segment_controller:seven_segment_display_inst" File: D:/github_project/fpga/fpga.v Line: 265
 Warning (10230): Verilog HDL assignment warning at seven_segment_decoder.v(74): truncated value with size 32 to match size of target (19) File: D:/github_project/fpga/seven_segment_decoder.v Line: 74
 Warning (276020): Inferred RAM node "piano_recorder:piano_recorder_inst|recorded_data_memory_rtl_0" from synchronous design logic.  Pass-through logic has been added to match the read-during-write behavior of the original design.
 Info (19000): Inferred 1 megafunctions from design logic
     Info (276029): Inferred altsyncram megafunction from the following design logic: "piano_recorder:piano_recorder_inst|recorded_data_memory_rtl_0" 
         Info (286033): Parameter OPERATION_MODE set to DUAL_PORT
-        Info (286033): Parameter WIDTH_A set to 6
+        Info (286033): Parameter WIDTH_A set to 7
         Info (286033): Parameter WIDTHAD_A set to 9
         Info (286033): Parameter NUMWORDS_A set to 512
-        Info (286033): Parameter WIDTH_B set to 6
+        Info (286033): Parameter WIDTH_B set to 7
         Info (286033): Parameter WIDTHAD_B set to 9
         Info (286033): Parameter NUMWORDS_B set to 512
         Info (286033): Parameter ADDRESS_ACLR_A set to NONE
@@ -723,10 +788,10 @@ Info (19000): Inferred 1 megafunctions from design logic
 Info (12130): Elaborated megafunction instantiation "piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0"
 Info (12133): Instantiated megafunction "piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0" with the following parameter:
     Info (12134): Parameter "OPERATION_MODE" = "DUAL_PORT"
-    Info (12134): Parameter "WIDTH_A" = "6"
+    Info (12134): Parameter "WIDTH_A" = "7"
     Info (12134): Parameter "WIDTHAD_A" = "9"
     Info (12134): Parameter "NUMWORDS_A" = "512"
-    Info (12134): Parameter "WIDTH_B" = "6"
+    Info (12134): Parameter "WIDTH_B" = "7"
     Info (12134): Parameter "WIDTHAD_B" = "9"
     Info (12134): Parameter "NUMWORDS_B" = "512"
     Info (12134): Parameter "ADDRESS_ACLR_A" = "NONE"
@@ -737,31 +802,30 @@ Info (12133): Instantiated megafunction "piano_recorder:piano_recorder_inst|alts
     Info (12134): Parameter "INDATA_ACLR_A" = "NONE"
     Info (12134): Parameter "WRCONTROL_ACLR_A" = "NONE"
     Info (12134): Parameter "READ_DURING_WRITE_MODE_MIXED_PORTS" = "OLD_DATA"
-Info (12021): Found 1 design units, including 1 entities, in source file db/altsyncram_usg1.tdf
-    Info (12023): Found entity 1: altsyncram_usg1 File: D:/github_project/fpga/db/altsyncram_usg1.tdf Line: 27
-Warning (12241): 1 hierarchies have connectivity warnings - see the Connectivity Checks report folder
+Info (12021): Found 1 design units, including 1 entities, in source file db/altsyncram_0tg1.tdf
+    Info (12023): Found entity 1: altsyncram_0tg1 File: D:/github_project/fpga/db/altsyncram_0tg1.tdf Line: 27
 Info (13000): Registers with preset signals will power-up high File: D:/github_project/fpga/seven_segment_decoder.v Line: 50
 Info (13003): DEV_CLRn pin will set, and not reset, register with preset signal due to NOT Gate Push-Back
 Warning (13024): Output pins are stuck at VCC or GND
-    Warning (13410): Pin "seven_seg_dp" is stuck at GND File: D:/github_project/fpga/fpga.v Line: 18
-    Warning (13410): Pin "seven_seg_digit_selects[0]" is stuck at GND File: D:/github_project/fpga/fpga.v Line: 20
-    Warning (13410): Pin "seven_seg_digit_selects[3]" is stuck at GND File: D:/github_project/fpga/fpga.v Line: 20
-    Warning (13410): Pin "seven_seg_digit_selects[4]" is stuck at GND File: D:/github_project/fpga/fpga.v Line: 20
-    Warning (13410): Pin "seven_seg_digit_selects[5]" is stuck at GND File: D:/github_project/fpga/fpga.v Line: 20
-    Warning (13410): Pin "seven_seg_digit_selects[6]" is stuck at GND File: D:/github_project/fpga/fpga.v Line: 20
-    Warning (13410): Pin "seven_seg_digit_selects[7]" is stuck at GND File: D:/github_project/fpga/fpga.v Line: 20
+    Warning (13410): Pin "seven_seg_dp" is stuck at GND File: D:/github_project/fpga/fpga.v Line: 32
+    Warning (13410): Pin "seven_seg_digit_selects[0]" is stuck at GND File: D:/github_project/fpga/fpga.v Line: 34
+    Warning (13410): Pin "seven_seg_digit_selects[3]" is stuck at GND File: D:/github_project/fpga/fpga.v Line: 34
+    Warning (13410): Pin "seven_seg_digit_selects[4]" is stuck at GND File: D:/github_project/fpga/fpga.v Line: 34
+    Warning (13410): Pin "seven_seg_digit_selects[5]" is stuck at GND File: D:/github_project/fpga/fpga.v Line: 34
+    Warning (13410): Pin "seven_seg_digit_selects[6]" is stuck at GND File: D:/github_project/fpga/fpga.v Line: 34
+    Warning (13410): Pin "seven_seg_digit_selects[7]" is stuck at GND File: D:/github_project/fpga/fpga.v Line: 34
 Info (286030): Timing-Driven Synthesis is running
 Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
     Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
-Info (21057): Implemented 796 device resources after synthesis - the final resource count might be different
-    Info (21058): Implemented 13 input pins
+Info (21057): Implemented 944 device resources after synthesis - the final resource count might be different
+    Info (21058): Implemented 18 input pins
     Info (21059): Implemented 17 output pins
-    Info (21061): Implemented 760 logic cells
-    Info (21064): Implemented 6 RAM segments
+    Info (21061): Implemented 902 logic cells
+    Info (21064): Implemented 7 RAM segments
 Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 20 warnings
-    Info: Peak virtual memory: 4826 megabytes
-    Info: Processing ended: Tue Jun 03 23:25:24 2025
+    Info: Peak virtual memory: 4829 megabytes
+    Info: Processing ended: Wed Jun 04 00:14:48 2025
     Info: Elapsed time: 00:00:13
-    Info: Total CPU time (on all processors): 00:00:07
+    Info: Total CPU time (on all processors): 00:00:09
 
 

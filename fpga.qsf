@@ -100,4 +100,9 @@ set_location_assignment PIN_86 -to seven_seg_dp
 set_global_assignment -name VERILOG_FILE piano_recorder.v
 set_location_assignment PIN_142 -to sw16_record_raw
 set_location_assignment PIN_137 -to sw17_playback_raw
+set_location_assignment PIN_43 -to key8_sharp1_raw
+set_location_assignment PIN_13 -to key9_flat3_raw
+set_location_assignment PIN_6 -to key10_sharp4_raw
+set_location_assignment PIN_144 -to key11_sharp5_raw
+set_location_assignment PIN_8 -to key12_flat7_raw
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

@@ -52,7 +52,19 @@
 					"strict" : false
 				},
 				{
+					"name" : "note_keys_physical_in[0]",
+					"strict" : false
+				},
+				{
+					"name" : "note_keys_physical_in[2]",
+					"strict" : false
+				},
+				{
 					"name" : "note_keys_physical_in[3]",
+					"strict" : false
+				},
+				{
+					"name" : "note_keys_physical_in[1]",
 					"strict" : false
 				},
 				{
@@ -68,15 +80,23 @@
 					"strict" : false
 				},
 				{
-					"name" : "note_keys_physical_in[0]",
+					"name" : "key9_flat3_raw",
 					"strict" : false
 				},
 				{
-					"name" : "note_keys_physical_in[1]",
+					"name" : "key11_sharp5_raw",
 					"strict" : false
 				},
 				{
-					"name" : "note_keys_physical_in[2]",
+					"name" : "key10_sharp4_raw",
+					"strict" : false
+				},
+				{
+					"name" : "key8_sharp1_raw",
+					"strict" : false
+				},
+				{
+					"name" : "key12_flat7_raw",
 					"strict" : false
 				},
 				{
