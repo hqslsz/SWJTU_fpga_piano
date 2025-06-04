@@ -1,0 +1,188 @@
+// File: song_player.v
+module song_player #(
+    parameter CLK_FREQ_HZ = 50_000_000,
+    parameter KEY_ID_BITS = 4 // To match the key IDs used in fpga.v (1-12 for notes, 0 for rest)
+) (
+    input clk,
+    input rst_n,
+    input play_start_pulse, // Single pulse to start/restart song
+
+    output reg [KEY_ID_BITS-1:0] song_key_id,
+    output reg song_key_is_pressed,
+    output reg is_song_playing // Status output
+);
+
+// --- Song Data: The Internationale (Simplified Excerpt) ---
+// Notes: C=1, C#=8, D=2, D#=9, E=3, F=4, F#=10, G=5, G#=11, A=6, A#=12, B=7, Rest=0
+// Duration: In units of basic_note_duration_cycles.
+// Example: {Note_ID, Duration_Units}
+
+localparam NOTE_C4  = 4'd1; localparam NOTE_CS4 = 4'd8;
+localparam NOTE_D4  = 4'd2; localparam NOTE_DS4 = 4'd9;
+localparam NOTE_E4  = 4'd3;
+localparam NOTE_F4  = 4'd4; localparam NOTE_FS4 = 4'd10;
+localparam NOTE_G4  = 4'd5; localparam NOTE_GS4 = 4'd11;
+localparam NOTE_A4  = 4'd6; localparam NOTE_AS4 = 4'd12; // Bb
+localparam NOTE_B4  = 4'd7;
+localparam REST     = 4'd0; // Use key ID 0 for rests (silence)
+
+// Define the song structure: {Key ID, Duration Multiplier}
+// Each entry is KEY_ID_BITS for key ID, and some bits for duration.
+// Let's use 4 bits for duration multiplier (1 to 15 units).
+localparam DURATION_BITS = 4;
+localparam SONG_DATA_WIDTH = KEY_ID_BITS + DURATION_BITS;
+
+// Example: Internationale snippet ( "起来，饥寒交迫的奴隶" )
+// Simplified melody and rhythm. Adjust to actual score.
+// G G A | G E G | C+1 D+1 E+1 | D+1 - |
+// G G A | G E G | C+1 D+1 C+1 | B  -  |
+// Notes are in C4 octave by default from key IDs 1-12.
+// For higher octave, we'd need to adjust key_id or handle octave in song data.
+// For simplicity, assume all notes are within one octave span that your key_ids 1-12 represent.
+// C+1 means C in the next octave. Our current key_ids don't directly support this without
+// an octave field in the song data or assuming the song naturally fits.
+// Let's assume Key IDs 1-7 map to C4-B4, 8-12 to C#4-A#4.
+// If a song needs C5, we'd need a mechanism.
+// For MAX simplicity, let's use key IDs 1-12 as is, implying frequencies defined in fpga.v
+
+// Structure: note_data[index] = {duration_multiplier, key_id}
+// Duration 1 = 1 unit, 2 = 2 units etc.
+// A "unit" could be e.g. 250ms (quarter note at 120 BPM if eighth note is unit)
+// Or 1 unit = eighth note.
+// Duration multiplier (DM): 1 = eighth, 2 = quarter, 3 = dotted quarter, 4 = half
+
+// Frequencies for Key IDs (from fpga.v for reference, not used here directly for ROM values)
+// ID 1 (C4), ID 2 (D4), ID 3 (E4), ID 4 (F4), ID 5 (G4), ID 6 (A4), ID 7 (B4)
+// ID 8 (C#4), ID 9 (D#4/Eb4), ID 10 (F#4), ID 11 (G#4/Ab4), ID 12 (A#4/Bb4)
+
+// Let's define a short recognizable part of Internationale.
+// Original is often in G major or Eb major. Let's try to map to our C4-B4 range.
+// "Arise, ye workers from your slumbers" -> G4 G4 A4 | G4 E4 D4 (rest)
+// Note: This is a very simplified version for demonstration.
+// You'll need to get the actual sheet music and map it carefully.
+
+// {Key_ID, Duration_Units}
+// Duration_Units: 1 unit = ~200ms.
+// So a quarter note (typically ~500ms at 120BPM) would be 2 or 3 units.
+// Let's say 1 unit = an eighth note. Tempo ~120 BPM means eighth note is ~250ms.
+// Let's set basic_note_duration_ms = 250 ms
+
+localparam SONG_LENGTH = 18; // Number of notes/rests in the song segment
+reg [SONG_DATA_WIDTH-1:0] song_rom [0:SONG_LENGTH-1];
+
+initial begin // Initialize the song ROM
+    // G G A | G E D | (rest) D E F# | F# G D | (rest) E F# G | G A E | D - -
+    // Using Key IDs: G=5, A=6, E=3, D=2, F#=10
+    // Duration: 2 = quarter, 1 = eighth, 4 = half
+    // {Duration, KeyID}
+    song_rom[0]  = {DURATION_BITS'd2, KEY_ID_BITS'(NOTE_G4)};  // G (quarter)
+    song_rom[1]  = {DURATION_BITS'd2, KEY_ID_BITS'(NOTE_G4)};  // G (quarter)
+    song_rom[2]  = {DURATION_BITS'd4, KEY_ID_BITS'(NOTE_A4)};  // A (half)
+
+    song_rom[3]  = {DURATION_BITS'd2, KEY_ID_BITS'(NOTE_G4)};  // G (quarter)
+    song_rom[4]  = {DURATION_BITS'd2, KEY_ID_BITS'(NOTE_E4)};  // E (quarter)
+    song_rom[5]  = {DURATION_BITS'd4, KEY_ID_BITS'(NOTE_D4)};  // D (half)
+
+    song_rom[6]  = {DURATION_BITS'd2, KEY_ID_BITS'(NOTE_D4)};
+    song_rom[7]  = {DURATION_BITS'd2, KEY_ID_BITS'(NOTE_E4)};
+    song_rom[8]  = {DURATION_BITS'd4, KEY_ID_BITS'(NOTE_FS4)};
+
+    song_rom[9]  = {DURATION_BITS'd2, KEY_ID_BITS'(NOTE_FS4)};
+    song_rom[10] = {DURATION_BITS'd2, KEY_ID_BITS'(NOTE_G4)};
+    song_rom[11] = {DURATION_BITS'd4, KEY_ID_BITS'(NOTE_D4)};
+
+    song_rom[12] = {DURATION_BITS'd2, KEY_ID_BITS'(NOTE_E4)};
+    song_rom[13] = {DURATION_BITS'd2, KEY_ID_BITS'(NOTE_FS4)};
+    song_rom[14] = {DURATION_BITS'd4, KEY_ID_BITS'(NOTE_G4)};
+
+    song_rom[15] = {DURATION_BITS'd2, KEY_ID_BITS'(NOTE_G4)};
+    song_rom[16] = {DURATION_BITS'd2, KEY_ID_BITS'(NOTE_A4)};
+    song_rom[17] = {DURATION_BITS'd4, KEY_ID_BITS'(NOTE_E4)};
+    // Add more notes for a longer song...
+end
+
+localparam BASIC_NOTE_DURATION_MS = 200; // Duration of 1 unit in ms (e.g., an eighth note)
+localparam BASIC_NOTE_DURATION_CYCLES = (BASIC_NOTE_DURATION_MS * (CLK_FREQ_HZ / 1000));
+
+reg [$clog2(SONG_LENGTH)-1:0] current_note_index;
+reg [$clog2(BASIC_NOTE_DURATION_CYCLES * (2**DURATION_BITS -1))-1:0] note_duration_timer; // Max duration
+reg [DURATION_BITS-1:0] current_note_duration_units;
+reg [KEY_ID_BITS-1:0] current_note_id_from_rom;
+
+localparam S_IDLE   = 1'b0;
+localparam S_PLAYING= 1'b1;
+reg state;
+
+initial begin
+    song_key_id = {KEY_ID_BITS{1'b0}}; // REST
+    song_key_is_pressed = 1'b0;
+    is_song_playing = 1'b0;
+    state = S_IDLE;
+    current_note_index = 0;
+    note_duration_timer = 0;
+    current_note_duration_units = 0;
+    current_note_id_from_rom = {KEY_ID_BITS{1'b0}};
+end
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        song_key_id <= {KEY_ID_BITS{1'b0}};
+        song_key_is_pressed <= 1'b0;
+        is_song_playing <= 1'b0;
+        state <= S_IDLE;
+        current_note_index <= 0;
+        note_duration_timer <= 0;
+    end else begin
+        case (state)
+            S_IDLE: begin
+                song_key_is_pressed <= 1'b0; // Ensure silent output
+                is_song_playing <= 1'b0;
+                note_duration_timer <= 0; // Reset timer
+
+                if (play_start_pulse) begin
+                    state <= S_PLAYING;
+                    current_note_index <= 0;
+                    // Pre-load first note details
+                    {current_note_duration_units, current_note_id_from_rom} <= song_rom[0];
+                    song_key_id <= song_rom[0][KEY_ID_BITS-1:0]; // Get key_id part
+                    song_key_is_pressed <= (song_rom[0][KEY_ID_BITS-1:0] != REST);
+                    note_duration_timer <= 0; // Start timer for the first note
+                    is_song_playing <= 1'b1;
+                end
+            end
+
+            S_PLAYING: begin
+                is_song_playing <= 1'b1;
+                if (note_duration_timer >= (BASIC_NOTE_DURATION_CYCLES * current_note_duration_units) -1'b1) begin
+                    // Current note finished, move to next
+                    if (current_note_index < SONG_LENGTH - 1) begin
+                        current_note_index <= current_note_index + 1;
+                        {current_note_duration_units, current_note_id_from_rom} <= song_rom[current_note_index + 1];
+                        song_key_id <= song_rom[current_note_index + 1][KEY_ID_BITS-1:0];
+                        song_key_is_pressed <= (song_rom[current_note_index + 1][KEY_ID_BITS-1:0] != REST);
+                        note_duration_timer <= 0;
+                    end else begin
+                        // Song finished
+                        state <= S_IDLE;
+                        song_key_is_pressed <= 1'b0;
+                        is_song_playing <= 1'b0;
+                    end
+                end else begin
+                    note_duration_timer <= note_duration_timer + 1;
+                end
+
+                // If play_start_pulse is received again during playback, restart the song
+                if (play_start_pulse) begin
+                    current_note_index <= 0;
+                    {current_note_duration_units, current_note_id_from_rom} <= song_rom[0];
+                    song_key_id <= song_rom[0][KEY_ID_BITS-1:0];
+                    song_key_is_pressed <= (song_rom[0][KEY_ID_BITS-1:0] != REST);
+                    note_duration_timer <= 0;
+                    // is_song_playing remains 1'b1
+                end
+            end
+            default: state <= S_IDLE;
+        endcase
+    end
+end
+endmodule

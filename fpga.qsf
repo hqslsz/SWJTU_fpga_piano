@@ -105,4 +105,6 @@ set_location_assignment PIN_13 -to key9_flat3_raw
 set_location_assignment PIN_6 -to key10_sharp4_raw
 set_location_assignment PIN_144 -to key11_sharp5_raw
 set_location_assignment PIN_8 -to key12_flat7_raw
+set_global_assignment -name VERILOG_FILE song_player.v
+set_location_assignment PIN_11 -to key14_play_song_raw
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

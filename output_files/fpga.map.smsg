@@ -1,0 +1,1 @@
+Warning (10268): Verilog HDL information at song_player.v(146): always construct contains both blocking and non-blocking assignments File: D:/github_project/fpga/song_player.v Line: 146

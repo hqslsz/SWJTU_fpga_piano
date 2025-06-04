@@ -60,19 +60,15 @@
 					"strict" : false
 				},
 				{
+					"name" : "note_keys_physical_in[4]",
+					"strict" : false
+				},
+				{
 					"name" : "note_keys_physical_in[3]",
 					"strict" : false
 				},
 				{
 					"name" : "note_keys_physical_in[1]",
-					"strict" : false
-				},
-				{
-					"name" : "note_keys_physical_in[4]",
-					"strict" : false
-				},
-				{
-					"name" : "note_keys_physical_in[5]",
 					"strict" : false
 				},
 				{
@@ -96,7 +92,15 @@
 					"strict" : false
 				},
 				{
+					"name" : "note_keys_physical_in[5]",
+					"strict" : false
+				},
+				{
 					"name" : "key12_flat7_raw",
+					"strict" : false
+				},
+				{
+					"name" : "sw13_octave_down_raw",
 					"strict" : false
 				},
 				{
@@ -104,7 +108,7 @@
 					"strict" : false
 				},
 				{
-					"name" : "sw13_octave_down_raw",
+					"name" : "key14_play_song_raw",
 					"strict" : false
 				},
 				{

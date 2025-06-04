@@ -78,7 +78,7 @@ sw13_octave_down_raw         : 7         : input  : 2.5 V             :         
 key12_flat7_raw              : 8         : input  : 2.5 V             :         : 1         : Y              
 nSTATUS                      : 9         :        :                   :         : 1         :                
 sw15_octave_up_raw           : 10        : input  : 2.5 V             :         : 1         : Y              
-RESERVED_INPUT_WITH_WEAK_PULLUP : 11        :        :                   :         : 1         :                
+key14_play_song_raw          : 11        : input  : 2.5 V             :         : 1         : Y              
 RESERVED_INPUT_WITH_WEAK_PULLUP : 12        :        :                   :         : 1         :                
 key9_flat3_raw               : 13        : input  : 2.5 V             :         : 1         : Y              
 nCONFIG                      : 14        :        :                   :         : 1         :                
