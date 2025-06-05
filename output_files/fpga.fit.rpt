@@ -1,5 +1,5 @@
 Fitter report for fpga
-Thu Jun 05 19:31:41 2025
+Thu Jun 05 23:45:51 2025
 Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
 
 
@@ -39,8 +39,10 @@ Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
  31. I/O Rules Matrix
  32. Fitter Device Options
  33. Operating Settings and Conditions
- 34. Fitter Messages
- 35. Fitter Suppressed Messages
+ 34. Estimated Delay Added for Hold Timing Summary
+ 35. Estimated Delay Added for Hold Timing Details
+ 36. Fitter Messages
+ 37. Fitter Suppressed Messages
 
 
 
@@ -66,17 +68,17 @@ refer to the applicable agreement for further details.
 +----------------------------------------------------------------------------------+
 ; Fitter Summary                                                                   ;
 +------------------------------------+---------------------------------------------+
-; Fitter Status                      ; Successful - Thu Jun 05 19:31:41 2025       ;
+; Fitter Status                      ; Successful - Thu Jun 05 23:45:51 2025       ;
 ; Quartus Prime Version              ; 18.1.0 Build 625 09/12/2018 SJ Lite Edition ;
 ; Revision Name                      ; fpga                                        ;
 ; Top-level Entity Name              ; fpga                                        ;
 ; Family                             ; Cyclone IV E                                ;
 ; Device                             ; EP4CE10E22C8                                ;
 ; Timing Models                      ; Final                                       ;
-; Total logic elements               ; 1,332 / 10,320 ( 13 % )                     ;
-;     Total combinational functions  ; 1,273 / 10,320 ( 12 % )                     ;
-;     Dedicated logic registers      ; 608 / 10,320 ( 6 % )                        ;
-; Total registers                    ; 608                                         ;
+; Total logic elements               ; 1,470 / 10,320 ( 14 % )                     ;
+;     Total combinational functions  ; 1,421 / 10,320 ( 14 % )                     ;
+;     Dedicated logic registers      ; 670 / 10,320 ( 6 % )                        ;
+; Total registers                    ; 670                                         ;
 ; Total pins                         ; 36 / 92 ( 39 % )                            ;
 ; Total virtual pins                 ; 0                                           ;
 ; Total memory bits                  ; 3,584 / 423,936 ( < 1 % )                   ;
@@ -153,19 +155,19 @@ refer to the applicable agreement for further details.
 ; Number detected on machine ; 16          ;
 ; Maximum allowed            ; 10          ;
 ;                            ;             ;
-; Average used               ; 1.20        ;
+; Average used               ; 1.19        ;
 ; Maximum used               ; 10          ;
 ;                            ;             ;
 ; Usage by Processor         ; % Time Used ;
 ;     Processor 1            ; 100.0%      ;
-;     Processor 2            ;   3.0%      ;
-;     Processor 3            ;   2.7%      ;
-;     Processor 4            ;   2.5%      ;
-;     Processor 5            ;   2.3%      ;
-;     Processor 6            ;   2.2%      ;
-;     Processor 7            ;   2.1%      ;
-;     Processor 8            ;   2.0%      ;
-;     Processors 9-10        ;   1.9%      ;
+;     Processor 2            ;   2.9%      ;
+;     Processor 3            ;   2.6%      ;
+;     Processor 4            ;   2.4%      ;
+;     Processor 5            ;   2.2%      ;
+;     Processor 6            ;   2.1%      ;
+;     Processor 7            ;   2.0%      ;
+;     Processor 8            ;   1.9%      ;
+;     Processors 9-10        ;   1.8%      ;
 +----------------------------+-------------+
 
 
@@ -175,8 +177,8 @@ refer to the applicable agreement for further details.
 ; Type                ; Total [A + B]       ; From Design Partitions [A] ; From Rapid Recompile [B] ;
 +---------------------+---------------------+----------------------------+--------------------------+
 ; Placement (by node) ;                     ;                            ;                          ;
-;     -- Requested    ; 0.00 % ( 0 / 1962 ) ; 0.00 % ( 0 / 1962 )        ; 0.00 % ( 0 / 1962 )      ;
-;     -- Achieved     ; 0.00 % ( 0 / 1962 ) ; 0.00 % ( 0 / 1962 )        ; 0.00 % ( 0 / 1962 )      ;
+;     -- Requested    ; 0.00 % ( 0 / 2172 ) ; 0.00 % ( 0 / 2172 )        ; 0.00 % ( 0 / 2172 )      ;
+;     -- Achieved     ; 0.00 % ( 0 / 2172 ) ; 0.00 % ( 0 / 2172 )        ; 0.00 % ( 0 / 2172 )      ;
 ;                     ;                     ;                            ;                          ;
 ; Routing (by net)    ;                     ;                            ;                          ;
 ;     -- Requested    ; 0.00 % ( 0 / 0 )    ; 0.00 % ( 0 / 0 )           ; 0.00 % ( 0 / 0 )         ;
@@ -199,7 +201,7 @@ refer to the applicable agreement for further details.
 +--------------------------------+-----------------------+-------------------------+-------------------+---------------------+-------+
 ; Partition Name                 ; Preservation Achieved ; Preservation Level Used ; Netlist Type Used ; Preservation Method ; Notes ;
 +--------------------------------+-----------------------+-------------------------+-------------------+---------------------+-------+
-; Top                            ; 0.00 % ( 0 / 1962 )   ; N/A                     ; Source File       ; N/A                 ;       ;
+; Top                            ; 0.00 % ( 0 / 2172 )   ; N/A                     ; Source File       ; N/A                 ;       ;
 ; hard_block:auto_generated_inst ; 0.00 % ( 0 / 0 )      ; N/A                     ; Source File       ; N/A                 ;       ;
 +--------------------------------+-----------------------+-------------------------+-------------------+---------------------+-------+
 
@@ -215,26 +217,26 @@ The pin-out file can be found in D:/github_project/fpga/output_files/fpga.pin.
 +---------------------------------------------+---------------------------+
 ; Resource                                    ; Usage                     ;
 +---------------------------------------------+---------------------------+
-; Total logic elements                        ; 1,332 / 10,320 ( 13 % )   ;
-;     -- Combinational with no register       ; 724                       ;
-;     -- Register only                        ; 59                        ;
-;     -- Combinational with a register        ; 549                       ;
+; Total logic elements                        ; 1,470 / 10,320 ( 14 % )   ;
+;     -- Combinational with no register       ; 800                       ;
+;     -- Register only                        ; 49                        ;
+;     -- Combinational with a register        ; 621                       ;
 ;                                             ;                           ;
 ; Logic element usage by number of LUT inputs ;                           ;
-;     -- 4 input functions                    ; 495                       ;
-;     -- 3 input functions                    ; 177                       ;
-;     -- <=2 input functions                  ; 601                       ;
-;     -- Register only                        ; 59                        ;
+;     -- 4 input functions                    ; 534                       ;
+;     -- 3 input functions                    ; 243                       ;
+;     -- <=2 input functions                  ; 644                       ;
+;     -- Register only                        ; 49                        ;
 ;                                             ;                           ;
 ; Logic elements by mode                      ;                           ;
-;     -- normal mode                          ; 723                       ;
-;     -- arithmetic mode                      ; 550                       ;
+;     -- normal mode                          ; 845                       ;
+;     -- arithmetic mode                      ; 576                       ;
 ;                                             ;                           ;
-; Total registers*                            ; 608 / 10,732 ( 6 % )      ;
-;     -- Dedicated logic registers            ; 608 / 10,320 ( 6 % )      ;
+; Total registers*                            ; 670 / 10,732 ( 6 % )      ;
+;     -- Dedicated logic registers            ; 670 / 10,320 ( 6 % )      ;
 ;     -- I/O registers                        ; 0 / 412 ( 0 % )           ;
 ;                                             ;                           ;
-; Total LABs:  partially or completely used   ; 108 / 645 ( 17 % )        ;
+; Total LABs:  partially or completely used   ; 117 / 645 ( 18 % )        ;
 ; Virtual pins                                ; 0                         ;
 ; I/O pins                                    ; 36 / 92 ( 39 % )          ;
 ;     -- Clock pins                           ; 2 / 3 ( 67 % )            ;
@@ -252,12 +254,12 @@ The pin-out file can be found in D:/github_project/fpga/output_files/fpga.pin.
 ; ASMI blocks                                 ; 0 / 1 ( 0 % )             ;
 ; Oscillator blocks                           ; 0 / 1 ( 0 % )             ;
 ; Impedance control blocks                    ; 0 / 4 ( 0 % )             ;
-; Average interconnect usage (total/H/V)      ; 1.7% / 1.5% / 2.0%        ;
-; Peak interconnect usage (total/H/V)         ; 3.6% / 3.5% / 5.0%        ;
-; Maximum fan-out                             ; 609                       ;
-; Highest non-global fan-out                  ; 75                        ;
-; Total fan-out                               ; 6472                      ;
-; Average fan-out                             ; 3.23                      ;
+; Average interconnect usage (total/H/V)      ; 1.8% / 1.6% / 2.2%        ;
+; Peak interconnect usage (total/H/V)         ; 4.2% / 3.8% / 4.9%        ;
+; Maximum fan-out                             ; 671                       ;
+; Highest non-global fan-out                  ; 76                        ;
+; Total fan-out                               ; 7158                      ;
+; Average fan-out                             ; 3.25                      ;
 +---------------------------------------------+---------------------------+
 *  Register count does not include registers inside RAM blocks or DSP blocks.
 
@@ -270,26 +272,26 @@ The pin-out file can be found in D:/github_project/fpga/output_files/fpga.pin.
 +---------------------------------------------+-----------------------+--------------------------------+
 ; Difficulty Clustering Region                ; Low                   ; Low                            ;
 ;                                             ;                       ;                                ;
-; Total logic elements                        ; 1332 / 10320 ( 13 % ) ; 0 / 10320 ( 0 % )              ;
-;     -- Combinational with no register       ; 724                   ; 0                              ;
-;     -- Register only                        ; 59                    ; 0                              ;
-;     -- Combinational with a register        ; 549                   ; 0                              ;
+; Total logic elements                        ; 1470 / 10320 ( 14 % ) ; 0 / 10320 ( 0 % )              ;
+;     -- Combinational with no register       ; 800                   ; 0                              ;
+;     -- Register only                        ; 49                    ; 0                              ;
+;     -- Combinational with a register        ; 621                   ; 0                              ;
 ;                                             ;                       ;                                ;
 ; Logic element usage by number of LUT inputs ;                       ;                                ;
-;     -- 4 input functions                    ; 495                   ; 0                              ;
-;     -- 3 input functions                    ; 177                   ; 0                              ;
-;     -- <=2 input functions                  ; 601                   ; 0                              ;
-;     -- Register only                        ; 59                    ; 0                              ;
+;     -- 4 input functions                    ; 534                   ; 0                              ;
+;     -- 3 input functions                    ; 243                   ; 0                              ;
+;     -- <=2 input functions                  ; 644                   ; 0                              ;
+;     -- Register only                        ; 49                    ; 0                              ;
 ;                                             ;                       ;                                ;
 ; Logic elements by mode                      ;                       ;                                ;
-;     -- normal mode                          ; 723                   ; 0                              ;
-;     -- arithmetic mode                      ; 550                   ; 0                              ;
+;     -- normal mode                          ; 845                   ; 0                              ;
+;     -- arithmetic mode                      ; 576                   ; 0                              ;
 ;                                             ;                       ;                                ;
-; Total registers                             ; 608                   ; 0                              ;
-;     -- Dedicated logic registers            ; 608 / 10320 ( 6 % )   ; 0 / 10320 ( 0 % )              ;
+; Total registers                             ; 670                   ; 0                              ;
+;     -- Dedicated logic registers            ; 670 / 10320 ( 6 % )   ; 0 / 10320 ( 0 % )              ;
 ;     -- I/O registers                        ; 0                     ; 0                              ;
 ;                                             ;                       ;                                ;
-; Total LABs:  partially or completely used   ; 108 / 645 ( 17 % )    ; 0 / 645 ( 0 % )                ;
+; Total LABs:  partially or completely used   ; 117 / 645 ( 18 % )    ; 0 / 645 ( 0 % )                ;
 ;                                             ;                       ;                                ;
 ; Virtual pins                                ; 0                     ; 0                              ;
 ; I/O pins                                    ; 36                    ; 0                              ;
@@ -306,8 +308,8 @@ The pin-out file can be found in D:/github_project/fpga/output_files/fpga.pin.
 ;     -- Registered Output Connections        ; 0                     ; 0                              ;
 ;                                             ;                       ;                                ;
 ; Internal Connections                        ;                       ;                                ;
-;     -- Total Connections                    ; 6472                  ; 0                              ;
-;     -- Registered Connections               ; 1633                  ; 0                              ;
+;     -- Total Connections                    ; 7158                  ; 0                              ;
+;     -- Registered Connections               ; 1818                  ; 0                              ;
 ;                                             ;                       ;                                ;
 ; External Connections                        ;                       ;                                ;
 ;     -- Top                                  ; 0                     ; 0                              ;
@@ -339,7 +341,7 @@ The pin-out file can be found in D:/github_project/fpga/output_files/fpga.pin.
 +--------------------------+-------+----------+--------------+--------------+--------------+-----------------------+--------------------+--------+----------------+---------------+-----------------+----------+--------------+--------------+---------------------------+----------------------+-----------+
 ; Name                     ; Pin # ; I/O Bank ; X coordinate ; Y coordinate ; Z coordinate ; Combinational Fan-Out ; Registered Fan-Out ; Global ; Input Register ; Power Up High ; PCI I/O Enabled ; Bus Hold ; Weak Pull Up ; I/O Standard ; Termination Control Block ; Location assigned by ; Slew Rate ;
 +--------------------------+-------+----------+--------------+--------------+--------------+-----------------------+--------------------+--------+----------------+---------------+-----------------+----------+--------------+--------------+---------------------------+----------------------+-----------+
-; clk_50mhz                ; 90    ; 6        ; 34           ; 12           ; 7            ; 609                   ; 0                  ; yes    ; no             ; no            ; yes             ; no       ; Off          ; 2.5 V        ; --                        ; User                 ; no        ;
+; clk_50mhz                ; 90    ; 6        ; 34           ; 12           ; 7            ; 671                   ; 0                  ; yes    ; no             ; no            ; yes             ; no       ; Off          ; 2.5 V        ; --                        ; User                 ; no        ;
 ; key10_sharp4_raw         ; 6     ; 1        ; 0            ; 22           ; 21           ; 3                     ; 0                  ; no     ; no             ; no            ; no              ; no       ; On           ; 2.5 V        ; --                        ; User                 ; no        ;
 ; key11_sharp5_raw         ; 144   ; 8        ; 1            ; 24           ; 7            ; 3                     ; 0                  ; no     ; no             ; no            ; yes             ; no       ; Off          ; 2.5 V        ; --                        ; User                 ; no        ;
 ; key12_flat7_raw          ; 8     ; 1        ; 0            ; 21           ; 14           ; 3                     ; 0                  ; no     ; no             ; no            ; no              ; no       ; On           ; 2.5 V        ; --                        ; User                 ; no        ;
@@ -353,7 +355,7 @@ The pin-out file can be found in D:/github_project/fpga/output_files/fpga.pin.
 ; note_keys_physical_in[4] ; 42    ; 3        ; 3            ; 0            ; 0            ; 3                     ; 0                  ; no     ; no             ; no            ; yes             ; no       ; Off          ; 2.5 V        ; --                        ; User                 ; no        ;
 ; note_keys_physical_in[5] ; 39    ; 3        ; 1            ; 0            ; 14           ; 3                     ; 0                  ; no     ; no             ; no            ; yes             ; no       ; Off          ; 2.5 V        ; --                        ; User                 ; no        ;
 ; note_keys_physical_in[6] ; 44    ; 3        ; 5            ; 0            ; 14           ; 3                     ; 0                  ; no     ; no             ; no            ; yes             ; no       ; Off          ; 2.5 V        ; --                        ; User                 ; no        ;
-; sw0_physical_reset       ; 24    ; 2        ; 0            ; 11           ; 14           ; 585                   ; 0                  ; yes    ; no             ; no            ; yes             ; no       ; Off          ; 2.5 V        ; --                        ; User                 ; no        ;
+; sw0_physical_reset       ; 24    ; 2        ; 0            ; 11           ; 14           ; 647                   ; 0                  ; yes    ; no             ; no            ; yes             ; no       ; Off          ; 2.5 V        ; --                        ; User                 ; no        ;
 ; sw13_octave_down_raw     ; 7     ; 1        ; 0            ; 21           ; 7            ; 3                     ; 0                  ; no     ; no             ; no            ; yes             ; no       ; Off          ; 2.5 V        ; --                        ; User                 ; no        ;
 ; sw15_octave_up_raw       ; 10    ; 1        ; 0            ; 18           ; 14           ; 3                     ; 0                  ; no     ; no             ; no            ; yes             ; no       ; Off          ; 2.5 V        ; --                        ; User                 ; no        ;
 ; sw16_record_raw          ; 142   ; 8        ; 3            ; 24           ; 21           ; 3                     ; 0                  ; no     ; no             ; no            ; yes             ; no       ; Off          ; 2.5 V        ; --                        ; User                 ; no        ;
@@ -605,21 +607,21 @@ Note: Pin directions (input, output or bidir) are based on device operating in u
 ; sw0_physical_reset         ; Incomplete set of assignments ;
 ; sw13_octave_down_raw       ; Incomplete set of assignments ;
 ; sw15_octave_up_raw         ; Incomplete set of assignments ;
-; note_keys_physical_in[0]   ; Incomplete set of assignments ;
-; note_keys_physical_in[2]   ; Incomplete set of assignments ;
-; note_keys_physical_in[3]   ; Incomplete set of assignments ;
-; note_keys_physical_in[1]   ; Incomplete set of assignments ;
-; note_keys_physical_in[4]   ; Incomplete set of assignments ;
+; key12_flat7_raw            ; Incomplete set of assignments ;
+; key8_sharp1_raw            ; Incomplete set of assignments ;
+; key9_flat3_raw             ; Incomplete set of assignments ;
+; key10_sharp4_raw           ; Incomplete set of assignments ;
+; key11_sharp5_raw           ; Incomplete set of assignments ;
 ; note_keys_physical_in[5]   ; Incomplete set of assignments ;
 ; note_keys_physical_in[6]   ; Incomplete set of assignments ;
-; key9_flat3_raw             ; Incomplete set of assignments ;
-; key11_sharp5_raw           ; Incomplete set of assignments ;
-; key10_sharp4_raw           ; Incomplete set of assignments ;
-; key8_sharp1_raw            ; Incomplete set of assignments ;
-; key12_flat7_raw            ; Incomplete set of assignments ;
-; key14_play_song_raw        ; Incomplete set of assignments ;
+; note_keys_physical_in[3]   ; Incomplete set of assignments ;
+; note_keys_physical_in[4]   ; Incomplete set of assignments ;
+; note_keys_physical_in[0]   ; Incomplete set of assignments ;
+; note_keys_physical_in[1]   ; Incomplete set of assignments ;
+; note_keys_physical_in[2]   ; Incomplete set of assignments ;
 ; sw17_playback_raw          ; Incomplete set of assignments ;
 ; sw16_record_raw            ; Incomplete set of assignments ;
+; key14_play_song_raw        ; Incomplete set of assignments ;
 +----------------------------+-------------------------------+
 
 
@@ -628,31 +630,33 @@ Note: Pin directions (input, output or bidir) are based on device operating in u
 +----------------------------------------------------------+-------------+---------------------------+---------------+-------------+------+--------------+---------+-----------+------+--------------+--------------+-------------------+------------------+---------------------------------------------------------------------------------------------------------------+--------------------------+--------------+
 ; Compilation Hierarchy Node                               ; Logic Cells ; Dedicated Logic Registers ; I/O Registers ; Memory Bits ; M9Ks ; DSP Elements ; DSP 9x9 ; DSP 18x18 ; Pins ; Virtual Pins ; LUT-Only LCs ; Register-Only LCs ; LUT/Register LCs ; Full Hierarchy Name                                                                                           ; Entity Name              ; Library Name ;
 +----------------------------------------------------------+-------------+---------------------------+---------------+-------------+------+--------------+---------+-----------+------+--------------+--------------+-------------------+------------------+---------------------------------------------------------------------------------------------------------------+--------------------------+--------------+
-; |fpga                                                    ; 1332 (173)  ; 608 (25)                  ; 0 (0)         ; 3584        ; 1    ; 0            ; 0       ; 0         ; 36   ; 0            ; 724 (147)    ; 59 (0)            ; 549 (29)         ; |fpga                                                                                                         ; fpga                     ; work         ;
+; |fpga                                                    ; 1470 (185)  ; 670 (26)                  ; 0 (0)         ; 3584        ; 1    ; 0            ; 0       ; 0         ; 36   ; 0            ; 800 (153)    ; 49 (1)            ; 621 (51)         ; |fpga                                                                                                         ; fpga                     ; work         ;
 ;    |debouncer:octave_down_deb_inst|                      ; 31 (31)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 1 (1)             ; 21 (21)          ; |fpga|debouncer:octave_down_deb_inst                                                                          ; debouncer                ; work         ;
 ;    |debouncer:octave_up_deb_inst|                        ; 31 (31)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 1 (1)             ; 21 (21)          ; |fpga|debouncer:octave_up_deb_inst                                                                            ; debouncer                ; work         ;
 ;    |debouncer:play_song_deb_inst|                        ; 31 (31)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 1 (1)             ; 21 (21)          ; |fpga|debouncer:play_song_deb_inst                                                                            ; debouncer                ; work         ;
 ;    |debouncer:playback_deb_inst|                         ; 31 (31)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 1 (1)             ; 21 (21)          ; |fpga|debouncer:playback_deb_inst                                                                             ; debouncer                ; work         ;
 ;    |debouncer:record_deb_inst|                           ; 31 (31)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 1 (1)             ; 21 (21)          ; |fpga|debouncer:record_deb_inst                                                                               ; debouncer                ; work         ;
-;    |keyboard_scanner:keyboard_scanner_inst|              ; 387 (11)    ; 264 (0)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 122 (11)     ; 11 (0)            ; 254 (3)          ; |fpga|keyboard_scanner:keyboard_scanner_inst                                                                  ; keyboard_scanner         ; work         ;
-;       |debouncer:debounce_gen_block[0].inst_debouncer|   ; 31 (31)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer                   ; debouncer                ; work         ;
+;    |keyboard_scanner:keyboard_scanner_inst|              ; 391 (14)    ; 264 (0)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 124 (11)     ; 9 (0)             ; 258 (6)          ; |fpga|keyboard_scanner:keyboard_scanner_inst                                                                  ; keyboard_scanner         ; work         ;
+;       |debouncer:debounce_gen_block[0].inst_debouncer|   ; 32 (32)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 10 (10)      ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer                   ; debouncer                ; work         ;
 ;       |debouncer:debounce_gen_block[10].inst_debouncer|  ; 31 (31)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 0 (0)             ; 22 (22)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[10].inst_debouncer                  ; debouncer                ; work         ;
-;       |debouncer:debounce_gen_block[11].inst_debouncer|  ; 31 (31)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[11].inst_debouncer                  ; debouncer                ; work         ;
-;       |debouncer:debounce_gen_block[1].inst_debouncer|   ; 32 (32)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 1 (1)             ; 22 (22)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[1].inst_debouncer                   ; debouncer                ; work         ;
+;       |debouncer:debounce_gen_block[11].inst_debouncer|  ; 32 (32)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 10 (10)      ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[11].inst_debouncer                  ; debouncer                ; work         ;
+;       |debouncer:debounce_gen_block[1].inst_debouncer|   ; 32 (32)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 10 (10)      ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[1].inst_debouncer                   ; debouncer                ; work         ;
 ;       |debouncer:debounce_gen_block[2].inst_debouncer|   ; 31 (31)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[2].inst_debouncer                   ; debouncer                ; work         ;
-;       |debouncer:debounce_gen_block[3].inst_debouncer|   ; 31 (31)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[3].inst_debouncer                   ; debouncer                ; work         ;
-;       |debouncer:debounce_gen_block[4].inst_debouncer|   ; 32 (32)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 10 (10)      ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[4].inst_debouncer                   ; debouncer                ; work         ;
-;       |debouncer:debounce_gen_block[5].inst_debouncer|   ; 32 (32)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 10 (10)      ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[5].inst_debouncer                   ; debouncer                ; work         ;
-;       |debouncer:debounce_gen_block[6].inst_debouncer|   ; 31 (31)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[6].inst_debouncer                   ; debouncer                ; work         ;
+;       |debouncer:debounce_gen_block[3].inst_debouncer|   ; 32 (32)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 10 (10)      ; 0 (0)             ; 22 (22)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[3].inst_debouncer                   ; debouncer                ; work         ;
+;       |debouncer:debounce_gen_block[4].inst_debouncer|   ; 31 (31)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[4].inst_debouncer                   ; debouncer                ; work         ;
+;       |debouncer:debounce_gen_block[5].inst_debouncer|   ; 31 (31)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[5].inst_debouncer                   ; debouncer                ; work         ;
+;       |debouncer:debounce_gen_block[6].inst_debouncer|   ; 32 (32)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 10 (10)      ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[6].inst_debouncer                   ; debouncer                ; work         ;
 ;       |debouncer:debounce_gen_block[7].inst_debouncer|   ; 31 (31)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[7].inst_debouncer                   ; debouncer                ; work         ;
-;       |debouncer:debounce_gen_block[8].inst_debouncer|   ; 31 (31)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[8].inst_debouncer                   ; debouncer                ; work         ;
-;       |debouncer:debounce_gen_block[9].inst_debouncer|   ; 32 (32)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 10 (10)      ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[9].inst_debouncer                   ; debouncer                ; work         ;
-;    |piano_recorder:piano_recorder_inst|                  ; 196 (196)   ; 92 (92)                   ; 0 (0)         ; 3584        ; 1    ; 0            ; 0       ; 0         ; 0    ; 0            ; 102 (102)    ; 23 (23)           ; 71 (71)          ; |fpga|piano_recorder:piano_recorder_inst                                                                      ; piano_recorder           ; work         ;
+;       |debouncer:debounce_gen_block[8].inst_debouncer|   ; 32 (32)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 0 (0)             ; 23 (23)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[8].inst_debouncer                   ; debouncer                ; work         ;
+;       |debouncer:debounce_gen_block[9].inst_debouncer|   ; 31 (31)     ; 22 (22)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 9 (9)        ; 1 (1)             ; 21 (21)          ; |fpga|keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[9].inst_debouncer                   ; debouncer                ; work         ;
+;    |mode_sequencer:mode_sequencer_inst|                  ; 61 (61)     ; 36 (36)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 25 (25)      ; 0 (0)             ; 36 (36)          ; |fpga|mode_sequencer:mode_sequencer_inst                                                                      ; mode_sequencer           ; work         ;
+;    |piano_recorder:piano_recorder_inst|                  ; 195 (195)   ; 92 (92)                   ; 0 (0)         ; 3584        ; 1    ; 0            ; 0       ; 0         ; 0    ; 0            ; 101 (101)    ; 19 (19)           ; 75 (75)          ; |fpga|piano_recorder:piano_recorder_inst                                                                      ; piano_recorder           ; work         ;
 ;       |altsyncram:recorded_data_memory_rtl_0|            ; 0 (0)       ; 0 (0)                     ; 0 (0)         ; 3584        ; 1    ; 0            ; 0       ; 0         ; 0    ; 0            ; 0 (0)        ; 0 (0)             ; 0 (0)            ; |fpga|piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0                                ; altsyncram               ; work         ;
 ;          |altsyncram_0tg1:auto_generated|                ; 0 (0)       ; 0 (0)                     ; 0 (0)         ; 3584        ; 1    ; 0            ; 0       ; 0         ; 0    ; 0            ; 0 (0)        ; 0 (0)             ; 0 (0)            ; |fpga|piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0|altsyncram_0tg1:auto_generated ; altsyncram_0tg1          ; work         ;
-;    |scrolling_display_buffer:scroller_inst|              ; 36 (36)     ; 36 (36)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 0 (0)        ; 17 (17)           ; 19 (19)          ; |fpga|scrolling_display_buffer:scroller_inst                                                                  ; scrolling_display_buffer ; work         ;
-;    |seven_segment_controller:seven_segment_display_inst| ; 109 (109)   ; 35 (35)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 58 (58)      ; 0 (0)             ; 51 (51)          ; |fpga|seven_segment_controller:seven_segment_display_inst                                                     ; seven_segment_controller ; work         ;
-;    |song_player:song_player_inst|                        ; 296 (282)   ; 46 (46)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 250 (236)    ; 3 (3)             ; 43 (43)          ; |fpga|song_player:song_player_inst                                                                            ; song_player              ; work         ;
+;    |practice_player:practice_player_inst|                ; 55 (55)     ; 25 (25)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 28 (28)      ; 1 (1)             ; 26 (26)          ; |fpga|practice_player:practice_player_inst                                                                    ; practice_player          ; work         ;
+;    |scrolling_display_buffer:scroller_inst|              ; 36 (36)     ; 36 (36)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 0 (0)        ; 12 (12)           ; 24 (24)          ; |fpga|scrolling_display_buffer:scroller_inst                                                                  ; scrolling_display_buffer ; work         ;
+;    |seven_segment_controller:seven_segment_display_inst| ; 116 (116)   ; 35 (35)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 77 (77)      ; 0 (0)             ; 39 (39)          ; |fpga|seven_segment_controller:seven_segment_display_inst                                                     ; seven_segment_controller ; work         ;
+;    |song_player:song_player_inst|                        ; 293 (279)   ; 46 (46)                   ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 247 (233)    ; 2 (2)             ; 44 (44)          ; |fpga|song_player:song_player_inst                                                                            ; song_player              ; work         ;
 ;       |lpm_mult:Mult0|                                   ; 14 (0)      ; 0 (0)                     ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 14 (0)       ; 0 (0)             ; 0 (0)            ; |fpga|song_player:song_player_inst|lpm_mult:Mult0                                                             ; lpm_mult                 ; work         ;
 ;          |multcore:mult_core|                            ; 14 (14)     ; 0 (0)                     ; 0 (0)         ; 0           ; 0    ; 0            ; 0       ; 0         ; 0    ; 0            ; 14 (14)      ; 0 (0)             ; 0 (0)            ; |fpga|song_player:song_player_inst|lpm_mult:Mult0|multcore:mult_core                                          ; multcore                 ; work         ;
 +----------------------------------------------------------+-------------+---------------------------+---------------+-------------+------+--------------+---------+-----------+------+--------------+--------------+-------------------+------------------+---------------------------------------------------------------------------------------------------------------+--------------------------+--------------+
@@ -684,22 +688,22 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ; clk_50mhz                  ; Input    ; (0) 0 ps      ; --            ; --                    ; --  ; --   ;
 ; sw0_physical_reset         ; Input    ; (0) 0 ps      ; --            ; --                    ; --  ; --   ;
 ; sw13_octave_down_raw       ; Input    ; --            ; (6) 1314 ps   ; --                    ; --  ; --   ;
-; sw15_octave_up_raw         ; Input    ; --            ; (6) 1314 ps   ; --                    ; --  ; --   ;
-; note_keys_physical_in[0]   ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
-; note_keys_physical_in[2]   ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
-; note_keys_physical_in[3]   ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
-; note_keys_physical_in[1]   ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
-; note_keys_physical_in[4]   ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
+; sw15_octave_up_raw         ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
+; key12_flat7_raw            ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
+; key8_sharp1_raw            ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
+; key9_flat3_raw             ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
+; key10_sharp4_raw           ; Input    ; --            ; (6) 1314 ps   ; --                    ; --  ; --   ;
+; key11_sharp5_raw           ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
 ; note_keys_physical_in[5]   ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
 ; note_keys_physical_in[6]   ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
-; key9_flat3_raw             ; Input    ; --            ; (6) 1314 ps   ; --                    ; --  ; --   ;
-; key11_sharp5_raw           ; Input    ; --            ; (6) 1314 ps   ; --                    ; --  ; --   ;
-; key10_sharp4_raw           ; Input    ; --            ; (6) 1314 ps   ; --                    ; --  ; --   ;
-; key8_sharp1_raw            ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
-; key12_flat7_raw            ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
-; key14_play_song_raw        ; Input    ; --            ; (6) 1314 ps   ; --                    ; --  ; --   ;
+; note_keys_physical_in[3]   ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
+; note_keys_physical_in[4]   ; Input    ; --            ; (6) 1314 ps   ; --                    ; --  ; --   ;
+; note_keys_physical_in[0]   ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
+; note_keys_physical_in[1]   ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
+; note_keys_physical_in[2]   ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
 ; sw17_playback_raw          ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
 ; sw16_record_raw            ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
+; key14_play_song_raw        ; Input    ; (6) 1314 ps   ; --            ; --                    ; --  ; --   ;
 +----------------------------+----------+---------------+---------------+-----------------------+-----+------+
 
 
@@ -715,61 +719,57 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ;      - debouncer:octave_down_deb_inst|always0~0                                                                     ; 1                 ; 6       ;
 ;      - debouncer:octave_down_deb_inst|key_temp_state~feeder                                                         ; 1                 ; 6       ;
 ; sw15_octave_up_raw                                                                                                  ;                   ;         ;
-;      - debouncer:octave_up_deb_inst|key_out_debounced~0                                                             ; 1                 ; 6       ;
-;      - debouncer:octave_up_deb_inst|always0~0                                                                       ; 1                 ; 6       ;
-;      - debouncer:octave_up_deb_inst|key_temp_state~feeder                                                           ; 1                 ; 6       ;
-; note_keys_physical_in[0]                                                                                            ;                   ;         ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer|key_temp_state         ; 0                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer|key_out_debounced~0    ; 0                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer|always0~0              ; 0                 ; 6       ;
-; note_keys_physical_in[2]                                                                                            ;                   ;         ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[2].inst_debouncer|key_out_debounced~0    ; 0                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[2].inst_debouncer|always0~0              ; 0                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[2].inst_debouncer|key_temp_state~feeder  ; 0                 ; 6       ;
-; note_keys_physical_in[3]                                                                                            ;                   ;         ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[3].inst_debouncer|key_out_debounced~0    ; 0                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[3].inst_debouncer|always0~0              ; 0                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[3].inst_debouncer|key_temp_state~feeder  ; 0                 ; 6       ;
-; note_keys_physical_in[1]                                                                                            ;                   ;         ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[1].inst_debouncer|key_out_debounced~0    ; 0                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[1].inst_debouncer|always0~0              ; 0                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[1].inst_debouncer|key_temp_state~feeder  ; 0                 ; 6       ;
-; note_keys_physical_in[4]                                                                                            ;                   ;         ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[4].inst_debouncer|key_out_debounced~0    ; 0                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[4].inst_debouncer|always0~0              ; 0                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[4].inst_debouncer|key_temp_state~feeder  ; 0                 ; 6       ;
-; note_keys_physical_in[5]                                                                                            ;                   ;         ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[5].inst_debouncer|key_out_debounced~0    ; 0                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[5].inst_debouncer|always0~0              ; 0                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[5].inst_debouncer|key_temp_state~feeder  ; 0                 ; 6       ;
-; note_keys_physical_in[6]                                                                                            ;                   ;         ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[6].inst_debouncer|key_temp_state         ; 0                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[6].inst_debouncer|key_out_debounced~0    ; 0                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[6].inst_debouncer|always0~0              ; 0                 ; 6       ;
-; key9_flat3_raw                                                                                                      ;                   ;         ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[8].inst_debouncer|key_out_debounced~0    ; 1                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[8].inst_debouncer|always0~0              ; 1                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[8].inst_debouncer|key_temp_state~feeder  ; 1                 ; 6       ;
-; key11_sharp5_raw                                                                                                    ;                   ;         ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[10].inst_debouncer|key_temp_state        ; 1                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[10].inst_debouncer|key_out_debounced~0   ; 1                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[10].inst_debouncer|always0~0             ; 1                 ; 6       ;
-; key10_sharp4_raw                                                                                                    ;                   ;         ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[9].inst_debouncer|key_out_debounced~0    ; 1                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[9].inst_debouncer|always0~0              ; 1                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[9].inst_debouncer|key_temp_state~feeder  ; 1                 ; 6       ;
-; key8_sharp1_raw                                                                                                     ;                   ;         ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[7].inst_debouncer|key_out_debounced~0    ; 0                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[7].inst_debouncer|always0~0              ; 0                 ; 6       ;
-;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[7].inst_debouncer|key_temp_state~feeder  ; 0                 ; 6       ;
+;      - debouncer:octave_up_deb_inst|key_out_debounced~0                                                             ; 0                 ; 6       ;
+;      - debouncer:octave_up_deb_inst|always0~0                                                                       ; 0                 ; 6       ;
+;      - debouncer:octave_up_deb_inst|key_temp_state~feeder                                                           ; 0                 ; 6       ;
 ; key12_flat7_raw                                                                                                     ;                   ;         ;
 ;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[11].inst_debouncer|key_out_debounced~0   ; 0                 ; 6       ;
 ;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[11].inst_debouncer|always0~0             ; 0                 ; 6       ;
 ;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[11].inst_debouncer|key_temp_state~feeder ; 0                 ; 6       ;
-; key14_play_song_raw                                                                                                 ;                   ;         ;
-;      - debouncer:play_song_deb_inst|key_out_debounced~0                                                             ; 1                 ; 6       ;
-;      - debouncer:play_song_deb_inst|always0~0                                                                       ; 1                 ; 6       ;
-;      - debouncer:play_song_deb_inst|key_temp_state~feeder                                                           ; 1                 ; 6       ;
+; key8_sharp1_raw                                                                                                     ;                   ;         ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[7].inst_debouncer|key_out_debounced~0    ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[7].inst_debouncer|always0~0              ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[7].inst_debouncer|key_temp_state~feeder  ; 0                 ; 6       ;
+; key9_flat3_raw                                                                                                      ;                   ;         ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[8].inst_debouncer|key_temp_state         ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[8].inst_debouncer|key_out_debounced~0    ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[8].inst_debouncer|always0~0              ; 0                 ; 6       ;
+; key10_sharp4_raw                                                                                                    ;                   ;         ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[9].inst_debouncer|key_out_debounced~0    ; 1                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[9].inst_debouncer|always0~0              ; 1                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[9].inst_debouncer|key_temp_state~feeder  ; 1                 ; 6       ;
+; key11_sharp5_raw                                                                                                    ;                   ;         ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[10].inst_debouncer|key_temp_state        ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[10].inst_debouncer|key_out_debounced~0   ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[10].inst_debouncer|always0~0             ; 0                 ; 6       ;
+; note_keys_physical_in[5]                                                                                            ;                   ;         ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[5].inst_debouncer|key_temp_state         ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[5].inst_debouncer|key_out_debounced~0    ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[5].inst_debouncer|always0~0              ; 0                 ; 6       ;
+; note_keys_physical_in[6]                                                                                            ;                   ;         ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[6].inst_debouncer|key_out_debounced~0    ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[6].inst_debouncer|always0~0              ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[6].inst_debouncer|key_temp_state~feeder  ; 0                 ; 6       ;
+; note_keys_physical_in[3]                                                                                            ;                   ;         ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[3].inst_debouncer|key_temp_state         ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[3].inst_debouncer|key_out_debounced~0    ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[3].inst_debouncer|always0~0              ; 0                 ; 6       ;
+; note_keys_physical_in[4]                                                                                            ;                   ;         ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[4].inst_debouncer|key_out_debounced~0    ; 1                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[4].inst_debouncer|always0~0              ; 1                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[4].inst_debouncer|key_temp_state~feeder  ; 1                 ; 6       ;
+; note_keys_physical_in[0]                                                                                            ;                   ;         ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer|key_out_debounced~0    ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer|always0~0              ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer|key_temp_state~feeder  ; 0                 ; 6       ;
+; note_keys_physical_in[1]                                                                                            ;                   ;         ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[1].inst_debouncer|key_temp_state         ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[1].inst_debouncer|key_out_debounced~0    ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[1].inst_debouncer|always0~0              ; 0                 ; 6       ;
+; note_keys_physical_in[2]                                                                                            ;                   ;         ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[2].inst_debouncer|key_out_debounced~0    ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[2].inst_debouncer|always0~0              ; 0                 ; 6       ;
+;      - keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[2].inst_debouncer|key_temp_state~feeder  ; 0                 ; 6       ;
 ; sw17_playback_raw                                                                                                   ;                   ;         ;
 ;      - debouncer:playback_deb_inst|key_out_debounced~0                                                              ; 0                 ; 6       ;
 ;      - debouncer:playback_deb_inst|always0~0                                                                        ; 0                 ; 6       ;
@@ -778,6 +778,10 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 ;      - debouncer:record_deb_inst|key_out_debounced~0                                                                ; 0                 ; 6       ;
 ;      - debouncer:record_deb_inst|always0~0                                                                          ; 0                 ; 6       ;
 ;      - debouncer:record_deb_inst|key_temp_state~feeder                                                              ; 0                 ; 6       ;
+; key14_play_song_raw                                                                                                 ;                   ;         ;
+;      - debouncer:play_song_deb_inst|key_out_debounced~0                                                             ; 0                 ; 6       ;
+;      - debouncer:play_song_deb_inst|always0~0                                                                       ; 0                 ; 6       ;
+;      - debouncer:play_song_deb_inst|key_temp_state~feeder                                                           ; 0                 ; 6       ;
 +---------------------------------------------------------------------------------------------------------------------+-------------------+---------+
 
 
@@ -786,57 +790,63 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +------------------------------------------------------------------------------------------------------------+--------------------+---------+--------------+--------+----------------------+------------------+---------------------------+
 ; Name                                                                                                       ; Location           ; Fan-Out ; Usage        ; Global ; Global Resource Used ; Global Line Name ; Enable Signal Source Name ;
 +------------------------------------------------------------------------------------------------------------+--------------------+---------+--------------+--------+----------------------+------------------+---------------------------+
-; buzzer_counter_reg[9]~54                                                                                   ; LCCOMB_X18_Y8_N22  ; 18      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; clk_50mhz                                                                                                  ; PIN_90             ; 609     ; Clock        ; yes    ; Global Clock         ; GCLK7            ; --                        ;
-; debouncer:octave_down_deb_inst|always0~0                                                                   ; LCCOMB_X10_Y11_N30 ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; debouncer:octave_down_deb_inst|key_out_debounced~6                                                         ; LCCOMB_X10_Y11_N28 ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; debouncer:octave_up_deb_inst|always0~0                                                                     ; LCCOMB_X5_Y10_N2   ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; debouncer:octave_up_deb_inst|key_out_debounced~6                                                           ; LCCOMB_X4_Y10_N26  ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; debouncer:play_song_deb_inst|always0~0                                                                     ; LCCOMB_X10_Y10_N0  ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; debouncer:play_song_deb_inst|key_out_debounced~6                                                           ; LCCOMB_X9_Y10_N26  ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; debouncer:playback_deb_inst|always0~0                                                                      ; LCCOMB_X5_Y17_N6   ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; debouncer:playback_deb_inst|key_out_debounced~6                                                            ; LCCOMB_X4_Y17_N28  ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; debouncer:record_deb_inst|always0~0                                                                        ; LCCOMB_X10_Y17_N0  ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; debouncer:record_deb_inst|key_out_debounced~6                                                              ; LCCOMB_X9_Y17_N20  ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer|always0~0            ; LCCOMB_X13_Y9_N30  ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer|key_out_debounced~6  ; LCCOMB_X13_Y9_N24  ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[10].inst_debouncer|always0~0           ; LCCOMB_X12_Y12_N30 ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[10].inst_debouncer|key_out_debounced~6 ; LCCOMB_X12_Y12_N24 ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[11].inst_debouncer|always0~0           ; LCCOMB_X18_Y10_N22 ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[11].inst_debouncer|key_out_debounced~6 ; LCCOMB_X19_Y10_N26 ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[1].inst_debouncer|always0~0            ; LCCOMB_X12_Y9_N22  ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[1].inst_debouncer|key_out_debounced~6  ; LCCOMB_X12_Y9_N20  ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[2].inst_debouncer|always0~0            ; LCCOMB_X24_Y11_N30 ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[2].inst_debouncer|key_out_debounced~6  ; LCCOMB_X24_Y11_N20 ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[3].inst_debouncer|always0~0            ; LCCOMB_X21_Y10_N10 ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[3].inst_debouncer|key_out_debounced~6  ; LCCOMB_X21_Y9_N24  ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[4].inst_debouncer|always0~0            ; LCCOMB_X13_Y12_N30 ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[4].inst_debouncer|key_out_debounced~6  ; LCCOMB_X13_Y12_N28 ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[5].inst_debouncer|always0~0            ; LCCOMB_X17_Y5_N30  ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[5].inst_debouncer|key_out_debounced~6  ; LCCOMB_X17_Y5_N20  ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[6].inst_debouncer|always0~0            ; LCCOMB_X17_Y14_N22 ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[6].inst_debouncer|key_out_debounced~6  ; LCCOMB_X17_Y14_N20 ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[7].inst_debouncer|always0~0            ; LCCOMB_X16_Y5_N30  ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[7].inst_debouncer|key_out_debounced~6  ; LCCOMB_X16_Y5_N24  ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[8].inst_debouncer|always0~0            ; LCCOMB_X14_Y12_N22 ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[8].inst_debouncer|key_out_debounced~6  ; LCCOMB_X14_Y12_N24 ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[9].inst_debouncer|always0~0            ; LCCOMB_X11_Y8_N22  ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[9].inst_debouncer|key_out_debounced~6  ; LCCOMB_X11_Y8_N20  ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; new_note_to_scroll_pulse~2                                                                                 ; LCCOMB_X17_Y12_N26 ; 18      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; piano_recorder:piano_recorder_inst|comb~0                                                                  ; LCCOMB_X12_Y14_N4  ; 3       ; Write enable ; no     ; --                   ; --               ; --                        ;
-; piano_recorder:piano_recorder_inst|current_state_reg.S_PLAYBACK                                            ; FF_X13_Y14_N31     ; 18      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; piano_recorder:piano_recorder_inst|current_state_reg.S_RECORDING                                           ; FF_X13_Y14_N5      ; 26      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; piano_recorder:piano_recorder_inst|last_recorded_ptr[1]~1                                                  ; LCCOMB_X13_Y14_N10 ; 9       ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; piano_recorder:piano_recorder_inst|playback_key_id[3]~0                                                    ; LCCOMB_X16_Y14_N2  ; 7       ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; piano_recorder:piano_recorder_inst|record_write_ptr[2]~12                                                  ; LCCOMB_X13_Y14_N14 ; 9       ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; piano_recorder:piano_recorder_inst|recorded_data_memory~16                                                 ; LCCOMB_X14_Y14_N24 ; 7       ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; piano_recorder:piano_recorder_inst|sample_timer_reg[9]~0                                                   ; LCCOMB_X13_Y14_N8  ; 12      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; seven_segment_controller:seven_segment_display_inst|LessThan0~5                                            ; LCCOMB_X24_Y20_N18 ; 19      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; song_player:song_player_inst|note_duration_timer[22]~79                                                    ; LCCOMB_X24_Y9_N30  ; 26      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
-; song_player:song_player_inst|note_duration_timer[22]~81                                                    ; LCCOMB_X24_Y9_N26  ; 26      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; song_player:song_player_inst|song_key_id[0]~1                                                              ; LCCOMB_X22_Y11_N20 ; 15      ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; song_player:song_player_inst|song_key_is_pressed~3                                                         ; LCCOMB_X22_Y11_N14 ; 2       ; Clock enable ; no     ; --                   ; --               ; --                        ;
-; sw0_physical_reset                                                                                         ; PIN_24             ; 584     ; Async. clear ; yes    ; Global Clock         ; GCLK4            ; --                        ;
+; buzzer_counter_reg[1]~54                                                                                   ; LCCOMB_X14_Y9_N22  ; 18      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; buzzer_counter_reg[1]~55                                                                                   ; LCCOMB_X14_Y9_N28  ; 18      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; clk_50mhz                                                                                                  ; PIN_90             ; 671     ; Clock        ; yes    ; Global Clock         ; GCLK7            ; --                        ;
+; debouncer:octave_down_deb_inst|always0~0                                                                   ; LCCOMB_X8_Y17_N14  ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; debouncer:octave_down_deb_inst|key_out_debounced~6                                                         ; LCCOMB_X7_Y17_N26  ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; debouncer:octave_up_deb_inst|always0~0                                                                     ; LCCOMB_X4_Y17_N16  ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; debouncer:octave_up_deb_inst|key_out_debounced~6                                                           ; LCCOMB_X5_Y17_N20  ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; debouncer:play_song_deb_inst|always0~0                                                                     ; LCCOMB_X8_Y8_N2    ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; debouncer:play_song_deb_inst|key_out_debounced~6                                                           ; LCCOMB_X7_Y8_N22   ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; debouncer:playback_deb_inst|always0~0                                                                      ; LCCOMB_X11_Y19_N16 ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; debouncer:playback_deb_inst|key_out_debounced~6                                                            ; LCCOMB_X12_Y19_N28 ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; debouncer:record_deb_inst|always0~0                                                                        ; LCCOMB_X7_Y19_N16  ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; debouncer:record_deb_inst|key_out_debounced~6                                                              ; LCCOMB_X8_Y19_N20  ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer|always0~0            ; LCCOMB_X6_Y7_N30   ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[0].inst_debouncer|key_out_debounced~6  ; LCCOMB_X6_Y7_N20   ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[10].inst_debouncer|always0~0           ; LCCOMB_X13_Y7_N30  ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[10].inst_debouncer|key_out_debounced~6 ; LCCOMB_X13_Y7_N28  ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[11].inst_debouncer|always0~0           ; LCCOMB_X11_Y13_N18 ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[11].inst_debouncer|key_out_debounced~6 ; LCCOMB_X10_Y15_N28 ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[1].inst_debouncer|always0~0            ; LCCOMB_X14_Y12_N22 ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[1].inst_debouncer|key_out_debounced~6  ; LCCOMB_X14_Y12_N24 ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[2].inst_debouncer|always0~0            ; LCCOMB_X11_Y7_N16  ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[2].inst_debouncer|key_out_debounced~6  ; LCCOMB_X12_Y7_N26  ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[3].inst_debouncer|always0~0            ; LCCOMB_X13_Y12_N26 ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[3].inst_debouncer|key_out_debounced~6  ; LCCOMB_X13_Y12_N20 ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[4].inst_debouncer|always0~0            ; LCCOMB_X6_Y9_N22   ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[4].inst_debouncer|key_out_debounced~6  ; LCCOMB_X6_Y9_N20   ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[5].inst_debouncer|always0~0            ; LCCOMB_X10_Y9_N22  ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[5].inst_debouncer|key_out_debounced~6  ; LCCOMB_X9_Y9_N22   ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[6].inst_debouncer|always0~0            ; LCCOMB_X10_Y7_N14  ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[6].inst_debouncer|key_out_debounced~6  ; LCCOMB_X9_Y7_N26   ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[7].inst_debouncer|always0~0            ; LCCOMB_X8_Y6_N26   ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[7].inst_debouncer|key_out_debounced~6  ; LCCOMB_X8_Y6_N28   ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[8].inst_debouncer|always0~0            ; LCCOMB_X12_Y17_N22 ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[8].inst_debouncer|key_out_debounced~6  ; LCCOMB_X12_Y17_N24 ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[9].inst_debouncer|always0~0            ; LCCOMB_X8_Y9_N22   ; 20      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; keyboard_scanner:keyboard_scanner_inst|debouncer:debounce_gen_block[9].inst_debouncer|key_out_debounced~6  ; LCCOMB_X8_Y9_N24   ; 21      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; mode_sequencer:mode_sequencer_inst|current_match_index[1]~2                                                ; LCCOMB_X16_Y12_N4  ; 3       ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; mode_sequencer:mode_sequencer_inst|last_pressed_key_id_prev_cycle~2                                        ; LCCOMB_X12_Y12_N18 ; 4       ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; mode_sequencer:mode_sequencer_inst|timeout_counter_reg[20]~69                                              ; LCCOMB_X16_Y12_N0  ; 28      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; new_note_to_scroll_pulse~3                                                                                 ; LCCOMB_X11_Y15_N2  ; 18      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; piano_recorder:piano_recorder_inst|comb~0                                                                  ; LCCOMB_X12_Y14_N10 ; 3       ; Write enable ; no     ; --                   ; --               ; --                        ;
+; piano_recorder:piano_recorder_inst|current_state_reg.S_PLAYBACK                                            ; FF_X11_Y17_N21     ; 18      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; piano_recorder:piano_recorder_inst|current_state_reg.S_RECORDING                                           ; FF_X11_Y17_N7      ; 26      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; piano_recorder:piano_recorder_inst|last_recorded_ptr[7]~1                                                  ; LCCOMB_X11_Y17_N28 ; 9       ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; piano_recorder:piano_recorder_inst|playback_key_id[1]~0                                                    ; LCCOMB_X12_Y14_N6  ; 7       ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; piano_recorder:piano_recorder_inst|record_write_ptr[1]~12                                                  ; LCCOMB_X10_Y14_N26 ; 9       ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; piano_recorder:piano_recorder_inst|recorded_data_memory~16                                                 ; LCCOMB_X14_Y14_N0  ; 7       ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; piano_recorder:piano_recorder_inst|sample_timer_reg[4]~0                                                   ; LCCOMB_X10_Y14_N16 ; 12      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; practice_mode_enabled_reg                                                                                  ; FF_X11_Y11_N9      ; 69      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; practice_player:practice_player_inst|display_out_seg0~0                                                    ; LCCOMB_X17_Y14_N26 ; 22      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; seven_segment_controller:seven_segment_display_inst|LessThan0~5                                            ; LCCOMB_X19_Y17_N20 ; 19      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; song_player:song_player_inst|note_duration_timer[24]~79                                                    ; LCCOMB_X17_Y6_N30  ; 26      ; Sync. clear  ; no     ; --                   ; --               ; --                        ;
+; song_player:song_player_inst|note_duration_timer[24]~80                                                    ; LCCOMB_X16_Y6_N0   ; 26      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; song_player:song_player_inst|song_key_id[3]~1                                                              ; LCCOMB_X17_Y6_N28  ; 15      ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; song_player:song_player_inst|song_key_is_pressed~3                                                         ; LCCOMB_X16_Y6_N24  ; 2       ; Clock enable ; no     ; --                   ; --               ; --                        ;
+; sw0_physical_reset                                                                                         ; PIN_24             ; 646     ; Async. clear ; yes    ; Global Clock         ; GCLK4            ; --                        ;
 +------------------------------------------------------------------------------------------------------------+--------------------+---------+--------------+--------+----------------------+------------------+---------------------------+
 
 
@@ -845,8 +855,8 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +--------------------+----------+---------+--------------------------------------+----------------------+------------------+---------------------------+
 ; Name               ; Location ; Fan-Out ; Fan-Out Using Intentional Clock Skew ; Global Resource Used ; Global Line Name ; Enable Signal Source Name ;
 +--------------------+----------+---------+--------------------------------------+----------------------+------------------+---------------------------+
-; clk_50mhz          ; PIN_90   ; 609     ; 18                                   ; Global Clock         ; GCLK7            ; --                        ;
-; sw0_physical_reset ; PIN_24   ; 584     ; 0                                    ; Global Clock         ; GCLK4            ; --                        ;
+; clk_50mhz          ; PIN_90   ; 671     ; 21                                   ; Global Clock         ; GCLK7            ; --                        ;
+; sw0_physical_reset ; PIN_24   ; 646     ; 0                                    ; Global Clock         ; GCLK4            ; --                        ;
 +--------------------+----------+---------+--------------------------------------+----------------------+------------------+---------------------------+
 
 
@@ -860,167 +870,173 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 Note: Fitter may spread logical memories into multiple blocks to improve timing. The actual required RAM blocks can be found in the Fitter Resource Usage section.
 
 
-+------------------------------------------------+
-; Routing Usage Summary                          ;
-+-----------------------+------------------------+
-; Routing Resource Type ; Usage                  ;
-+-----------------------+------------------------+
-; Block interconnects   ; 990 / 32,401 ( 3 % )   ;
-; C16 interconnects     ; 16 / 1,326 ( 1 % )     ;
-; C4 interconnects      ; 404 / 21,816 ( 2 % )   ;
-; Direct links          ; 271 / 32,401 ( < 1 % ) ;
-; Global clocks         ; 2 / 10 ( 20 % )        ;
-; Local interconnects   ; 949 / 10,320 ( 9 % )   ;
-; R24 interconnects     ; 19 / 1,289 ( 1 % )     ;
-; R4 interconnects      ; 382 / 28,186 ( 1 % )   ;
-+-----------------------+------------------------+
++-------------------------------------------------+
+; Routing Usage Summary                           ;
++-----------------------+-------------------------+
+; Routing Resource Type ; Usage                   ;
++-----------------------+-------------------------+
+; Block interconnects   ; 1,145 / 32,401 ( 4 % )  ;
+; C16 interconnects     ; 13 / 1,326 ( < 1 % )    ;
+; C4 interconnects      ; 464 / 21,816 ( 2 % )    ;
+; Direct links          ; 358 / 32,401 ( 1 % )    ;
+; Global clocks         ; 2 / 10 ( 20 % )         ;
+; Local interconnects   ; 1,015 / 10,320 ( 10 % ) ;
+; R24 interconnects     ; 21 / 1,289 ( 2 % )      ;
+; R4 interconnects      ; 414 / 28,186 ( 1 % )    ;
++-----------------------+-------------------------+
 
 
 +-----------------------------------------------------------------------------+
 ; LAB Logic Elements                                                          ;
 +---------------------------------------------+-------------------------------+
-; Number of Logic Elements  (Average = 12.33) ; Number of LABs  (Total = 108) ;
+; Number of Logic Elements  (Average = 12.56) ; Number of LABs  (Total = 117) ;
 +---------------------------------------------+-------------------------------+
-; 1                                           ; 6                             ;
-; 2                                           ; 3                             ;
-; 3                                           ; 4                             ;
-; 4                                           ; 6                             ;
+; 1                                           ; 7                             ;
+; 2                                           ; 4                             ;
+; 3                                           ; 5                             ;
+; 4                                           ; 3                             ;
 ; 5                                           ; 1                             ;
-; 6                                           ; 1                             ;
-; 7                                           ; 2                             ;
+; 6                                           ; 0                             ;
+; 7                                           ; 1                             ;
 ; 8                                           ; 1                             ;
-; 9                                           ; 3                             ;
-; 10                                          ; 0                             ;
-; 11                                          ; 2                             ;
+; 9                                           ; 1                             ;
+; 10                                          ; 1                             ;
+; 11                                          ; 4                             ;
 ; 12                                          ; 1                             ;
-; 13                                          ; 14                            ;
+; 13                                          ; 17                            ;
 ; 14                                          ; 6                             ;
-; 15                                          ; 4                             ;
-; 16                                          ; 54                            ;
+; 15                                          ; 12                            ;
+; 16                                          ; 53                            ;
 +---------------------------------------------+-------------------------------+
 
 
 +--------------------------------------------------------------------+
 ; LAB-wide Signals                                                   ;
 +------------------------------------+-------------------------------+
-; LAB-wide Signals  (Average = 2.14) ; Number of LABs  (Total = 108) ;
+; LAB-wide Signals  (Average = 2.20) ; Number of LABs  (Total = 117) ;
 +------------------------------------+-------------------------------+
-; 1 Async. clear                     ; 83                            ;
-; 1 Clock                            ; 84                            ;
-; 1 Clock enable                     ; 30                            ;
-; 1 Sync. clear                      ; 30                            ;
-; 2 Clock enables                    ; 4                             ;
+; 1 Async. clear                     ; 93                            ;
+; 1 Clock                            ; 93                            ;
+; 1 Clock enable                     ; 38                            ;
+; 1 Sync. clear                      ; 32                            ;
+; 2 Clock enables                    ; 1                             ;
 +------------------------------------+-------------------------------+
 
 
 +------------------------------------------------------------------------------+
 ; LAB Signals Sourced                                                          ;
 +----------------------------------------------+-------------------------------+
-; Number of Signals Sourced  (Average = 17.23) ; Number of LABs  (Total = 108) ;
+; Number of Signals Sourced  (Average = 17.58) ; Number of LABs  (Total = 117) ;
 +----------------------------------------------+-------------------------------+
 ; 0                                            ; 1                             ;
 ; 1                                            ; 3                             ;
-; 2                                            ; 5                             ;
-; 3                                            ; 1                             ;
+; 2                                            ; 6                             ;
+; 3                                            ; 3                             ;
 ; 4                                            ; 6                             ;
 ; 5                                            ; 1                             ;
-; 6                                            ; 4                             ;
-; 7                                            ; 3                             ;
-; 8                                            ; 2                             ;
-; 9                                            ; 2                             ;
+; 6                                            ; 2                             ;
+; 7                                            ; 1                             ;
+; 8                                            ; 3                             ;
+; 9                                            ; 0                             ;
 ; 10                                           ; 2                             ;
-; 11                                           ; 0                             ;
+; 11                                           ; 1                             ;
 ; 12                                           ; 0                             ;
-; 13                                           ; 1                             ;
-; 14                                           ; 0                             ;
-; 15                                           ; 2                             ;
+; 13                                           ; 0                             ;
+; 14                                           ; 2                             ;
+; 15                                           ; 4                             ;
 ; 16                                           ; 12                            ;
 ; 17                                           ; 3                             ;
-; 18                                           ; 5                             ;
-; 19                                           ; 2                             ;
-; 20                                           ; 3                             ;
-; 21                                           ; 4                             ;
+; 18                                           ; 1                             ;
+; 19                                           ; 4                             ;
+; 20                                           ; 5                             ;
+; 21                                           ; 2                             ;
 ; 22                                           ; 2                             ;
-; 23                                           ; 14                            ;
-; 24                                           ; 4                             ;
-; 25                                           ; 2                             ;
-; 26                                           ; 14                            ;
-; 27                                           ; 4                             ;
+; 23                                           ; 20                            ;
+; 24                                           ; 7                             ;
+; 25                                           ; 4                             ;
+; 26                                           ; 15                            ;
+; 27                                           ; 1                             ;
 ; 28                                           ; 1                             ;
 ; 29                                           ; 4                             ;
-; 30                                           ; 0                             ;
-; 31                                           ; 1                             ;
+; 30                                           ; 1                             ;
 +----------------------------------------------+-------------------------------+
 
 
 +---------------------------------------------------------------------------------+
 ; LAB Signals Sourced Out                                                         ;
 +-------------------------------------------------+-------------------------------+
-; Number of Signals Sourced Out  (Average = 5.24) ; Number of LABs  (Total = 108) ;
+; Number of Signals Sourced Out  (Average = 5.59) ; Number of LABs  (Total = 117) ;
 +-------------------------------------------------+-------------------------------+
-; 0                                               ; 2                             ;
-; 1                                               ; 10                            ;
-; 2                                               ; 31                            ;
-; 3                                               ; 19                            ;
-; 4                                               ; 9                             ;
-; 5                                               ; 4                             ;
+; 0                                               ; 1                             ;
+; 1                                               ; 13                            ;
+; 2                                               ; 32                            ;
+; 3                                               ; 14                            ;
+; 4                                               ; 10                            ;
+; 5                                               ; 5                             ;
 ; 6                                               ; 3                             ;
-; 7                                               ; 1                             ;
-; 8                                               ; 1                             ;
+; 7                                               ; 3                             ;
+; 8                                               ; 5                             ;
 ; 9                                               ; 6                             ;
-; 10                                              ; 4                             ;
-; 11                                              ; 4                             ;
-; 12                                              ; 1                             ;
-; 13                                              ; 3                             ;
+; 10                                              ; 2                             ;
+; 11                                              ; 6                             ;
+; 12                                              ; 2                             ;
+; 13                                              ; 5                             ;
 ; 14                                              ; 3                             ;
-; 15                                              ; 3                             ;
-; 16                                              ; 2                             ;
-; 17                                              ; 0                             ;
+; 15                                              ; 2                             ;
+; 16                                              ; 3                             ;
+; 17                                              ; 1                             ;
 ; 18                                              ; 0                             ;
 ; 19                                              ; 0                             ;
-; 20                                              ; 2                             ;
+; 20                                              ; 0                             ;
+; 21                                              ; 0                             ;
+; 22                                              ; 0                             ;
+; 23                                              ; 0                             ;
+; 24                                              ; 0                             ;
+; 25                                              ; 1                             ;
 +-------------------------------------------------+-------------------------------+
 
 
-+-----------------------------------------------------------------------------+
-; LAB Distinct Inputs                                                         ;
-+---------------------------------------------+-------------------------------+
-; Number of Distinct Inputs  (Average = 9.93) ; Number of LABs  (Total = 108) ;
-+---------------------------------------------+-------------------------------+
-; 0                                           ; 0                             ;
-; 1                                           ; 0                             ;
-; 2                                           ; 1                             ;
-; 3                                           ; 3                             ;
-; 4                                           ; 21                            ;
-; 5                                           ; 6                             ;
-; 6                                           ; 8                             ;
-; 7                                           ; 20                            ;
-; 8                                           ; 9                             ;
-; 9                                           ; 5                             ;
-; 10                                          ; 3                             ;
-; 11                                          ; 3                             ;
-; 12                                          ; 0                             ;
-; 13                                          ; 2                             ;
-; 14                                          ; 1                             ;
-; 15                                          ; 4                             ;
-; 16                                          ; 3                             ;
-; 17                                          ; 3                             ;
-; 18                                          ; 2                             ;
-; 19                                          ; 2                             ;
-; 20                                          ; 1                             ;
-; 21                                          ; 2                             ;
-; 22                                          ; 0                             ;
-; 23                                          ; 2                             ;
-; 24                                          ; 0                             ;
-; 25                                          ; 0                             ;
-; 26                                          ; 1                             ;
-; 27                                          ; 3                             ;
-; 28                                          ; 0                             ;
-; 29                                          ; 1                             ;
-; 30                                          ; 1                             ;
-; 31                                          ; 0                             ;
-; 32                                          ; 1                             ;
-+---------------------------------------------+-------------------------------+
++------------------------------------------------------------------------------+
+; LAB Distinct Inputs                                                          ;
++----------------------------------------------+-------------------------------+
+; Number of Distinct Inputs  (Average = 10.26) ; Number of LABs  (Total = 117) ;
++----------------------------------------------+-------------------------------+
+; 0                                            ; 0                             ;
+; 1                                            ; 0                             ;
+; 2                                            ; 0                             ;
+; 3                                            ; 5                             ;
+; 4                                            ; 24                            ;
+; 5                                            ; 8                             ;
+; 6                                            ; 6                             ;
+; 7                                            ; 17                            ;
+; 8                                            ; 10                            ;
+; 9                                            ; 1                             ;
+; 10                                           ; 7                             ;
+; 11                                           ; 3                             ;
+; 12                                           ; 4                             ;
+; 13                                           ; 3                             ;
+; 14                                           ; 4                             ;
+; 15                                           ; 4                             ;
+; 16                                           ; 1                             ;
+; 17                                           ; 1                             ;
+; 18                                           ; 2                             ;
+; 19                                           ; 2                             ;
+; 20                                           ; 0                             ;
+; 21                                           ; 3                             ;
+; 22                                           ; 0                             ;
+; 23                                           ; 2                             ;
+; 24                                           ; 0                             ;
+; 25                                           ; 2                             ;
+; 26                                           ; 0                             ;
+; 27                                           ; 2                             ;
+; 28                                           ; 2                             ;
+; 29                                           ; 2                             ;
+; 30                                           ; 0                             ;
+; 31                                           ; 0                             ;
+; 32                                           ; 1                             ;
+; 33                                           ; 0                             ;
+; 34                                           ; 1                             ;
++----------------------------------------------+-------------------------------+
 
 
 +------------------------------------------+
@@ -1105,21 +1121,21 @@ Note: Fitter may spread logical memories into multiple blocks to improve timing.
 ; sw0_physical_reset         ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
 ; sw13_octave_down_raw       ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
 ; sw15_octave_up_raw         ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
-; note_keys_physical_in[0]   ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
-; note_keys_physical_in[2]   ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
-; note_keys_physical_in[3]   ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
-; note_keys_physical_in[1]   ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
-; note_keys_physical_in[4]   ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
+; key12_flat7_raw            ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
+; key8_sharp1_raw            ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
+; key9_flat3_raw             ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
+; key10_sharp4_raw           ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
+; key11_sharp5_raw           ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
 ; note_keys_physical_in[5]   ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
 ; note_keys_physical_in[6]   ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
-; key9_flat3_raw             ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
-; key11_sharp5_raw           ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
-; key10_sharp4_raw           ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
-; key8_sharp1_raw            ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
-; key12_flat7_raw            ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
-; key14_play_song_raw        ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
+; note_keys_physical_in[3]   ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
+; note_keys_physical_in[4]   ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
+; note_keys_physical_in[0]   ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
+; note_keys_physical_in[1]   ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
+; note_keys_physical_in[2]   ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
 ; sw17_playback_raw          ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
 ; sw16_record_raw            ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
+; key14_play_song_raw        ; Pass      ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Pass      ; Pass      ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Pass         ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Inapplicable ; Pass      ; Inapplicable ; Inapplicable ;
 +----------------------------+-----------+--------------+-----------+--------------+--------------+-----------+-----------+--------------+-----------+-----------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+--------------+-----------+--------------+--------------+
 
 
@@ -1157,6 +1173,25 @@ Note: Fitter may spread logical memories into multiple blocks to improve timing.
 ; Low Junction Temperature  ; 0 °C   ;
 ; High Junction Temperature ; 85 °C  ;
 +---------------------------+--------+
+
+
++------------------------------------------------------------+
+; Estimated Delay Added for Hold Timing Summary              ;
++-----------------+----------------------+-------------------+
+; Source Clock(s) ; Destination Clock(s) ; Delay Added in ns ;
++-----------------+----------------------+-------------------+
+Note: For more information on problematic transfers, consider running the Fitter again with the Optimize hold timing option (Settings Menu) turned off.
+This will disable optimization of problematic paths and expose them for further analysis using the Timing Analyzer.
+
+
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Estimated Delay Added for Hold Timing Details                                                                                                                                                                        ;
++--------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------+-------------------+
+; Source Register                                        ; Destination Register                                                                                                                    ; Delay Added in ns ;
++--------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------+-------------------+
+; piano_recorder:piano_recorder_inst|record_write_ptr[0] ; piano_recorder:piano_recorder_inst|altsyncram:recorded_data_memory_rtl_0|altsyncram_0tg1:auto_generated|ram_block1a3~porta_address_reg0 ; 0.327             ;
++--------------------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------+-------------------+
+Note: This table only shows the top 1 path(s) that have the largest delay added for hold.
 
 
 +-----------------+
@@ -1206,22 +1241,22 @@ Info (170195): Router estimated average interconnect usage is 1% of the availabl
 Info (170199): The Fitter performed an Auto Fit compilation.  Optimizations were skipped to reduce compilation time.
     Info (170201): Optimizations that may affect the design's routability were skipped
 Info (170194): Fitter routing operations ending: elapsed time is 00:00:01
-Info (11888): Total time spent on timing analysis during the Fitter is 0.76 seconds.
+Info (11888): Total time spent on timing analysis during the Fitter is 0.86 seconds.
 Info (334003): Started post-fitting delay annotation
 Info (334004): Delay annotation completed successfully
 Info (334003): Started post-fitting delay annotation
 Info (334004): Delay annotation completed successfully
 Info (11218): Fitter post-fit operations ending: elapsed time is 00:00:01
 Warning (169180): Following 3 pins must use external clamping diodes.
+    Info (169178): Pin key12_flat7_raw uses I/O standard 2.5 V at 8 File: D:/github_project/fpga/fpga.v Line: 19
     Info (169178): Pin key9_flat3_raw uses I/O standard 2.5 V at 13 File: D:/github_project/fpga/fpga.v Line: 16
     Info (169178): Pin key10_sharp4_raw uses I/O standard 2.5 V at 6 File: D:/github_project/fpga/fpga.v Line: 17
-    Info (169178): Pin key12_flat7_raw uses I/O standard 2.5 V at 8 File: D:/github_project/fpga/fpga.v Line: 19
 Info (144001): Generated suppressed messages file D:/github_project/fpga/output_files/fpga.fit.smsg
 Info: Quartus Prime Fitter was successful. 0 errors, 5 warnings
-    Info: Peak virtual memory: 5952 megabytes
-    Info: Processing ended: Thu Jun 05 19:31:42 2025
+    Info: Peak virtual memory: 5954 megabytes
+    Info: Processing ended: Thu Jun 05 23:45:51 2025
     Info: Elapsed time: 00:00:09
-    Info: Total CPU time (on all processors): 00:00:18
+    Info: Total CPU time (on all processors): 00:00:19
 
 
 +----------------------------+

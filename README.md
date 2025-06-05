@@ -2,10 +2,10 @@
 SWJTU数电课设电子琴
 
 ## 核心代码
-### 顶层fpga.v
+### 1.顶层fpga.v
 ```verilog
-// File: fpga.v (Modified for song player octave support)
-// Top-level module for the FPGA Piano with recording, semitones, and song playback with octaves
+// File: fpga.v (Modified for practice mode integration)
+// Top-level module for the FPGA Piano with recording, semitones, song playback, and practice mode
 
 module fpga (
     // Clock and Reset
@@ -37,301 +37,369 @@ module fpga (
     // Outputs for 7-Segment Display
     output seven_seg_a, output seven_seg_b, output seven_seg_c, output seven_seg_d,
     output seven_seg_e, output seven_seg_f, output seven_seg_g, output seven_seg_dp,
-    output [7:0] seven_seg_digit_selects// For SEG0-SEG7
-
-    // Optional LED Outputs (uncomment and assign pins if used)
-    // output led_is_recording,
-    // output led_is_playing_recording,
-    // output led_is_playing_song
+    output [7:0] seven_seg_digit_selects // For SEG0-SEG7
 );
 
 // --- Internal Reset Logic ---
 wire rst_n_internal;
-assign rst_n_internal = ~sw0_physical_reset; // Convert active high physical reset to active low internal
+assign rst_n_internal = ~sw0_physical_reset;
 
 // --- Debouncer Parameter ---
 localparam DEBOUNCE_TIME_MS = 20;
-localparam DEBOUNCE_CYCLES_CALC = (DEBOUNCE_TIME_MS * 50000); // For 50MHz clock
+localparam DEBOUNCE_CYCLES_CALC = (DEBOUNCE_TIME_MS * 50000);
 
 // --- Consolidate All Musical Key Inputs ---
 localparam NUM_BASE_KEYS = 7;
 localparam NUM_SEMITONE_KEYS = 5;
-localparam NUM_TOTAL_MUSICAL_KEYS = NUM_BASE_KEYS + NUM_SEMITONE_KEYS; // 7 + 5 = 12 keys
+localparam NUM_TOTAL_MUSICAL_KEYS = NUM_BASE_KEYS + NUM_SEMITONE_KEYS;
+localparam RECORDER_KEY_ID_BITS = 4; // For 12 musical keys + rest (0)
+localparam RECORDER_OCTAVE_BITS = 2;
+
 
 wire [NUM_TOTAL_MUSICAL_KEYS-1:0] all_musical_keys_raw;
+assign all_musical_keys_raw[0] = note_keys_physical_in[0]; // C -> ID 1 in scanner
+assign all_musical_keys_raw[1] = note_keys_physical_in[1]; // D -> ID 2
+assign all_musical_keys_raw[2] = note_keys_physical_in[2]; // E -> ID 3
+assign all_musical_keys_raw[3] = note_keys_physical_in[3]; // F -> ID 4
+assign all_musical_keys_raw[4] = note_keys_physical_in[4]; // G -> ID 5
+assign all_musical_keys_raw[5] = note_keys_physical_in[5]; // A -> ID 6
+assign all_musical_keys_raw[6] = note_keys_physical_in[6]; // B -> ID 7
+assign all_musical_keys_raw[7] = key8_sharp1_raw;          // C# -> ID 8
+assign all_musical_keys_raw[8] = key9_flat3_raw;           // Eb -> ID 9
+assign all_musical_keys_raw[9] = key10_sharp4_raw;         // F# -> ID 10
+assign all_musical_keys_raw[10] = key11_sharp5_raw;        // G# -> ID 11
+assign all_musical_keys_raw[11] = key12_flat7_raw;         // Bb -> ID 12
 
-assign all_musical_keys_raw[0] = note_keys_physical_in[0]; // Key1 (C) -> ID 1
-assign all_musical_keys_raw[1] = note_keys_physical_in[1]; // Key2 (D) -> ID 2
-assign all_musical_keys_raw[2] = note_keys_physical_in[2]; // Key3 (E) -> ID 3
-assign all_musical_keys_raw[3] = note_keys_physical_in[3]; // Key4 (F) -> ID 4
-assign all_musical_keys_raw[4] = note_keys_physical_in[4]; // Key5 (G) -> ID 5
-assign all_musical_keys_raw[5] = note_keys_physical_in[5]; // Key6 (A) -> ID 6
-assign all_musical_keys_raw[6] = note_keys_physical_in[6]; // Key7 (B) -> ID 7
-assign all_musical_keys_raw[7] = key8_sharp1_raw;          // Key8 (C#) -> ID 8
-assign all_musical_keys_raw[8] = key9_flat3_raw;           // Key9 (Eb) -> ID 9
-assign all_musical_keys_raw[9] = key10_sharp4_raw;         // Key10 (F#) -> ID 10
-assign all_musical_keys_raw[10] = key11_sharp5_raw;        // Key11 (G#) -> ID 11
-assign all_musical_keys_raw[11] = key12_flat7_raw;         // Key12 (Bb) -> ID 12
-
-
-// --- Keyboard Scanner Instance for ALL Musical Notes ---
-wire [3:0] current_active_key_id_internal; // For 12 keys + no key (0), needs 4 bits
+// --- Keyboard Scanner Instance ---
+wire [RECORDER_KEY_ID_BITS-1:0] current_active_key_id_internal; // Output from scanner (0 for none, 1-12 for keys)
 wire       current_key_is_pressed_flag_internal;
-
-keyboard_scanner #(
-    .NUM_KEYS(NUM_TOTAL_MUSICAL_KEYS),
-    .DEBOUNCE_TIME_MS(DEBOUNCE_TIME_MS)
-) keyboard_scanner_inst (
-    .clk(clk_50mhz),
-    .rst_n(rst_n_internal),
-    .keys_in_raw(all_musical_keys_raw),
-    .active_key_id(current_active_key_id_internal),
-    .key_is_pressed(current_key_is_pressed_flag_internal)
+keyboard_scanner #( .NUM_KEYS(NUM_TOTAL_MUSICAL_KEYS), .DEBOUNCE_TIME_MS(DEBOUNCE_TIME_MS) )
+keyboard_scanner_inst (
+    .clk(clk_50mhz), .rst_n(rst_n_internal), .keys_in_raw(all_musical_keys_raw),
+    .active_key_id(current_active_key_id_internal), .key_is_pressed(current_key_is_pressed_flag_internal)
 );
 
-// --- Debouncers for Octave and Control Keys ---
-wire sw15_octave_up_debounced_internal;
-wire sw13_octave_down_debounced_internal;
-wire sw16_record_debounced_internal;
-wire sw17_playback_debounced_internal;
+// --- Debouncers for Control Keys ---
+wire sw15_octave_up_debounced_internal, sw13_octave_down_debounced_internal;
+wire sw16_record_debounced_internal, sw17_playback_debounced_internal, key14_play_song_debounced_internal;
 wire sw17_playback_pulse_internal;
-wire key14_play_song_debounced_internal;
 
-debouncer #( .DEBOUNCE_CYCLES(DEBOUNCE_CYCLES_CALC) ) octave_up_debouncer_inst (
-    .clk(clk_50mhz), .rst_n(rst_n_internal), .key_in_raw(sw15_octave_up_raw),
-    .key_out_debounced(sw15_octave_up_debounced_internal)
-);
-debouncer #( .DEBOUNCE_CYCLES(DEBOUNCE_CYCLES_CALC) ) octave_down_debouncer_inst (
-    .clk(clk_50mhz), .rst_n(rst_n_internal), .key_in_raw(sw13_octave_down_raw),
-    .key_out_debounced(sw13_octave_down_debounced_internal)
-);
-debouncer #( .DEBOUNCE_CYCLES(DEBOUNCE_CYCLES_CALC) ) record_debouncer_inst (
-    .clk(clk_50mhz), .rst_n(rst_n_internal), .key_in_raw(sw16_record_raw),
-    .key_out_debounced(sw16_record_debounced_internal)
-);
-debouncer #( .DEBOUNCE_CYCLES(DEBOUNCE_CYCLES_CALC) ) playback_debouncer_inst (
-    .clk(clk_50mhz), .rst_n(rst_n_internal), .key_in_raw(sw17_playback_raw),
-    .key_out_debounced(sw17_playback_debounced_internal)
-);
-debouncer #( .DEBOUNCE_CYCLES(DEBOUNCE_CYCLES_CALC) ) play_song_debouncer_inst (
-    .clk(clk_50mhz), .rst_n(rst_n_internal), .key_in_raw(key14_play_song_raw),
-    .key_out_debounced(key14_play_song_debounced_internal)
-);
+debouncer #( .DEBOUNCE_CYCLES(DEBOUNCE_CYCLES_CALC) ) octave_up_deb_inst (.clk(clk_50mhz), .rst_n(rst_n_internal), .key_in_raw(sw15_octave_up_raw),   .key_out_debounced(sw15_octave_up_debounced_internal));
+debouncer #( .DEBOUNCE_CYCLES(DEBOUNCE_CYCLES_CALC) ) octave_down_deb_inst(.clk(clk_50mhz), .rst_n(rst_n_internal), .key_in_raw(sw13_octave_down_raw), .key_out_debounced(sw13_octave_down_debounced_internal));
+debouncer #( .DEBOUNCE_CYCLES(DEBOUNCE_CYCLES_CALC) ) record_deb_inst(.clk(clk_50mhz), .rst_n(rst_n_internal), .key_in_raw(sw16_record_raw),       .key_out_debounced(sw16_record_debounced_internal));
+debouncer #( .DEBOUNCE_CYCLES(DEBOUNCE_CYCLES_CALC) ) playback_deb_inst(.clk(clk_50mhz), .rst_n(rst_n_internal), .key_in_raw(sw17_playback_raw),     .key_out_debounced(sw17_playback_debounced_internal));
+debouncer #( .DEBOUNCE_CYCLES(DEBOUNCE_CYCLES_CALC) ) play_song_deb_inst(.clk(clk_50mhz), .rst_n(rst_n_internal), .key_in_raw(key14_play_song_raw),   .key_out_debounced(key14_play_song_debounced_internal));
 
-// Generate a single pulse for playback start (for piano_recorder)
-reg sw17_playback_debounced_prev;
-initial sw17_playback_debounced_prev = 1'b0;
+reg sw17_playback_debounced_prev; initial sw17_playback_debounced_prev = 1'b0;
 always @(posedge clk_50mhz or negedge rst_n_internal) begin
-    if(!rst_n_internal) sw17_playback_debounced_prev <= 1'b0;
-    else sw17_playback_debounced_prev <= sw17_playback_debounced_internal;
-end
+    if(!rst_n_internal) sw17_playback_debounced_prev <= 1'b0; else sw17_playback_debounced_prev <= sw17_playback_debounced_internal; end
 assign sw17_playback_pulse_internal = sw17_playback_debounced_internal & ~sw17_playback_debounced_prev;
 
-// --- Instantiate Piano Recorder ---
-localparam RECORDER_KEY_ID_BITS = 4; // Must be 4 for 0-12 keys
-localparam RECORDER_OCTAVE_BITS = 2; // For low, mid, high recording
-
-wire [RECORDER_KEY_ID_BITS-1:0] playback_key_id_feed;
-wire playback_key_is_pressed_feed;
-wire playback_octave_up_feed;
-wire playback_octave_down_feed;
-wire is_recording_status;
-wire is_playing_status; // From piano_recorder
-
-piano_recorder #(
-    .CLK_FREQ_HZ(50_000_000),
-    .RECORD_INTERVAL_MS(20),
-    .MAX_RECORD_SAMPLES(512),
-    .KEY_ID_BITS(RECORDER_KEY_ID_BITS),
-    .OCTAVE_BITS(RECORDER_OCTAVE_BITS) // Use defined parameter
-) piano_recorder_inst (
-    .clk(clk_50mhz),
-    .rst_n(rst_n_internal),
-    .record_active_level(sw16_record_debounced_internal),
-    .playback_start_pulse(sw17_playback_pulse_internal),
-    .live_key_id(current_active_key_id_internal),
-    .live_key_is_pressed(current_key_is_pressed_flag_internal),
-    .live_octave_up(sw15_octave_up_debounced_internal),
-    .live_octave_down(sw13_octave_down_debounced_internal),
-    .playback_key_id(playback_key_id_feed),
-    .playback_key_is_pressed(playback_key_is_pressed_feed),
-    .playback_octave_up(playback_octave_up_feed),
-    .playback_octave_down(playback_octave_down_feed),
-    .is_recording(is_recording_status),
-    .is_playing(is_playing_status)
+// --- Piano Recorder Instance ---
+wire [RECORDER_KEY_ID_BITS-1:0] playback_key_id_feed; wire playback_key_is_pressed_feed;
+wire playback_octave_up_feed, playback_octave_down_feed; wire is_recording_status, is_playing_status;
+piano_recorder #( .CLK_FREQ_HZ(50_000_000), .RECORD_INTERVAL_MS(20), .MAX_RECORD_SAMPLES(512), .KEY_ID_BITS(RECORDER_KEY_ID_BITS), .OCTAVE_BITS(RECORDER_OCTAVE_BITS) )
+piano_recorder_inst (
+    .clk(clk_50mhz), .rst_n(rst_n_internal), .record_active_level(sw16_record_debounced_internal), .playback_start_pulse(sw17_playback_pulse_internal),
+    .live_key_id(current_active_key_id_internal), .live_key_is_pressed(current_key_is_pressed_flag_internal),
+    .live_octave_up(sw15_octave_up_debounced_internal), .live_octave_down(sw13_octave_down_debounced_internal),
+    .playback_key_id(playback_key_id_feed), .playback_key_is_pressed(playback_key_is_pressed_feed),
+    .playback_octave_up(playback_octave_up_feed), .playback_octave_down(playback_octave_down_feed),
+    .is_recording(is_recording_status), .is_playing(is_playing_status)
 );
 
-// --- Instantiate Song Player ---
-wire [RECORDER_KEY_ID_BITS-1:0] song_player_key_id_feed;
-wire song_player_key_is_pressed_feed;
-wire song_player_octave_up_internal;    // New wire for song's octave up
-wire song_player_octave_down_internal;  // New wire for song's octave down
-wire is_song_playing_status;
-
-song_player #(
-    .CLK_FREQ_HZ(50_000_000),
-    .KEY_ID_BITS(RECORDER_KEY_ID_BITS), // Match recorder's key ID bits
-    .OCTAVE_BITS(RECORDER_OCTAVE_BITS)  // Match recorder's octave bits for consistency
-) song_player_inst (
-    .clk(clk_50mhz),
-    .rst_n(rst_n_internal),
-    .play_active_level(key14_play_song_debounced_internal),
-    .song_key_id(song_player_key_id_feed),
-    .song_key_is_pressed(song_player_key_is_pressed_feed),
-    .song_octave_up_feed(song_player_octave_up_internal),     // Connect to new output
-    .song_octave_down_feed(song_player_octave_down_internal), // Connect to new output
+// --- Song Player Instance ---
+wire [RECORDER_KEY_ID_BITS-1:0] song_player_key_id_feed; wire song_player_key_is_pressed_feed;
+wire song_player_octave_up_internal, song_player_octave_down_internal; wire is_song_playing_status;
+song_player #( .CLK_FREQ_HZ(50_000_000), .KEY_ID_BITS(RECORDER_KEY_ID_BITS), .OCTAVE_BITS(RECORDER_OCTAVE_BITS) )
+song_player_inst (
+    .clk(clk_50mhz), .rst_n(rst_n_internal), .play_active_level(key14_play_song_debounced_internal),
+    .song_key_id(song_player_key_id_feed), .song_key_is_pressed(song_player_key_is_pressed_feed),
+    .song_octave_up_feed(song_player_octave_up_internal), .song_octave_down_feed(song_player_octave_down_internal),
     .is_song_playing(is_song_playing_status)
 );
 
-// --- Buzzer and Display Input Selection Logic ---
-wire [RECORDER_KEY_ID_BITS-1:0] final_key_id_for_sound_and_display;
-wire final_key_is_pressed_for_sound_and_display;
-wire final_octave_up_for_sound_and_display;
-wire final_octave_down_for_sound_and_display;
+// --- Mode Sequencer Instance (NEW) ---
+wire practice_mode_trigger_pulse_internal;
+mode_sequencer mode_sequencer_inst (
+    .clk(clk_50mhz),
+    .rst_n(rst_n_internal),
+    .current_live_key_id(current_active_key_id_internal), // From keyboard_scanner
+    .current_live_key_pressed(current_key_is_pressed_flag_internal), // From keyboard_scanner
+    .practice_mode_active_pulse(practice_mode_trigger_pulse_internal)
+);
 
-assign final_key_id_for_sound_and_display =
-    is_song_playing_status ? song_player_key_id_feed :
-    (is_playing_status ? playback_key_id_feed :
-    current_active_key_id_internal);
-
-assign final_key_is_pressed_for_sound_and_display =
-    is_song_playing_status ? song_player_key_is_pressed_feed :
-    (is_playing_status ? playback_key_is_pressed_feed :
-    current_key_is_pressed_flag_internal);
-
-// MODIFIED Octave Selection: Song player now dictates octave during its playback
-assign final_octave_up_for_sound_and_display =
-    is_song_playing_status ? song_player_octave_up_internal : // Use song's octave up
-    (is_playing_status ? playback_octave_up_feed :
-    sw15_octave_up_debounced_internal);
-
-assign final_octave_down_for_sound_and_display =
-    is_song_playing_status ? song_player_octave_down_internal : // Use song's octave down
-    (is_playing_status ? playback_octave_down_feed :
-    sw13_octave_down_debounced_internal);
-
-// --- Buzzer Frequency Generation ---
-// These are counts for half period for Middle C (C4) Octave
-// N_half_period_counts = (50_000_000 Hz / (2 * F_note)) - 1
-localparam CNT_C4  = 17'd95566; // 261.63 Hz
-localparam CNT_CS4 = 17'd90194; // 277.18 Hz
-localparam CNT_D4  = 17'd85135; // 293.66 Hz
-localparam CNT_DS4 = 17'd80346; // 311.13 Hz (Eb)
-localparam CNT_E4  = 17'd75830; // 329.63 Hz
-localparam CNT_F4  = 17'd71569; // 349.23 Hz
-localparam CNT_FS4 = 17'd67569; // 369.99 Hz
-localparam CNT_G4  = 17'd63775; // 392.00 Hz
-localparam CNT_GS4 = 17'd60197; // 415.30 Hz (Ab)
-localparam CNT_A4  = 17'd56817; // 440.00 Hz
-localparam CNT_AS4 = 17'd53627; // 466.16 Hz (Bb)
-localparam CNT_B4  = 17'd50619; // 493.88 Hz
-
-reg [17:0] buzzer_counter_reg;
-reg [17:0] base_note_target_count;    // Target count for middle octave (C4 based)
-reg [17:0] final_target_count_max; // Final target after octave adjustment
-
-// Determine base note target count from key ID (middle octave reference)
-always @(*) begin
-    case (final_key_id_for_sound_and_display) // final_key_id is 4 bits (0-12)
-        4'd1:    base_note_target_count = CNT_C4;
-        4'd2:    base_note_target_count = CNT_D4;
-        4'd3:    base_note_target_count = CNT_E4;
-        4'd4:    base_note_target_count = CNT_F4;
-        4'd5:    base_note_target_count = CNT_G4;
-        4'd6:    base_note_target_count = CNT_A4;
-        4'd7:    base_note_target_count = CNT_B4;
-        4'd8:    base_note_target_count = CNT_CS4; // C#
-        4'd9:    base_note_target_count = CNT_DS4; // D# (Eb)
-        4'd10:   base_note_target_count = CNT_FS4; // F#
-        4'd11:   base_note_target_count = CNT_GS4; // G# (Ab)
-        4'd12:   base_note_target_count = CNT_AS4; // A# (Bb)
-        default: base_note_target_count = 18'h3FFFF; // Effectively silent (very low freq or ensure buzzer_out stays low)
-                                                    // Or use a very high count if 0 should be silent.
-                                                    // CNT_C4 is ~95k, so 2^18-1 is much higher -> lower freq.
-                                                    // Let's stick to a known high value for silence if key_id is 0.
-    endcase
-end
-
-// Adjust target count based on octave signals
-always @(*) begin
-    // Ensure base_note_target_count is valid before division
-    // If base_note_target_count could be very small or zero from a default case,
-    // this could be an issue. Given our CNT values, it's fine.
-    if (final_octave_up_for_sound_and_display && !final_octave_down_for_sound_and_display) begin // Octave Up
-        // Target count for half period is halved (approx), so frequency doubles.
-        // (N+1)/2 - 1 for new count, where N is old count.
-        final_target_count_max = (base_note_target_count + 1) / 2 - 1;
-    end else if (!final_octave_up_for_sound_and_display && final_octave_down_for_sound_and_display) begin // Octave Down
-        // Target count for half period is doubled (approx), so frequency halves.
-        // (N+1)*2 - 1 for new count.
-        final_target_count_max = (base_note_target_count + 1) * 2 - 1;
-    end else begin // Middle Octave (or both octave keys pressed - treat as middle)
-        final_target_count_max = base_note_target_count;
-    end
-end
-
-initial begin
-    buzzer_out = 1'b0;
-    buzzer_counter_reg = 18'd0;
-end
-
+// --- Practice Mode Enable Logic (NEW) ---
+reg practice_mode_enabled_reg; initial practice_mode_enabled_reg = 1'b0;
 always @(posedge clk_50mhz or negedge rst_n_internal) begin
     if (!rst_n_internal) begin
-        buzzer_counter_reg <= 18'd0;
-        buzzer_out <= 1'b0;
+        practice_mode_enabled_reg <= 1'b0;
     end else begin
-        // Only generate sound if a key is considered pressed and it's not the REST note (ID 0)
-        if (final_key_is_pressed_for_sound_and_display && final_key_id_for_sound_and_display != 4'd0) begin
-            if (buzzer_counter_reg >= final_target_count_max) begin
-                buzzer_counter_reg <= 18'd0;
-                buzzer_out <= ~buzzer_out;
-            end else begin
-                buzzer_counter_reg <= buzzer_counter_reg + 1'b1;
-            end
-        end else begin
-            buzzer_counter_reg <= 18'd0; // Reset counter when no valid key is pressed
-            buzzer_out <= 1'b0;          // Ensure silence
+        if (practice_mode_trigger_pulse_internal) begin
+            practice_mode_enabled_reg <= ~practice_mode_enabled_reg; // Toggle practice mode
         end
     end
 end
 
-// --- Instantiate Seven Segment Controller ---
-// Note: seven_segment_controller currently takes [2:0] for key_id,
-// which is only 0-7. If you want to display semitones or more info,
-// this module will need changes. For now, it will truncate the key ID.
-// Consider how to display C# (ID 8) etc.
-// A simple way: display 'C' for C#, 'd' for D#, etc., or use a dot.
-// For now, passing the lower 3 bits for basic 1-7 display.
-wire [2:0] display_key_id_truncated;
-// Example: C#(8)->1, D#(9)->2, F#(10)->4, G#(11)->5, A#(12)->6
-// This mapping helps show the root note on the 1-7 display.
-// You can make this more sophisticated.
-assign display_key_id_truncated =
-    (final_key_id_for_sound_and_display == 4'd8)  ? 3'd1 : // C# -> 1 (C)
-    (final_key_id_for_sound_and_display == 4'd9)  ? 3'd2 : // D# (Eb) -> 2 (D)
-    (final_key_id_for_sound_and_display == 4'd10) ? 3'd4 : // F# -> 4 (F)
-    (final_key_id_for_sound_and_display == 4'd11) ? 3'd5 : // G# (Ab) -> 5 (G)
-    (final_key_id_for_sound_and_display == 4'd12) ? 3'd6 : // A# (Bb) -> 6 (A)
-    (final_key_id_for_sound_and_display >= 4'd1 && final_key_id_for_sound_and_display <= 4'd7) ? final_key_id_for_sound_and_display[2:0] :
-    3'd0; // Default to 0 (blank) if not a standard note or defined semitone
+// --- Practice Player Instance (NEW) ---
+localparam NUM_PRACTICE_DISPLAY_SEGMENTS = 6;
+wire [2:0] practice_data_s0; // For display_out_seg0 from practice_player
+wire [2:0] practice_data_s1;
+wire [2:0] practice_data_s2;
+wire [2:0] practice_data_s3;
+wire [2:0] practice_data_s4;
+wire [2:0] practice_data_s5;// Array for practice display data
+wire practice_correct_event;
+wire practice_wrong_event;
+wire practice_finished_event;
 
+// In fpga.v, practice_player_inst instantiation
+practice_player #( .NUM_DISPLAY_SEGMENTS(NUM_PRACTICE_DISPLAY_SEGMENTS) ) practice_player_inst (
+    .clk(clk_50mhz),
+    .rst_n(rst_n_internal),
+    .practice_mode_active(practice_mode_enabled_reg),
+    .current_live_key_id(current_active_key_id_internal),
+    .current_live_key_pressed(current_key_is_pressed_flag_internal),
+    //.display_data_practice_seg(practice_seg_data_feed), // OLD
+    // NEW: Connect to individual ports
+    .display_out_seg0(practice_data_s0),
+    .display_out_seg1(practice_data_s1),
+    .display_out_seg2(practice_data_s2),
+    .display_out_seg3(practice_data_s3),
+    .display_out_seg4(practice_data_s4),
+    .display_out_seg5(practice_data_s5),
+    .correct_note_played_event(practice_correct_event),
+    .wrong_note_played_event(practice_wrong_event),
+    .practice_song_finished_event(practice_finished_event)
+);
+// --- Sound/Display Source Multiplexer (MODIFIED for practice mode) ---
+wire [RECORDER_KEY_ID_BITS-1:0] final_key_id_for_sound_and_display;
+wire final_key_is_pressed_for_sound_and_display;
+wire final_octave_up_for_sound_and_display, final_octave_down_for_sound_and_display;
+
+// In practice mode, sound/display logic will be different.
+// For now, let's assume practice mode itself doesn't directly drive the main buzzer/display for notes
+// (it has its own display feed: practice_seg_data_feed, and event flags for sound).
+// So, if practice_mode is on, the main sound generation from keys might be disabled or handled differently.
+
+// Priority: Song Player > Recorded Playback > Live Keys (IF NOT IN PRACTICE MODE or if practice allows live passthrough)
+// In fpga.v
+// --- Sound/Display Source Multiplexer (MODIFIED for practice mode sound) ---
+// ... (final_key_id_for_sound_and_display etc. declarations) ...
+
+// Priority:
+// 1. Practice Mode: Sound from live keys
+// 2. Song Player
+// 3. Recorded Playback
+// 4. Live Keys (normal mode)
+
+assign final_key_id_for_sound_and_display =
+    (practice_mode_enabled_reg) ? current_active_key_id_internal : // <<< CHANGE: Sound from live keys in practice
+    (is_song_playing_status ? song_player_key_id_feed :
+    (is_playing_status ? playback_key_id_feed : current_active_key_id_internal));
+
+assign final_key_is_pressed_for_sound_and_display =
+    (practice_mode_enabled_reg) ? current_key_is_pressed_flag_internal : // <<< CHANGE: Use live key press flag
+    (is_song_playing_status ? song_player_key_is_pressed_feed :
+    (is_playing_status ? playback_key_is_pressed_feed : current_key_is_pressed_flag_internal));
+
+// Octave for practice mode sound will also come from global octave buttons with this change
+assign final_octave_up_for_sound_and_display =
+    (is_song_playing_status && !practice_mode_enabled_reg) ? song_player_octave_up_internal : // Song octave only if not in practice
+    ((is_playing_status && !practice_mode_enabled_reg) ? playback_octave_up_feed : // Playback octave only if not in practice
+    sw15_octave_up_debounced_internal); // Live/Practice octave
+
+assign final_octave_down_for_sound_and_display =
+    (is_song_playing_status && !practice_mode_enabled_reg) ? song_player_octave_down_internal :
+    ((is_playing_status && !practice_mode_enabled_reg) ? playback_octave_down_feed :
+    sw13_octave_down_debounced_internal);
+
+// --- Buzzer Frequency Generation ---
+localparam CNT_C4=17'd95566, CNT_CS4=17'd90194, CNT_D4=17'd85135, CNT_DS4=17'd80346, CNT_E4=17'd75830;
+localparam CNT_F4=17'd71569, CNT_FS4=17'd67569, CNT_G4=17'd63775, CNT_GS4=17'd60197, CNT_A4=17'd56817;
+localparam CNT_AS4=17'd53627,CNT_B4=17'd50619;
+
+reg [17:0] buzzer_counter_reg;
+reg [17:0] base_note_target_count;
+reg [17:0] final_target_count_max;
+
+// Combinational logic for sound generation
+always @(*) begin
+    case (final_key_id_for_sound_and_display) // This uses the muxed output
+        4'd1:  base_note_target_count = CNT_C4;  4'd8:  base_note_target_count = CNT_CS4;
+        4'd2:  base_note_target_count = CNT_D4;  4'd9:  base_note_target_count = CNT_DS4;
+        4'd3:  base_note_target_count = CNT_E4;  // No default Eb (ID 9 used by you)
+        4'd4:  base_note_target_count = CNT_F4;  4'd10: base_note_target_count = CNT_FS4;
+        4'd5:  base_note_target_count = CNT_G4;  4'd11: base_note_target_count = CNT_GS4;
+        4'd6:  base_note_target_count = CNT_A4;  4'd12: base_note_target_count = CNT_AS4;
+        4'd7:  base_note_target_count = CNT_B4;
+        default: base_note_target_count = 18'h3FFFF; // Silent
+    endcase
+
+    if (final_octave_up_for_sound_and_display && !final_octave_down_for_sound_and_display) begin
+        final_target_count_max = (base_note_target_count + 1) / 2 - 1;
+    end else if (!final_octave_up_for_sound_and_display && final_octave_down_for_sound_and_display) begin
+        final_target_count_max = (base_note_target_count + 1) * 2 - 1;
+    end else begin
+        final_target_count_max = base_note_target_count;
+    end
+end
+
+initial begin buzzer_out = 1'b0; buzzer_counter_reg = 18'd0; end
+
+always @(posedge clk_50mhz or negedge rst_n_internal) begin
+    if(!rst_n_internal) begin
+        buzzer_counter_reg <= 18'd0; buzzer_out <= 1'b0;
+    // MODIFIED: Buzzer logic needs to consider practice mode feedback sounds
+    // This is a SIMPLIFICATION. A more complex sound muxer might be needed.
+    // For now, main buzzer responds to final_key_is_pressed...
+    // Practice mode correct/wrong events could trigger specific short tones via another PWM or by briefly overriding these.
+    end else if (final_key_is_pressed_for_sound_and_display && final_key_id_for_sound_and_display != 4'd0) begin
+        if (buzzer_counter_reg >= final_target_count_max) begin
+            buzzer_counter_reg <= 18'd0; buzzer_out <= ~buzzer_out;
+        end else begin
+            buzzer_counter_reg <= buzzer_counter_reg + 1'b1;
+        end
+    // NEW: Add simple feedback for practice mode (can be improved)
+    end else if (practice_correct_event) begin // Brief high tone for correct
+        // This is a placeholder for a proper sound. It will conflict if a note is also sounding.
+        // A dedicated sound generator for feedback is better.
+        // For now, let's make it a very short click or high pitch.
+        // This simple version might not sound good.
+        buzzer_counter_reg <= 18'd0; // This will make it ~440Hz if CNT_A4 is target
+        //buzzer_out <= ~buzzer_out; // Pulsing might be too short
+    end else if (practice_wrong_event) begin // Brief low tone for wrong
+        //buzzer_counter_reg <= CNT_C4 * 2; // Example very low freq
+        //buzzer_out <= ~buzzer_out;
+    end else begin
+        buzzer_counter_reg <= 18'd0; buzzer_out <= 1'b0; // No key, no feedback
+    end
+end
+
+
+// --- Data Preparation for Display Modules (MODIFIED for practice mode priority on SEG0/SEG7) ---
+reg [2:0] base_note_id_for_buffer_and_suffix;
+reg [1:0] semitone_type_for_suffix;
+reg       current_note_is_valid_for_display;
+
+// This always block prepares data primarily for the scrolling display (non-practice)
+// and for the semitone suffix on SEG0.
+always @(*) begin
+    base_note_id_for_buffer_and_suffix = 3'd0;
+    semitone_type_for_suffix = 2'b00;
+    current_note_is_valid_for_display = 1'b0;
+
+    // If in practice mode, SEG0/SEG7 might show different things (handled in seven_segment_controller)
+    // This section is for when NOT in practice mode, or for the general note pressed
+    if (final_key_is_pressed_for_sound_and_display && final_key_id_for_sound_and_display != 4'd0) begin
+        current_note_is_valid_for_display = 1'b1;
+        case (final_key_id_for_sound_and_display)
+            4'd1:  begin base_note_id_for_buffer_and_suffix = 3'd1; semitone_type_for_suffix = 2'b00; end // C
+            4'd2:  begin base_note_id_for_buffer_and_suffix = 3'd2; semitone_type_for_suffix = 2'b00; end // D
+            4'd3:  begin base_note_id_for_buffer_and_suffix = 3'd3; semitone_type_for_suffix = 2'b00; end // E
+            4'd4:  begin base_note_id_for_buffer_and_suffix = 3'd4; semitone_type_for_suffix = 2'b00; end // F
+            4'd5:  begin base_note_id_for_buffer_and_suffix = 3'd5; semitone_type_for_suffix = 2'b00; end // G
+            4'd6:  begin base_note_id_for_buffer_and_suffix = 3'd6; semitone_type_for_suffix = 2'b00; end // A
+            4'd7:  begin base_note_id_for_buffer_and_suffix = 3'd7; semitone_type_for_suffix = 2'b00; end // B
+            4'd8:  begin base_note_id_for_buffer_and_suffix = 3'd1; semitone_type_for_suffix = 2'b01; end // C#
+            4'd9:  begin base_note_id_for_buffer_and_suffix = 3'd3; semitone_type_for_suffix = 2'b10; end // Eb
+            4'd10: begin base_note_id_for_buffer_and_suffix = 3'd4; semitone_type_for_suffix = 2'b01; end // F#
+            4'd11: begin base_note_id_for_buffer_and_suffix = 3'd5; semitone_type_for_suffix = 2'b01; end // G#
+            4'd12: begin base_note_id_for_buffer_and_suffix = 3'd7; semitone_type_for_suffix = 2'b10; end // Bb
+            default: current_note_is_valid_for_display = 1'b0;
+        endcase
+    end
+end
+
+// --- Generate Pulse for New Valid Note to Trigger Scrolling Buffer ---
+reg  final_key_is_pressed_for_sound_and_display_prev;
+reg  [RECORDER_KEY_ID_BITS-1:0] final_key_id_for_sound_and_display_prev;
+wire new_note_to_scroll_pulse;
+
+initial begin
+    final_key_is_pressed_for_sound_and_display_prev = 1'b0;
+    final_key_id_for_sound_and_display_prev = {RECORDER_KEY_ID_BITS{1'b0}};
+end
+
+always @(posedge clk_50mhz or negedge rst_n_internal) begin
+    if(!rst_n_internal) begin
+        final_key_is_pressed_for_sound_and_display_prev <= 1'b0;
+        final_key_id_for_sound_and_display_prev <= {RECORDER_KEY_ID_BITS{1'b0}};
+    end else begin
+        final_key_is_pressed_for_sound_and_display_prev <= final_key_is_pressed_for_sound_and_display;
+        if (final_key_is_pressed_for_sound_and_display) begin
+            final_key_id_for_sound_and_display_prev <= final_key_id_for_sound_and_display;
+        end else begin
+            final_key_id_for_sound_and_display_prev <= {RECORDER_KEY_ID_BITS{1'b0}};
+        end
+    end
+end
+
+assign new_note_to_scroll_pulse =
+    !practice_mode_enabled_reg && // Only scroll if NOT in practice mode
+    (
+        (final_key_is_pressed_for_sound_and_display && !final_key_is_pressed_for_sound_and_display_prev) ||
+        (final_key_is_pressed_for_sound_and_display && (final_key_id_for_sound_and_display != final_key_id_for_sound_and_display_prev))
+    ) && current_note_is_valid_for_display;
+
+// --- Instantiate Scrolling Display Buffer ---
+wire [2:0] scroll_data_seg1_feed; wire [2:0] scroll_data_seg2_feed;
+wire [2:0] scroll_data_seg3_feed; wire [2:0] scroll_data_seg4_feed;
+wire [2:0] scroll_data_seg5_feed; wire [2:0] scroll_data_seg6_feed;
+
+scrolling_display_buffer scroller_inst (
+    .clk(clk_50mhz),
+    .rst_n(rst_n_internal),
+    .new_note_valid_pulse(new_note_to_scroll_pulse),
+    .current_base_note_id_in(base_note_id_for_buffer_and_suffix),
+    .display_data_seg1(scroll_data_seg1_feed),
+    .display_data_seg2(scroll_data_seg2_feed),
+    .display_data_seg3(scroll_data_seg3_feed),
+    .display_data_seg4(scroll_data_seg4_feed),
+    .display_data_seg5(scroll_data_seg5_feed),
+    .display_data_seg6(scroll_data_seg6_feed)
+);
+
+// --- Wires for final data to seven_segment_controller (NEW) ---
+wire [2:0] final_to_sev_seg1_data; wire [2:0] final_to_sev_seg2_data;
+wire [2:0] final_to_sev_seg3_data; wire [2:0] final_to_sev_seg4_data;
+wire [2:0] final_to_sev_seg5_data; wire [2:0] final_to_sev_seg6_data;
+
+// --- Multiplex data for SEG1-SEG6 display (NEW) ---
+assign final_to_sev_seg1_data = practice_mode_enabled_reg ? practice_data_s0 : scroll_data_seg1_feed;
+assign final_to_sev_seg2_data = practice_mode_enabled_reg ? practice_data_s1 : scroll_data_seg2_feed;
+assign final_to_sev_seg3_data = practice_mode_enabled_reg ? practice_data_s2 : scroll_data_seg3_feed;
+assign final_to_sev_seg4_data = practice_mode_enabled_reg ? practice_data_s3 : scroll_data_seg4_feed;
+assign final_to_sev_seg5_data = practice_mode_enabled_reg ? practice_data_s4 : scroll_data_seg5_feed;
+assign final_to_sev_seg6_data = practice_mode_enabled_reg ? practice_data_s5 : scroll_data_seg6_feed;
+// --- Instantiate Seven Segment Controller (MODIFIED inputs) ---
 seven_segment_controller seven_segment_display_inst (
     .clk(clk_50mhz),
     .rst_n(rst_n_internal),
-    .current_active_key_id(display_key_id_truncated), // Pass truncated/mapped ID
-    .current_key_is_pressed_flag(final_key_is_pressed_for_sound_and_display && final_key_id_for_sound_and_display != 4'd0), // Only show if valid note
-    .octave_up_active(final_octave_up_for_sound_and_display),
-    .octave_down_active(final_octave_down_for_sound_and_display),
 
+    // Inputs for SEG0 (Suffix / Practice Mode Indicator)
+    // MODIFIED: If in practice, show 'P', else show semitone.
+    .semitone_type_in(practice_mode_enabled_reg ? 2'b11 : semitone_type_for_suffix), // 2'b11 can be a code for 'P' in your controller
+    .semitone_display_active_flag(practice_mode_enabled_reg ? 1'b1 : current_note_is_valid_for_display),
+
+    // Inputs for SEG1-SEG6 (Muxed data)
+    .scrolled_note_seg1_in(final_to_sev_seg1_data),
+    .scrolled_note_seg2_in(final_to_sev_seg2_data),
+    .scrolled_note_seg3_in(final_to_sev_seg3_data),
+    .scrolled_note_seg4_in(final_to_sev_seg4_data),
+    .scrolled_note_seg5_in(final_to_sev_seg5_data),
+    .scrolled_note_seg6_in(final_to_sev_seg6_data),
+
+    // Inputs for SEG7 (Octave / Practice Feedback)
+    // MODIFIED: If in practice, show feedback (e.g., based on practice_correct_event), else octave.
+    .octave_up_active(practice_mode_enabled_reg ? practice_correct_event : (final_octave_up_for_sound_and_display && !final_octave_down_for_sound_and_display)),
+    .octave_down_active(practice_mode_enabled_reg ? practice_wrong_event : (final_octave_down_for_sound_and_display && !final_octave_up_for_sound_and_display)),
+
+    // Seven Segment Outputs
     .seg_a(seven_seg_a), .seg_b(seven_seg_b), .seg_c(seven_seg_c), .seg_d(seven_seg_d),
     .seg_e(seven_seg_e), .seg_f(seven_seg_f), .seg_g(seven_seg_g), .seg_dp(seven_seg_dp),
     .digit_selects(seven_seg_digit_selects)
 );
-
-// --- Optional LED Indicators ---
-// assign led_is_recording = is_recording_status;
-// assign led_is_playing_recording = is_playing_status && !is_song_playing_status; // Only recording playback
-// assign led_is_playing_song = is_song_playing_status;
 
 endmodule
 ```
@@ -452,97 +520,167 @@ endmodule
 ### seven_segment_controller.v
 ```verilog
 // File: seven_segment_controller.v
+// Modified to display:
+// - SEG0: Current Semitone Suffix (#/b)
+// - SEG1-SEG6: Scrolled Note Digits (from scrolling_display_buffer)
+// - SEG7: Octave Status
 module seven_segment_controller (
-    input clk,                           // System clock (50MHz)
-    input rst_n,                         // Active low reset
+    input clk,
+    input rst_n,
 
-    input [2:0] current_active_key_id,     // 0 for none, 1-7 for musical keys
-    input current_key_is_pressed_flag, // True if a musical key is pressed
-    input octave_up_active,            // True if SW15 (octave up) is pressed
-    input octave_down_active,          // True if SW13 (octave down) is pressed
+    // Inputs for SEG0 (Suffix)
+    input [1:0] semitone_type_in,        // 00: none, 01: sharp (#), 10: flat (b)
+    input semitone_display_active_flag,  // True if a valid musical note is active for SEG0 suffix display
+
+    // Inputs for SEG1-SEG6 (Scrolled Note Digits from buffer)
+    // Each input is [2:0], 0 for blank, 1-7 for note.
+    input [2:0] scrolled_note_seg1_in,
+    input [2:0] scrolled_note_seg2_in,
+    input [2:0] scrolled_note_seg3_in,
+    input [2:0] scrolled_note_seg4_in,
+    input [2:0] scrolled_note_seg5_in,
+    input [2:0] scrolled_note_seg6_in,
+
+    // Inputs for SEG7 (Octave)
+    input octave_up_active,
+    input octave_down_active,
 
     output reg seg_a, output reg seg_b, output reg seg_c, output reg seg_d,
     output reg seg_e, output reg seg_f, output reg seg_g, output reg seg_dp,
-    output reg [7:0] digit_selects       // For SEG0-SEG7, ACTIVE HIGH
+    output reg [7:0] digit_selects
 );
 
-// Segment patterns for COMMON CATHODE (1=ON, 0=OFF) - These are correct.
+// Segment patterns (same as before)
 localparam PATTERN_0    = 7'b0111111; localparam PATTERN_1    = 7'b0000110;
 localparam PATTERN_2    = 7'b1011011; localparam PATTERN_3    = 7'b1001111;
 localparam PATTERN_4    = 7'b1100110; localparam PATTERN_5    = 7'b1101101;
 localparam PATTERN_6    = 7'b1111101; localparam PATTERN_7    = 7'b0000111;
 localparam PATTERN_BLANK= 7'b0000000;
+localparam PATTERN_H    = 7'b1110110; // For '#'
+localparam PATTERN_b    = 7'b1111100; // For 'b'
 
 localparam OCTAVE_UP_PATTERN    = 7'b0000001; // 'a'
 localparam OCTAVE_NORMAL_PATTERN= 7'b1000000; // 'g'
 localparam OCTAVE_DOWN_PATTERN  = 7'b0001000; // 'd'
 
-reg [6:0] seg_data_for_note;
-reg [6:0] seg_data_for_octave;
+// Decoded segment data for each display position
+reg [6:0] seg_data_suffix;     // For SEG0
+reg [6:0] seg_data_scrolled_notes [1:6]; // Array for SEG1-SEG6 data
+reg [6:0] seg_data_octave;     // For SEG7
 
-always @(*) begin /* Note Decoder - Correct */
-    if (!current_key_is_pressed_flag) seg_data_for_note = PATTERN_BLANK;
-    else case (current_active_key_id)
-        3'd1: seg_data_for_note = PATTERN_1; 3'd2: seg_data_for_note = PATTERN_2;
-        3'd3: seg_data_for_note = PATTERN_3; 3'd4: seg_data_for_note = PATTERN_4;
-        3'd5: seg_data_for_note = PATTERN_5; 3'd6: seg_data_for_note = PATTERN_6;
-        3'd7: seg_data_for_note = PATTERN_7; default: seg_data_for_note = PATTERN_BLANK;
+// Combinational logic to decode note ID to segment pattern
+function [6:0] decode_note_to_segments (input [2:0] note_id);
+    case (note_id)
+        3'd1: decode_note_to_segments = PATTERN_1; 3'd2: decode_note_to_segments = PATTERN_2;
+        3'd3: decode_note_to_segments = PATTERN_3; 3'd4: decode_note_to_segments = PATTERN_4;
+        3'd5: decode_note_to_segments = PATTERN_5; 3'd6: decode_note_to_segments = PATTERN_6;
+        3'd7: decode_note_to_segments = PATTERN_7;
+        default: decode_note_to_segments = PATTERN_BLANK; // Includes 0
+    endcase
+endfunction
+
+// Decoder for Semitone Suffix (SEG0)
+always @(*) begin
+    if (!semitone_display_active_flag) seg_data_suffix = PATTERN_BLANK;
+    else case (semitone_type_in)
+        2'b01:  seg_data_suffix = PATTERN_H;
+        2'b10:  seg_data_suffix = PATTERN_b;
+        default: seg_data_suffix = PATTERN_BLANK;
     endcase
 end
-always @(*) begin /* Octave Decoder - Correct */
-    if (octave_up_active && !octave_down_active) seg_data_for_octave = OCTAVE_UP_PATTERN;
-    else if (!octave_up_active && octave_down_active) seg_data_for_octave = OCTAVE_DOWN_PATTERN;
-    else seg_data_for_octave = OCTAVE_NORMAL_PATTERN;
+
+// Decoder for Scrolled Notes (SEG1-SEG6)
+integer k;
+always @(*) begin
+    seg_data_scrolled_notes[1] = decode_note_to_segments(scrolled_note_seg1_in);
+    seg_data_scrolled_notes[2] = decode_note_to_segments(scrolled_note_seg2_in);
+    seg_data_scrolled_notes[3] = decode_note_to_segments(scrolled_note_seg3_in);
+    seg_data_scrolled_notes[4] = decode_note_to_segments(scrolled_note_seg4_in);
+    seg_data_scrolled_notes[5] = decode_note_to_segments(scrolled_note_seg5_in);
+    seg_data_scrolled_notes[6] = decode_note_to_segments(scrolled_note_seg6_in);
 end
 
-localparam MUX_COUNT_MAX = 250000; // ~5ms per digit
-reg [18:0] mux_counter;
-// current_timeslot_is_for_seg1:
-// TRUE means it's time to drive Physical SEG1 (digit_selects[1], PIN_126) which should show NOTE.
-// FALSE means it's time to drive Physical SEG2 (digit_selects[2], PIN_115) which should show OCTAVE.
-reg current_timeslot_is_for_seg1;
+// Decoder for Octave (SEG7)
+always @(*) begin
+    if (octave_up_active && !octave_down_active) seg_data_octave = OCTAVE_UP_PATTERN;
+    else if (!octave_up_active && octave_down_active) seg_data_octave = OCTAVE_DOWN_PATTERN;
+    else seg_data_octave = OCTAVE_NORMAL_PATTERN;
+end
 
-initial begin // Correct for Active HIGH digit select
-    seg_a = 0; seg_b = 0; seg_c = 0; seg_d = 0; seg_e = 0; seg_f = 0; seg_g = 0; seg_dp = 0;
-    digit_selects = 8'h00; // All digits deselected (ACTIVE HIGH)
-    mux_counter = 0;
-    current_timeslot_is_for_seg1 = 1'b1; // Start with SEG1 (Note)
+// Muxing Logic for 8 digits (SEG0 to SEG7)
+localparam NUM_DISPLAY_SLOTS = 8;
+localparam MUX_COUNT_MAX_PER_DIGIT = 104000; // Approx 2.08ms per digit, ~60Hz group refresh
+
+reg [$clog2(MUX_COUNT_MAX_PER_DIGIT)-1:0] mux_counter_reg;
+reg [2:0] current_digit_slot_reg;
+
+initial begin
+    // ... (same initial block as before) ...
+    seg_a = 1'b0; seg_b = 1'b0; seg_c = 1'b0; seg_d = 1'b0;
+    seg_e = 1'b0; seg_f = 1'b0; seg_g = 1'b0; seg_dp = 1'b0;
+    digit_selects = 8'h00;
+    mux_counter_reg = 0;
+    current_digit_slot_reg = 3'd0;
 end
 
 always @(posedge clk or negedge rst_n) begin
-    if (!rst_n) begin // Correct reset for Active HIGH
-        mux_counter <= 0;
-        current_timeslot_is_for_seg1 <= 1'b1;
+    if (!rst_n) begin
+        // ... (same reset logic as before) ...
+        mux_counter_reg <= 0;
+        current_digit_slot_reg <= 3'd0;
         digit_selects <= 8'h00;
-        seg_a <= 0; seg_b <= 0; seg_c <= 0; seg_d <= 0; seg_e <= 0; seg_f <= 0; seg_g <= 0; seg_dp <= 0;
+        seg_a <= 1'b0; seg_b <= 1'b0; seg_c <= 1'b0; seg_d <= 1'b0;
+        seg_e <= 1'b0; seg_f <= 1'b0; seg_g <= 1'b0; seg_dp <= 1'b0;
     end else begin
-        // Default to all segments OFF and all digits deselected (ACTIVE HIGH) - Correct
-        seg_a <= 0; seg_b <= 0; seg_c <= 0; seg_d <= 0; seg_e <= 0; seg_f <= 0; seg_g <= 0; seg_dp <= 0;
+        seg_a <= 1'b0; seg_b <= 1'b0; seg_c <= 1'b0; seg_d <= 1'b0;
+        seg_e <= 1'b0; seg_f <= 1'b0; seg_g <= 1'b0; seg_dp <= 1'b0;
         digit_selects <= 8'h00;
 
-        if (mux_counter == MUX_COUNT_MAX - 1) begin
-            mux_counter <= 0;
-            current_timeslot_is_for_seg1 <= ~current_timeslot_is_for_seg1;
+        if (mux_counter_reg >= MUX_COUNT_MAX_PER_DIGIT - 1) begin
+            mux_counter_reg <= 0;
+            current_digit_slot_reg <= (current_digit_slot_reg == NUM_DISPLAY_SLOTS - 1) ? 3'd0 : current_digit_slot_reg + 1'b1;
         end else begin
-            mux_counter <= mux_counter + 1;
+            mux_counter_reg <= mux_counter_reg + 1;
         end
 
-        // CORRECTED DATA ASSIGNMENT TO MATCH YOUR GOAL:
-        // Physical SEG1 (digit_selects[1] = PIN_126) should display NOTE.
-        // Physical SEG2 (digit_selects[2] = PIN_115) should display OCTAVE.
-        if (current_timeslot_is_for_seg1) begin // Time slot for Physical SEG1 (to display NOTE)
-            seg_g <= seg_data_for_note[6]; seg_f <= seg_data_for_note[5];
-            seg_e <= seg_data_for_note[4]; seg_d <= seg_data_for_note[3];
-            seg_c <= seg_data_for_note[2]; seg_b <= seg_data_for_note[1];
-            seg_a <= seg_data_for_note[0];
-            digit_selects[1] <= 1'b1; // Activate physical SEG1 (PIN_126)
-        end else begin // Time slot for Physical SEG2 (to display OCTAVE)
-            seg_g <= seg_data_for_octave[6]; seg_f <= seg_data_for_octave[5];
-            seg_e <= seg_data_for_octave[4]; seg_d <= seg_data_for_octave[3];
-            seg_c <= seg_data_for_octave[2]; seg_b <= seg_data_for_octave[1];
-            seg_a <= seg_data_for_octave[0];
-            digit_selects[2] <= 1'b1; // Activate physical SEG2 (PIN_115)
-        end
+        // ... inside the always @(posedge clk or negedge rst_n) block ...
+// ... inside the 'else' branch ...
+        case (current_digit_slot_reg)
+            3'd0: begin // SEG0: Semitone Suffix
+                {seg_g, seg_f, seg_e, seg_d, seg_c, seg_b, seg_a} <= seg_data_suffix; // CHANGED TO <=
+                digit_selects[0] <= 1'b1; // Keep as is, or assign digit_selects as a whole
+            end
+            3'd1: begin // SEG1: Scrolled Note 1
+                {seg_g, seg_f, seg_e, seg_d, seg_c, seg_b, seg_a} <= seg_data_scrolled_notes[1]; // CHANGED TO <=
+                digit_selects[1] <= 1'b1;
+            end
+            3'd2: begin // SEG2: Scrolled Note 2
+                {seg_g, seg_f, seg_e, seg_d, seg_c, seg_b, seg_a} <= seg_data_scrolled_notes[2]; // CHANGED TO <=
+                digit_selects[2] <= 1'b1;
+            end
+            3'd3: begin // SEG3: Scrolled Note 3
+                {seg_g, seg_f, seg_e, seg_d, seg_c, seg_b, seg_a} <= seg_data_scrolled_notes[3]; // CHANGED TO <=
+                digit_selects[3] <= 1'b1;
+            end
+            3'd4: begin // SEG4: Scrolled Note 4
+                {seg_g, seg_f, seg_e, seg_d, seg_c, seg_b, seg_a} <= seg_data_scrolled_notes[4]; // CHANGED TO <=
+                digit_selects[4] <= 1'b1;
+            end
+            3'd5: begin // SEG5: Scrolled Note 5
+                {seg_g, seg_f, seg_e, seg_d, seg_c, seg_b, seg_a} <= seg_data_scrolled_notes[5]; // CHANGED TO <=
+                digit_selects[5] <= 1'b1;
+            end
+            3'd6: begin // SEG6: Scrolled Note 6
+                {seg_g, seg_f, seg_e, seg_d, seg_c, seg_b, seg_a} <= seg_data_scrolled_notes[6]; // CHANGED TO <=
+                digit_selects[6] <= 1'b1;
+            end
+            3'd7: begin // SEG7: Octave Status
+                {seg_g, seg_f, seg_e, seg_d, seg_c, seg_b, seg_a} <= seg_data_octave; // CHANGED TO <=
+                digit_selects[7] <= 1'b1;
+            end
+            default: digit_selects <= 8'h00;
+        endcase
+// ...
     end
 end
 endmodule
@@ -948,4 +1086,384 @@ module song_player #(
         end // else (if !rst_n) 结束
     end // always 结束
 endmodule // 模块结束
+```
+
+### scrolling_display_buffer.v
+```verilog
+// File: scrolling_display_buffer.v
+// Module to manage a 6-digit scrolling buffer for note display (SEG1-SEG6)
+
+module scrolling_display_buffer (
+    input clk,
+    input rst_n,
+
+    input new_note_valid_pulse,         // Single clock pulse when a new valid note is pressed
+    input [2:0] current_base_note_id_in,  // The base note ID (1-7) of the new note
+
+    output reg [2:0] display_data_seg1, // Data for physical SEG1 (rightmost of scrolling area)
+    output reg [2:0] display_data_seg2,
+    output reg [2:0] display_data_seg3,
+    output reg [2:0] display_data_seg4,
+    output reg [2:0] display_data_seg5,
+    output reg [2:0] display_data_seg6  // Data for physical SEG6 (leftmost of scrolling area)
+);
+
+// Internal buffer registers for 6 display segments (SEG1 to SEG6)
+// seg_buffer[0] corresponds to display_data_seg1 (rightmost of scrolling)
+// seg_buffer[5] corresponds to display_data_seg6 (leftmost of scrolling)
+reg [2:0] seg_buffer [0:5]; // Each element stores a 3-bit note ID (0 for blank)
+
+integer i; // Loop variable
+
+initial begin
+    display_data_seg1 = 3'd0;
+    display_data_seg2 = 3'd0;
+    display_data_seg3 = 3'd0;
+    display_data_seg4 = 3'd0;
+    display_data_seg5 = 3'd0;
+    display_data_seg6 = 3'd0;
+    for (i = 0; i < 6; i = i + 1) begin
+        seg_buffer[i] = 3'd0; // Initialize buffer to blank
+    end
+end
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        // Reset all buffer positions to 0 (blank)
+        for (i = 0; i < 6; i = i + 1) begin
+            seg_buffer[i] <= 3'd0;
+        end
+    end else begin
+        if (new_note_valid_pulse) begin
+            // Scroll existing data: seg_buffer[5] (SEG6) <- seg_buffer[4] (SEG5), etc.
+            // The oldest data at seg_buffer[5] is shifted out.
+            seg_buffer[5] <= seg_buffer[4]; // SEG6_data <--- SEG5_data
+            seg_buffer[4] <= seg_buffer[3]; // SEG5_data <--- SEG4_data
+            seg_buffer[3] <= seg_buffer[2]; // SEG4_data <--- SEG3_data
+            seg_buffer[2] <= seg_buffer[1]; // SEG3_data <--- SEG2_data
+            seg_buffer[1] <= seg_buffer[0]; // SEG2_data <--- SEG1_data
+
+            // Load new note into the first position (SEG1)
+            seg_buffer[0] <= current_base_note_id_in; // SEG1_data <--- New Note
+        end
+        // No else: if new_note_valid_pulse is not high, the buffer holds its value.
+    end
+end
+
+// Assign buffer contents to outputs continuously
+// (Combinational assignment from buffer regs to output regs for clarity,
+// or could directly use seg_buffer[x] in seven_segment_controller if preferred as wires)
+// For direct output from registers, assign in the always block or use separate assigns.
+// To ensure outputs are also reset correctly and avoid latches if outputs were wires,
+// it's cleaner to assign them from the registered buffer values.
+
+// We declared outputs as 'reg' and will assign them directly.
+// Let's ensure they are updated in the clocked block or from the buffer
+// in a combinational way if they were wires.
+// Since outputs are 'reg', we update them based on the 'seg_buffer'.
+// It's often good practice for module outputs driven by internal registers
+// to be assigned combinatorially *from* those registers,
+// or the outputs themselves are the registers.
+// Here, we've made outputs 'reg', so we should assign them in an always block.
+// A simpler way if outputs are 'reg' is to directly assign in the clocked block AFTER buffer update.
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        display_data_seg1 <= 3'd0;
+        display_data_seg2 <= 3'd0;
+        display_data_seg3 <= 3'd0;
+        display_data_seg4 <= 3'd0;
+        display_data_seg5 <= 3'd0;
+        display_data_seg6 <= 3'd0;
+    end else begin
+        // Update outputs from the buffer contents
+        display_data_seg1 <= seg_buffer[0];
+        display_data_seg2 <= seg_buffer[1];
+        display_data_seg3 <= seg_buffer[2];
+        display_data_seg4 <= seg_buffer[3];
+        display_data_seg5 <= seg_buffer[4];
+        display_data_seg6 <= seg_buffer[5];
+    end
+end
+
+endmodule
+```
+
+### mode_sequencer.v
+```verilog
+// File: mode_sequencer.v (Corrected and Refined)
+module mode_sequencer (
+    input clk,
+    input rst_n,
+
+    // Input from the main piano logic (debounced, highest priority key ID)
+    input [3:0] current_live_key_id,         // 4-bit ID: 1-12 for notes, 0 for none
+    input       current_live_key_pressed,    // Is a live key currently pressed?
+
+    // Output to indicate practice mode activation
+    output reg  practice_mode_active_pulse   // A single clock pulse when sequence is matched
+);
+
+// --- Parameters for the sequence ---
+localparam SEQ_LENGTH = 7; // Length of your sequence "2317616"
+// CORRECTED: Single line assignment for TARGET_SEQUENCE, ensure your Verilog version in Quartus is 2001 or SystemVerilog
+function [3:0] get_target_sequence_val (input integer index);
+    case (index)
+        0: get_target_sequence_val = 4'd2;
+        1: get_target_sequence_val = 4'd3;
+        2: get_target_sequence_val = 4'd1;
+        3: get_target_sequence_val = 4'd7;
+        4: get_target_sequence_val = 4'd6;
+        5: get_target_sequence_val = 4'd1;
+        6: get_target_sequence_val = 4'd6;
+        default: get_target_sequence_val = 4'dx; // Or some other default
+    endcase
+endfunction
+// Then in your logic:
+// if (current_live_key_id == get_target_sequence_val(current_match_index)) begin
+
+// Timeout for sequence input (e.g., 2 seconds between key presses)
+localparam TIMEOUT_MS = 2000; // 2 seconds
+localparam CLK_FREQ_HZ = 50_000_000;
+localparam TIMEOUT_CYCLES = (TIMEOUT_MS * (CLK_FREQ_HZ / 1000));
+
+// --- Internal state and registers ---
+// Corrected width for current_match_index to safely hold 0 to SEQ_LENGTH states (e.g., 0-6 for match, 7 for 'done' or use 0 to SEQ_LENGTH-1 as index)
+// It needs to hold values from 0 up to SEQ_LENGTH-1 as an index.
+// $clog2(SEQ_LENGTH) gives bits for 0 to SEQ_LENGTH-1. If SEQ_LENGTH=7, needs 3 bits (0-6).
+reg [$clog2(SEQ_LENGTH > 1 ? SEQ_LENGTH : 2)-1:0] current_match_index; // e.g., for SEQ_LENGTH=7, [2:0]
+
+reg [3:0] last_pressed_key_id_prev_cycle; // Stores key_id from previous cycle to detect new presses
+reg [$clog2(TIMEOUT_CYCLES > 1 ? TIMEOUT_CYCLES : 2)-1:0] timeout_counter_reg;
+reg sequence_input_active_flag; // Flag to indicate if we are in the middle of inputting a sequence
+
+initial begin
+    practice_mode_active_pulse = 1'b0;
+    current_match_index = 0;
+    last_pressed_key_id_prev_cycle = 4'd0; // No key initially
+    timeout_counter_reg = 0;
+    sequence_input_active_flag = 1'b0;
+end
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        practice_mode_active_pulse <= 1'b0;
+        current_match_index <= 0;
+        last_pressed_key_id_prev_cycle <= 4'd0;
+        timeout_counter_reg <= 0;
+        sequence_input_active_flag <= 1'b0;
+    end else begin
+        // Default: pulse is low unless explicitly set high for one cycle
+        practice_mode_active_pulse <= 1'b0;
+
+        // Timeout logic
+        if (sequence_input_active_flag) begin
+            if (timeout_counter_reg >= TIMEOUT_CYCLES - 1) begin
+                // Timeout occurred, reset sequence matching
+                current_match_index <= 0;
+                sequence_input_active_flag <= 1'b0;
+                timeout_counter_reg <= 0;
+            end else begin
+                timeout_counter_reg <= timeout_counter_reg + 1'b1;
+            end
+        end else begin
+            timeout_counter_reg <= 0; // Not in sequence, reset timer
+        end
+
+        // Key press detection and sequence matching logic
+        // A new key press is when current_live_key_pressed is true,
+        // and current_live_key_id is different from last_pressed_key_id_prev_cycle,
+        // and current_live_key_id is not 0 (rest).
+        if (current_live_key_pressed && current_live_key_id != 4'd0 && current_live_key_id != last_pressed_key_id_prev_cycle) begin
+            // This is a new, valid musical key press event
+            timeout_counter_reg <= 0;                 // Reset timeout timer on new key press
+            sequence_input_active_flag <= 1'b1;       // We are now actively inputting/checking a sequence
+
+            if (current_live_key_id == get_target_sequence_val(current_match_index)) begin
+                // Correct key for the current step in the sequence
+                if (current_match_index == SEQ_LENGTH - 1) begin
+                    // Last key of the sequence matched!
+                    practice_mode_active_pulse <= 1'b1; // Fire the pulse!
+                    current_match_index <= 0;           // Reset for next time
+                    sequence_input_active_flag <= 1'b0; // Sequence complete, no longer active
+                end else begin
+                    // Not the last key, but correct so far. Advance.
+                    current_match_index <= current_match_index + 1'b1;
+                end
+            end else begin // Incorrect key pressed for the sequence
+                // If the incorrect key is the start of a new target sequence, restart matching from step 1
+                if (current_live_key_id == get_target_sequence_val(0)) begin
+                    current_match_index <= 1; // Matched the first element of the sequence
+                end else begin
+                    current_match_index <= 0; // Wrong key, and it's not the start of a new sequence, reset.
+                    sequence_input_active_flag <= 1'b0; 
+                end
+            end
+        end
+
+        // Update last_pressed_key_id_prev_cycle for the next clock cycle
+        // If a key is pressed, store its ID. If no key is pressed, store 0.
+        if (current_live_key_pressed && current_live_key_id != 4'd0) begin
+            last_pressed_key_id_prev_cycle <= current_live_key_id;
+        end else if (!current_live_key_pressed) begin // Key has been released
+            last_pressed_key_id_prev_cycle <= 4'd0;
+        end
+        // If key is held (current_live_key_id == last_pressed_key_id_prev_cycle), 
+        // last_pressed_key_id_prev_cycle remains, and the main `if` condition above won't trigger for "new press".
+    end
+end
+
+endmodule
+```
+### practice_player.v
+```verilog
+// File: practice_player.v (Reconstructed Complete Version)
+module practice_player #(
+    parameter NUM_DISPLAY_SEGMENTS = 6
+) (
+    input clk,
+    input rst_n,
+
+    input practice_mode_active,
+    input [3:0] current_live_key_id,
+    input current_live_key_pressed,
+
+    output reg [2:0] display_out_seg0,
+    output reg [2:0] display_out_seg1,
+    output reg [2:0] display_out_seg2,
+    output reg [2:0] display_out_seg3,
+    output reg [2:0] display_out_seg4,
+    output reg [2:0] display_out_seg5,
+
+    output reg correct_note_played_event,
+    output reg wrong_note_played_event,
+    output reg practice_song_finished_event
+);
+
+// --- Parameters ---
+localparam PRACTICE_SONG_LENGTH = 14;
+
+// --- Functions ---
+function [3:0] get_practice_song_note (input integer index);
+    if (index >= PRACTICE_SONG_LENGTH || index < 0) begin
+        get_practice_song_note = 4'd0; 
+    end else begin
+        case (index)
+            0:  get_practice_song_note = 4'd1; 1:  get_practice_song_note = 4'd1;
+            2:  get_practice_song_note = 4'd5; 3:  get_practice_song_note = 4'd5;
+            4:  get_practice_song_note = 4'd6; 5:  get_practice_song_note = 4'd6;
+            6:  get_practice_song_note = 4'd5; 7:  get_practice_song_note = 4'd4;
+            8:  get_practice_song_note = 4'd4; 9:  get_practice_song_note = 4'd3;
+            10: get_practice_song_note = 4'd3; 11: get_practice_song_note = 4'd2;
+            12: get_practice_song_note = 4'd2; 13: get_practice_song_note = 4'd1;
+            default: get_practice_song_note = 4'd0;
+        endcase
+    end
+endfunction
+
+function [2:0] musical_to_display_id (input [3:0] musical_id);
+    case (musical_id)
+        4'd1:  musical_to_display_id = 3'd1; 4'd2:  musical_to_display_id = 3'd2;
+        4'd3:  musical_to_display_id = 3'd3; 4'd4:  musical_to_display_id = 3'd4;
+        4'd5:  musical_to_display_id = 3'd5; 4'd6:  musical_to_display_id = 3'd6;
+        4'd7:  musical_to_display_id = 3'd7;
+        default: musical_to_display_id = 3'd0;
+    endcase
+endfunction
+
+// --- Internal Registers ---
+reg [$clog2(PRACTICE_SONG_LENGTH + 1)-1:0] current_note_index_in_song;
+reg current_live_key_pressed_prev;
+reg [$clog2(PRACTICE_SONG_LENGTH + 1)-1:0] next_note_idx_calculated; // Moved declaration to module level
+
+// --- Wires ---
+wire new_key_press_event;
+
+// --- Tasks ---
+task update_display_buffer (input [$clog2(PRACTICE_SONG_LENGTH + 1)-1:0] base_song_idx_for_display);
+    integer i;
+    integer song_idx_to_show;
+    reg [2:0] temp_display_buffer [NUM_DISPLAY_SEGMENTS-1:0];
+    begin // Task body begin
+        for (i = 0; i < NUM_DISPLAY_SEGMENTS; i = i + 1) begin // For loop begin
+            song_idx_to_show = base_song_idx_for_display + i;
+            if (song_idx_to_show < PRACTICE_SONG_LENGTH) begin // If begin
+                temp_display_buffer[i] = musical_to_display_id(get_practice_song_note(song_idx_to_show));
+            end else begin // Else for if begin
+                temp_display_buffer[i] = 3'd0;
+            end // If else end
+        end // For loop end
+        display_out_seg0 <= temp_display_buffer[0]; display_out_seg1 <= temp_display_buffer[1];
+        display_out_seg2 <= temp_display_buffer[2]; display_out_seg3 <= temp_display_buffer[3];
+        display_out_seg4 <= temp_display_buffer[4]; display_out_seg5 <= temp_display_buffer[5];
+    end // Task body end
+endtask
+
+// --- Initial block ---
+initial begin
+    current_note_index_in_song = 0;
+    correct_note_played_event = 1'b0; wrong_note_played_event = 1'b0;
+    practice_song_finished_event = 1'b0;
+    display_out_seg0 = 3'd0; display_out_seg1 = 3'd0; display_out_seg2 = 3'd0;
+    display_out_seg3 = 3'd0; display_out_seg4 = 3'd0; display_out_seg5 = 3'd0;
+    current_live_key_pressed_prev = 1'b0;
+    next_note_idx_calculated = 0; // Initialize module level reg
+end
+
+// --- Combinational logic for new_key_press_event ---
+assign new_key_press_event = current_live_key_pressed && !current_live_key_pressed_prev;
+
+// --- Sequential logic for current_live_key_pressed_prev ---
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        current_live_key_pressed_prev <= 1'b0;
+    end else begin
+        current_live_key_pressed_prev <= current_live_key_pressed;
+    end
+end
+
+// --- Main sequential logic block ---
+always @(posedge clk or negedge rst_n) begin
+    // 'next_note_idx_calculated' is a module-level reg, assigned before use in this block.
+    if (!rst_n) begin
+        current_note_index_in_song <= 0;
+        correct_note_played_event <= 1'b0; wrong_note_played_event <= 1'b0;
+        practice_song_finished_event <= 1'b0;
+        update_display_buffer(0);
+    end else begin
+        correct_note_played_event <= 1'b0;
+        wrong_note_played_event <= 1'b0;
+
+        if (practice_mode_active) begin
+            if (new_key_press_event && current_live_key_id != 4'd0) begin
+                if (current_note_index_in_song < PRACTICE_SONG_LENGTH) begin
+                    if (current_live_key_id == get_practice_song_note(current_note_index_in_song)) begin
+                        correct_note_played_event <= 1'b1;
+                        
+                        next_note_idx_calculated = current_note_index_in_song + 1; // Assignment
+
+                        if (current_note_index_in_song == PRACTICE_SONG_LENGTH - 1) begin
+                            practice_song_finished_event <= 1'b1;
+                        end // end if (current_note_index_in_song == ...)
+                        
+                        current_note_index_in_song <= next_note_idx_calculated; // Usage
+                        update_display_buffer(next_note_idx_calculated);      // Usage
+                    end else begin // else for if (current_live_key_id == ...)
+                        wrong_note_played_event <= 1'b1;
+                    end // end if (current_live_key_id == ...) else
+                end // end if (current_note_index_in_song < ...)
+            end // end if (new_key_press_event && ...)
+        end else begin // else for if (practice_mode_active)
+            if (current_note_index_in_song != 0) begin
+                 current_note_index_in_song <= 0;
+                 update_display_buffer(0);
+            end // end if (current_note_index_in_song != 0)
+            if (practice_song_finished_event) begin
+                practice_song_finished_event <= 1'b0;
+            end // end if (practice_song_finished_event)
+        end // end if (practice_mode_active) else
+    end // end if (!rst_n) else
+end // end always
+
+endmodule
 ```

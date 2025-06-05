@@ -1,0 +1,118 @@
+// File: mode_sequencer.v
+module mode_sequencer (
+    input clk,
+    input rst_n,
+
+    // Input from the main piano logic (debounced, highest priority key ID)
+    // This should be the 'final_key_id_for_sound_and_display' or similar
+    // signal from your top module, BEFORE it gets modified by recorder/song player.
+    // Essentially, the raw, debounced key ID from the keyboard_scanner.
+    input [3:0] current_live_key_id,         // 4-bit ID: 1-12 for notes, 0 for none
+    input       current_live_key_pressed,    // Is a live key currently pressed?
+
+    // Output to indicate practice mode activation
+    output reg  practice_mode_active_pulse   // A single clock pulse when sequence is matched
+);
+
+// --- Parameters for the sequence ---
+localparam SEQ_LENGTH = 7; // Length of your sequence "2317616"
+localparam [3:0] TARGET_SEQUENCE [0:SEQ_LENGTH-1] = '{
+    4'd2,  // Re (D)
+    4'd3,  // Mi (E)
+    4'd1,  // Do (C)
+    4'd7,  // Ti (B)
+    4'd6,  // La (A)
+    4'd1,  // Do (C)
+    4'd6   // La (A)
+};
+
+// Timeout for sequence input (e.g., 2 seconds between key presses)
+localparam TIMEOUT_MS = 2000; // 2 seconds
+localparam CLK_FREQ_HZ = 50_000_000;
+localparam TIMEOUT_CYCLES = (TIMEOUT_MS * (CLK_FREQ_HZ / 1000));
+
+// --- Internal state and registers ---
+reg [$clog2(SEQ_LENGTH):0] current_match_index; // How many notes in sequence have been matched (0 to SEQ_LENGTH)
+                                                // Needs to go up to SEQ_LENGTH, so width is $clog2(SEQ_LENGTH+1)
+                                                // but since 0 is a state, $clog2(SEQ_LENGTH) might be if you index 0 to SEQ_LENGTH-1
+                                                // Let's use a clearer way: index from 0 to SEQ_LENGTH-1 for matched notes.
+                                                // So, 0 means no notes matched yet. 1 means first note matched.
+                                                // SEQ_LENGTH means all notes matched.
+
+reg [3:0] last_pressed_key_id;
+reg [$clog2(TIMEOUT_CYCLES)-1:0] timeout_counter_reg;
+reg sequence_input_active; // Flag to indicate if we are in the middle of inputting a sequence
+
+initial begin
+    practice_mode_active_pulse = 1'b0;
+    current_match_index = 0;
+    last_pressed_key_id = 4'd0; // No key initially
+    timeout_counter_reg = 0;
+    sequence_input_active = 1'b0;
+end
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        practice_mode_active_pulse <= 1'b0;
+        current_match_index <= 0;
+        last_pressed_key_id <= 4'd0;
+        timeout_counter_reg <= 0;
+        sequence_input_active <= 1'b0;
+    end else begin
+        // Default: pulse is low unless explicitly set high for one cycle
+        practice_mode_active_pulse <= 1'b0;
+
+        // Timeout logic
+        if (sequence_input_active) begin
+            if (timeout_counter_reg >= TIMEOUT_CYCLES - 1) begin
+                // Timeout occurred, reset sequence matching
+                current_match_index <= 0;
+                sequence_input_active <= 1'b0;
+                timeout_counter_reg <= 0;
+            end else begin
+                timeout_counter_reg <= timeout_counter_reg + 1'b1;
+            end
+        end else begin
+            timeout_counter_reg <= 0; // Not in sequence, reset timer
+        end
+
+        // Detect a new key press (rising edge of current_live_key_pressed for a valid key)
+        // We only care about new presses, not holding a key down.
+        // And we only care about musical keys (ID > 0).
+        if (current_live_key_pressed && current_live_key_id != 4'd0 && current_live_key_id != last_pressed_key_id) begin
+            // A new, different musical key has been pressed
+            last_pressed_key_id <= current_live_key_id; // Update last pressed key
+            timeout_counter_reg <= 0;                 // Reset timeout timer on new key press
+            sequence_input_active <= 1'b1;            // We are now actively inputting a sequence
+
+            if (current_live_key_id == TARGET_SEQUENCE[current_match_index]) begin
+                // Correct key for the current step in the sequence
+                if (current_match_index == SEQ_LENGTH - 1) begin
+                    // Last key of the sequence matched!
+                    practice_mode_active_pulse <= 1'b1; // Fire the pulse!
+                    current_match_index <= 0;           // Reset for next time
+                    sequence_input_active <= 1'b0;      // Sequence complete, no longer active
+                end else begin
+                    // Not the last key, but correct so far. Advance.
+                    current_match_index <= current_match_index + 1'b1;
+                end
+            end else { // Incorrect key pressed for the sequence
+                 // If the first key of a potential new sequence matches the current (wrong) key, start over from index 1
+                if (current_live_key_id == TARGET_SEQUENCE[0]) begin
+                    current_match_index <= 1; // Start a new sequence attempt with this key as the first
+                } else {
+                    current_match_index <= 0; // Wrong key, and it's not the start of a new sequence, reset.
+                    sequence_input_active <= 1'b0; // No longer actively trying to match (unless this key starts a new one)
+                }
+            }
+        end else if (!current_live_key_pressed && last_pressed_key_id != 4'd0) begin
+            // Key has been released
+            last_pressed_key_id <= 4'd0;
+            // Keep sequence_input_active and timeout_counter running if we were in a sequence
+        end
+
+        // If no key is pressed for a while AND we were in a sequence, timeout will handle reset.
+    end
+end
+
+endmodule

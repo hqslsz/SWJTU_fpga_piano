@@ -1,0 +1,147 @@
+// File: practice_player.v
+module practice_player #(
+    parameter NUM_DISPLAY_SEGMENTS = 6 // Number of segments used for practice display (e.g., SEG1-SEG6)
+) (
+    input clk,
+    input rst_n,
+
+    input practice_mode_active,         // High when practice mode is enabled by top module
+    input [3:0] current_live_key_id,      // Debounced key ID from keyboard_scanner (1-12, 0 for none)
+    input current_live_key_pressed,       // Is a live key currently pressed?
+
+    // Outputs for practice display (base note ID 1-7, 0 for blank)
+    // display_data_practice_seg[0] is for the right-most segment (e.g., SEG1 - current note to play)
+    // display_data_practice_seg[NUM_DISPLAY_SEGMENTS-1] is for the left-most segment
+    output reg [2:0] display_data_practice_seg [NUM_DISPLAY_SEGMENTS-1:0],
+
+    output reg correct_note_played_event,
+    output reg wrong_note_played_event,
+    output reg practice_song_finished_event
+);
+
+// --- Practice Song Definition ---
+// Example: Twinkle Twinkle Little Star (C C G G A A G - F F E E D D C)
+// Note IDs: C=1, D=2, E=3, F=4, G=5, A=6, B=7
+localparam [3:0] PRACTICE_SONG_NOTES [] = '{
+    4'd1, 4'd1, 4'd5, 4'd5, 4'd6, 4'd6, 4'd5, // C C G G A A G
+    4'd4, 4'd4, 4'd3, 4'd3, 4'd2, 4'd2, 4'd1  // F F E E D D C
+};
+localparam PRACTICE_SONG_LENGTH = $size(PRACTICE_SONG_NOTES);
+
+// --- Internal Registers ---
+reg [$clog2(PRACTICE_SONG_LENGTH > 0 ? PRACTICE_SONG_LENGTH : 1)-1:0] current_note_index_in_song;
+reg [3:0] last_key_id_processed; // To detect new key press edge
+
+// Function to convert 4-bit musical key ID (1-12) to 3-bit display ID (1-7, or 0 for semitones/blank)
+// This is similar to what you have in your top module for display prep.
+function [2:0] musical_to_display_id (input [3:0] musical_id);
+    case (musical_id)
+        4'd1:  musical_to_display_id = 3'd1; // C -> 1
+        4'd2:  musical_to_display_id = 3'd2; // D -> 2
+        4'd3:  musical_to_display_id = 3'd3; // E -> 3
+        4'd4:  musical_to_display_id = 3'd4; // F -> 4
+        4'd5:  musical_to_display_id = 3'd5; // G -> 5
+        4'd6:  musical_to_display_id = 3'd6; // A -> 6
+        4'd7:  musical_to_display_id = 3'd7; // B -> 7
+        // Semitones C#, Eb, F#, G#, Bb - for practice, we might simplify and only use natural notes
+        // or decide how to display them (e.g., 0 for now, or implement suffix later in display controller)
+        // For this simplified practice, let's assume song only contains natural notes 1-7.
+        // If PRACTICE_SONG_NOTES contains semitone IDs, this function needs to handle them.
+        // For now, assume PRACTICE_SONG_NOTES only contains 4'd1 to 4'd7.
+        default: musical_to_display_id = 3'd0; // Blank for invalid or unhandled
+    endcase
+endfunction
+
+// Procedure to update the display buffer based on current_note_index_in_song
+task update_display_buffer;
+    integer i;
+    integer song_idx;
+    begin
+        for (i = 0; i < NUM_DISPLAY_SEGMENTS; i = i + 1) begin
+            song_idx = current_note_index_in_song + i;
+            if (song_idx < PRACTICE_SONG_LENGTH) begin
+                display_data_practice_seg[i] <= musical_to_display_id(PRACTICE_SONG_NOTES[song_idx]);
+            end else begin
+                display_data_practice_seg[i] <= 3'd0; // Blank if past end of song
+            end
+        end
+    end
+endtask
+
+initial begin
+    current_note_index_in_song = 0;
+    last_key_id_processed = 4'd0;
+    correct_note_played_event = 1'b0;
+    wrong_note_played_event = 1'b0;
+    practice_song_finished_event = 1'b0;
+    // Initialize display_data_practice_seg (will be done by update_display_buffer on reset/entry)
+    // `update_display_buffer` cannot be called directly in `initial` for synthesis if it assigns to regs.
+    // So, we'll rely on the reset condition in the always block.
+    integer k;
+    for (k = 0; k < NUM_DISPLAY_SEGMENTS; k = k + 1) begin
+        display_data_practice_seg[k] = 3'd0;
+    end
+end
+
+always @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        current_note_index_in_song <= 0;
+        last_key_id_processed <= 4'd0;
+        correct_note_played_event <= 1'b0;
+        wrong_note_played_event <= 1'b0;
+        practice_song_finished_event <= 1'b0;
+        update_display_buffer(); // Initialize display on reset
+    end else begin
+        // Default: clear event flags
+        correct_note_played_event <= 1'b0;
+        wrong_note_played_event <= 1'b0;
+        practice_song_finished_event <= 1'b0;
+
+        if (practice_mode_active) begin
+            // If mode just became active, reset practice state
+            // This requires knowing previous state of practice_mode_active, or a separate trigger
+            // For now, assume top module handles reset of index when practice_mode_active goes low then high.
+            // Or, we can detect rising edge of practice_mode_active here.
+            // Let's assume for now that when practice_mode_active is high, we are in a continuous session.
+
+            // Detect new key press (edge detection)
+            if (current_live_key_pressed && current_live_key_id != 4'd0 && current_live_key_id != last_key_id_processed) begin
+                last_key_id_processed <= current_live_key_id; // Store this press
+
+                if (current_note_index_in_song < PRACTICE_SONG_LENGTH) begin // If song not finished
+                    if (current_live_key_id == PRACTICE_SONG_NOTES[current_note_index_in_song]) begin
+                        // Correct key pressed
+                        correct_note_played_event <= 1'b1;
+                        if (current_note_index_in_song == PRACTICE_SONG_LENGTH - 1) begin
+                            // This was the last note
+                            practice_song_finished_event <= 1'b1;
+                            // Optionally, advance index beyond length to stop further interaction, or reset.
+                            current_note_index_in_song <= current_note_index_in_song + 1; // Go past end
+                        end else begin
+                            current_note_index_in_song <= current_note_index_in_song + 1;
+                        end
+                        update_display_buffer(); // Update display for next note
+                    end else begin
+                        // Wrong key pressed
+                        wrong_note_played_event <= 1'b1;
+                        // Do not advance current_note_index_in_song
+                        // Display remains the same
+                    end
+                end
+            // Key released, or same key held (no new distinct press)
+            end else if (!current_live_key_pressed && last_key_id_processed != 4'd0) {
+                last_key_id_processed <= 4'd0; // Clear last processed key on release
+            }
+            // If current_note_index_in_song >= PRACTICE_SONG_LENGTH, song is finished, do nothing more.
+
+        // Not in practice mode
+        end else {
+            // When practice mode is exited, reset the practice state for next time
+            current_note_index_in_song <= 0;
+            last_key_id_processed <= 4'd0;
+            // Optionally clear display or let top module handle it
+            // update_display_buffer(); // Could show start of song, or top module blanks it
+        }
+    end
+end
+endmodule
