@@ -48,6 +48,26 @@
 					"strict" : false
 				},
 				{
+					"name" : "seven_seg_digit_selects[3]",
+					"strict" : false
+				},
+				{
+					"name" : "seven_seg_digit_selects[4]",
+					"strict" : false
+				},
+				{
+					"name" : "seven_seg_digit_selects[5]",
+					"strict" : false
+				},
+				{
+					"name" : "seven_seg_digit_selects[6]",
+					"strict" : false
+				},
+				{
+					"name" : "seven_seg_digit_selects[7]",
+					"strict" : false
+				},
+				{
 					"name" : "clk_50mhz",
 					"strict" : false
 				},
