@@ -4,8 +4,8 @@ SWJTU数电课设电子琴
 ## 核心代码
 ### 顶层fpga.v
 ```verilog
-// File: fpga_piano_top.v
-// Top-level module for the FPGA Piano with recording and semitones
+// File: fpga.v (Modified for song player octave support)
+// Top-level module for the FPGA Piano with recording, semitones, and song playback with octaves
 
 module fpga (
     // Clock and Reset
@@ -29,6 +29,7 @@ module fpga (
     input sw13_octave_down_raw,  // Octave Down key (Key13/SW13, PIN_7)
     input sw16_record_raw,       // Record key (Key16/SW16, PIN_142)
     input sw17_playback_raw,     // Playback key (Key17/SW17, PIN_137)
+    input key14_play_song_raw,   // Play Song key (Key14/SW14, PIN_11)
 
     // Outputs
     output reg buzzer_out,       // Buzzer output (PIN_128)
@@ -36,7 +37,12 @@ module fpga (
     // Outputs for 7-Segment Display
     output seven_seg_a, output seven_seg_b, output seven_seg_c, output seven_seg_d,
     output seven_seg_e, output seven_seg_f, output seven_seg_g, output seven_seg_dp,
-    output [7:0] seven_seg_digit_selects // For SEG0-SEG7
+    output [7:0] seven_seg_digit_selects// For SEG0-SEG7
+
+    // Optional LED Outputs (uncomment and assign pins if used)
+    // output led_is_recording,
+    // output led_is_playing_recording,
+    // output led_is_playing_song
 );
 
 // --- Internal Reset Logic ---
@@ -54,7 +60,6 @@ localparam NUM_TOTAL_MUSICAL_KEYS = NUM_BASE_KEYS + NUM_SEMITONE_KEYS; // 7 + 5 
 
 wire [NUM_TOTAL_MUSICAL_KEYS-1:0] all_musical_keys_raw;
 
-// Assign base notes (Key ID 1 to 7)
 assign all_musical_keys_raw[0] = note_keys_physical_in[0]; // Key1 (C) -> ID 1
 assign all_musical_keys_raw[1] = note_keys_physical_in[1]; // Key2 (D) -> ID 2
 assign all_musical_keys_raw[2] = note_keys_physical_in[2]; // Key3 (E) -> ID 3
@@ -62,8 +67,6 @@ assign all_musical_keys_raw[3] = note_keys_physical_in[3]; // Key4 (F) -> ID 4
 assign all_musical_keys_raw[4] = note_keys_physical_in[4]; // Key5 (G) -> ID 5
 assign all_musical_keys_raw[5] = note_keys_physical_in[5]; // Key6 (A) -> ID 6
 assign all_musical_keys_raw[6] = note_keys_physical_in[6]; // Key7 (B) -> ID 7
-
-// Assign semitone notes (Key ID 8 to 12)
 assign all_musical_keys_raw[7] = key8_sharp1_raw;          // Key8 (C#) -> ID 8
 assign all_musical_keys_raw[8] = key9_flat3_raw;           // Key9 (Eb) -> ID 9
 assign all_musical_keys_raw[9] = key10_sharp4_raw;         // Key10 (F#) -> ID 10
@@ -72,28 +75,27 @@ assign all_musical_keys_raw[11] = key12_flat7_raw;         // Key12 (Bb) -> ID 1
 
 
 // --- Keyboard Scanner Instance for ALL Musical Notes ---
-// Output active_key_id will be 0 for no key, 1-12 for pressed keys.
-// Needs $clog2(12+1) = 4 bits.
-wire [3:0] current_active_key_id_internal;
+wire [3:0] current_active_key_id_internal; // For 12 keys + no key (0), needs 4 bits
 wire       current_key_is_pressed_flag_internal;
 
 keyboard_scanner #(
-    .NUM_KEYS(NUM_TOTAL_MUSICAL_KEYS), // Set to 12
+    .NUM_KEYS(NUM_TOTAL_MUSICAL_KEYS),
     .DEBOUNCE_TIME_MS(DEBOUNCE_TIME_MS)
 ) keyboard_scanner_inst (
     .clk(clk_50mhz),
     .rst_n(rst_n_internal),
     .keys_in_raw(all_musical_keys_raw),
-    .active_key_id(current_active_key_id_internal), // Output width will be 4-bit
+    .active_key_id(current_active_key_id_internal),
     .key_is_pressed(current_key_is_pressed_flag_internal)
 );
 
 // --- Debouncers for Octave and Control Keys ---
 wire sw15_octave_up_debounced_internal;
 wire sw13_octave_down_debounced_internal;
-wire sw16_record_debounced_internal;    // Debounced record key level
-wire sw17_playback_debounced_internal;  // Debounced playback key level
-wire sw17_playback_pulse_internal;      // Single pulse for playback start
+wire sw16_record_debounced_internal;
+wire sw17_playback_debounced_internal;
+wire sw17_playback_pulse_internal;
+wire key14_play_song_debounced_internal;
 
 debouncer #( .DEBOUNCE_CYCLES(DEBOUNCE_CYCLES_CALC) ) octave_up_debouncer_inst (
     .clk(clk_50mhz), .rst_n(rst_n_internal), .key_in_raw(sw15_octave_up_raw),
@@ -111,8 +113,12 @@ debouncer #( .DEBOUNCE_CYCLES(DEBOUNCE_CYCLES_CALC) ) playback_debouncer_inst (
     .clk(clk_50mhz), .rst_n(rst_n_internal), .key_in_raw(sw17_playback_raw),
     .key_out_debounced(sw17_playback_debounced_internal)
 );
+debouncer #( .DEBOUNCE_CYCLES(DEBOUNCE_CYCLES_CALC) ) play_song_debouncer_inst (
+    .clk(clk_50mhz), .rst_n(rst_n_internal), .key_in_raw(key14_play_song_raw),
+    .key_out_debounced(key14_play_song_debounced_internal)
+);
 
-// Generate a single pulse for playback start from the debounced level
+// Generate a single pulse for playback start (for piano_recorder)
 reg sw17_playback_debounced_prev;
 initial sw17_playback_debounced_prev = 1'b0;
 always @(posedge clk_50mhz or negedge rst_n_internal) begin
@@ -121,32 +127,33 @@ always @(posedge clk_50mhz or negedge rst_n_internal) begin
 end
 assign sw17_playback_pulse_internal = sw17_playback_debounced_internal & ~sw17_playback_debounced_prev;
 
-
 // --- Instantiate Piano Recorder ---
-localparam RECORDER_KEY_ID_BITS = 4; // For key IDs 0-12
+localparam RECORDER_KEY_ID_BITS = 4; // Must be 4 for 0-12 keys
+localparam RECORDER_OCTAVE_BITS = 2; // For low, mid, high recording
+
 wire [RECORDER_KEY_ID_BITS-1:0] playback_key_id_feed;
 wire playback_key_is_pressed_feed;
 wire playback_octave_up_feed;
 wire playback_octave_down_feed;
-wire is_recording_status; // For potential LED indicator
-wire is_playing_status;   // For potential LED indicator
+wire is_recording_status;
+wire is_playing_status; // From piano_recorder
 
 piano_recorder #(
     .CLK_FREQ_HZ(50_000_000),
-    .RECORD_INTERVAL_MS(20),      // Sample every 20ms
-    .MAX_RECORD_SAMPLES(512),     // Approx 10.24 seconds of recording
-    .KEY_ID_BITS(RECORDER_KEY_ID_BITS), // Set to 4
-    .OCTAVE_BITS(2)               // 00:normal, 01:up, 10:down
+    .RECORD_INTERVAL_MS(20),
+    .MAX_RECORD_SAMPLES(512),
+    .KEY_ID_BITS(RECORDER_KEY_ID_BITS),
+    .OCTAVE_BITS(RECORDER_OCTAVE_BITS) // Use defined parameter
 ) piano_recorder_inst (
     .clk(clk_50mhz),
     .rst_n(rst_n_internal),
     .record_active_level(sw16_record_debounced_internal),
     .playback_start_pulse(sw17_playback_pulse_internal),
-    .live_key_id(current_active_key_id_internal), // 4-bit input
+    .live_key_id(current_active_key_id_internal),
     .live_key_is_pressed(current_key_is_pressed_flag_internal),
     .live_octave_up(sw15_octave_up_debounced_internal),
     .live_octave_down(sw13_octave_down_debounced_internal),
-    .playback_key_id(playback_key_id_feed),       // 4-bit output
+    .playback_key_id(playback_key_id_feed),
     .playback_key_is_pressed(playback_key_is_pressed_feed),
     .playback_octave_up(playback_octave_up_feed),
     .playback_octave_down(playback_octave_down_feed),
@@ -154,42 +161,78 @@ piano_recorder #(
     .is_playing(is_playing_status)
 );
 
+// --- Instantiate Song Player ---
+wire [RECORDER_KEY_ID_BITS-1:0] song_player_key_id_feed;
+wire song_player_key_is_pressed_feed;
+wire song_player_octave_up_internal;    // New wire for song's octave up
+wire song_player_octave_down_internal;  // New wire for song's octave down
+wire is_song_playing_status;
+
+song_player #(
+    .CLK_FREQ_HZ(50_000_000),
+    .KEY_ID_BITS(RECORDER_KEY_ID_BITS), // Match recorder's key ID bits
+    .OCTAVE_BITS(RECORDER_OCTAVE_BITS)  // Match recorder's octave bits for consistency
+) song_player_inst (
+    .clk(clk_50mhz),
+    .rst_n(rst_n_internal),
+    .play_active_level(key14_play_song_debounced_internal),
+    .song_key_id(song_player_key_id_feed),
+    .song_key_is_pressed(song_player_key_is_pressed_feed),
+    .song_octave_up_feed(song_player_octave_up_internal),     // Connect to new output
+    .song_octave_down_feed(song_player_octave_down_internal), // Connect to new output
+    .is_song_playing(is_song_playing_status)
+);
+
 // --- Buzzer and Display Input Selection Logic ---
-// These signals will drive the buzzer and display, selected from live or playback.
 wire [RECORDER_KEY_ID_BITS-1:0] final_key_id_for_sound_and_display;
 wire final_key_is_pressed_for_sound_and_display;
 wire final_octave_up_for_sound_and_display;
 wire final_octave_down_for_sound_and_display;
 
-assign final_key_id_for_sound_and_display         = is_playing_status ? playback_key_id_feed         : current_active_key_id_internal;
-assign final_key_is_pressed_for_sound_and_display = is_playing_status ? playback_key_is_pressed_feed : current_key_is_pressed_flag_internal;
-assign final_octave_up_for_sound_and_display      = is_playing_status ? playback_octave_up_feed      : sw15_octave_up_debounced_internal;
-assign final_octave_down_for_sound_and_display    = is_playing_status ? playback_octave_down_feed    : sw13_octave_down_debounced_internal;
+assign final_key_id_for_sound_and_display =
+    is_song_playing_status ? song_player_key_id_feed :
+    (is_playing_status ? playback_key_id_feed :
+    current_active_key_id_internal);
 
+assign final_key_is_pressed_for_sound_and_display =
+    is_song_playing_status ? song_player_key_is_pressed_feed :
+    (is_playing_status ? playback_key_is_pressed_feed :
+    current_key_is_pressed_flag_internal);
+
+// MODIFIED Octave Selection: Song player now dictates octave during its playback
+assign final_octave_up_for_sound_and_display =
+    is_song_playing_status ? song_player_octave_up_internal : // Use song's octave up
+    (is_playing_status ? playback_octave_up_feed :
+    sw15_octave_up_debounced_internal);
+
+assign final_octave_down_for_sound_and_display =
+    is_song_playing_status ? song_player_octave_down_internal : // Use song's octave down
+    (is_playing_status ? playback_octave_down_feed :
+    sw13_octave_down_debounced_internal);
 
 // --- Buzzer Frequency Generation ---
-// Target counts for a 50MHz clock to produce semitone frequencies (half-period counts)
-// Formula: COUNT = (50_000_000 / (2 * Freq_Hz))
-localparam CNT_C4  = 17'd95566; // Key ID 1 (C4)
-localparam CNT_CS4 = 17'd90194; // Key ID 8 (C#4/Db4)
-localparam CNT_D4  = 17'd85135; // Key ID 2 (D4)
-localparam CNT_DS4 = 17'd80346; // Key ID 9 (D#4/Eb4)
-localparam CNT_E4  = 17'd75830; // Key ID 3 (E4)
-localparam CNT_F4  = 17'd71569; // Key ID 4 (F4)
-localparam CNT_FS4 = 17'd67569; // Key ID 10 (F#4/Gb4)
-localparam CNT_G4  = 17'd63775; // Key ID 5 (G4)
-localparam CNT_GS4 = 17'd60197; // Key ID 11 (G#4/Ab4)
-localparam CNT_A4  = 17'd56817; // Key ID 6 (A4)
-localparam CNT_AS4 = 17'd53627; // Key ID 12 (A#4/Bb4)
-localparam CNT_B4  = 17'd50619; // Key ID 7 (B4)
+// These are counts for half period for Middle C (C4) Octave
+// N_half_period_counts = (50_000_000 Hz / (2 * F_note)) - 1
+localparam CNT_C4  = 17'd95566; // 261.63 Hz
+localparam CNT_CS4 = 17'd90194; // 277.18 Hz
+localparam CNT_D4  = 17'd85135; // 293.66 Hz
+localparam CNT_DS4 = 17'd80346; // 311.13 Hz (Eb)
+localparam CNT_E4  = 17'd75830; // 329.63 Hz
+localparam CNT_F4  = 17'd71569; // 349.23 Hz
+localparam CNT_FS4 = 17'd67569; // 369.99 Hz
+localparam CNT_G4  = 17'd63775; // 392.00 Hz
+localparam CNT_GS4 = 17'd60197; // 415.30 Hz (Ab)
+localparam CNT_A4  = 17'd56817; // 440.00 Hz
+localparam CNT_AS4 = 17'd53627; // 466.16 Hz (Bb)
+localparam CNT_B4  = 17'd50619; // 493.88 Hz
 
-reg [17:0] buzzer_counter_reg;      // Counter for PWM generation
-reg [17:0] base_note_target_count;  // Target count for the base note (before octave adjustment)
-reg [17:0] final_target_count_max;  // Final target count after octave adjustment
+reg [17:0] buzzer_counter_reg;
+reg [17:0] base_note_target_count;    // Target count for middle octave (C4 based)
+reg [17:0] final_target_count_max; // Final target after octave adjustment
 
-// Determine base_note_target_count based on the selected key ID
+// Determine base note target count from key ID (middle octave reference)
 always @(*) begin
-    case (final_key_id_for_sound_and_display) // Now a 4-bit input
+    case (final_key_id_for_sound_and_display) // final_key_id is 4 bits (0-12)
         4'd1:    base_note_target_count = CNT_C4;
         4'd2:    base_note_target_count = CNT_D4;
         4'd3:    base_note_target_count = CNT_E4;
@@ -197,31 +240,36 @@ always @(*) begin
         4'd5:    base_note_target_count = CNT_G4;
         4'd6:    base_note_target_count = CNT_A4;
         4'd7:    base_note_target_count = CNT_B4;
-        // Semitones
         4'd8:    base_note_target_count = CNT_CS4; // C#
-        4'd9:    base_note_target_count = CNT_DS4; // Eb
+        4'd9:    base_note_target_count = CNT_DS4; // D# (Eb)
         4'd10:   base_note_target_count = CNT_FS4; // F#
-        4'd11:   base_note_target_count = CNT_GS4; // G#
-        4'd12:   base_note_target_count = CNT_AS4; // Bb
-        default: base_note_target_count = CNT_C4; // Default for ID 0 or unexpected
+        4'd11:   base_note_target_count = CNT_GS4; // G# (Ab)
+        4'd12:   base_note_target_count = CNT_AS4; // A# (Bb)
+        default: base_note_target_count = 18'h3FFFF; // Effectively silent (very low freq or ensure buzzer_out stays low)
+                                                    // Or use a very high count if 0 should be silent.
+                                                    // CNT_C4 is ~95k, so 2^18-1 is much higher -> lower freq.
+                                                    // Let's stick to a known high value for silence if key_id is 0.
     endcase
 end
 
-// Determine final_target_count_max based on octave selection
+// Adjust target count based on octave signals
 always @(*) begin
-    if (final_octave_up_for_sound_and_display && !final_octave_down_for_sound_and_display) begin
-        // Octave Up: frequency doubles, so count halves
-        final_target_count_max = (base_note_target_count + 1) / 2 - 1; // +1/-1 for integer division precision
-    end else if (!final_octave_up_for_sound_and_display && final_octave_down_for_sound_and_display) begin
-        // Octave Down: frequency halves, so count doubles
+    // Ensure base_note_target_count is valid before division
+    // If base_note_target_count could be very small or zero from a default case,
+    // this could be an issue. Given our CNT values, it's fine.
+    if (final_octave_up_for_sound_and_display && !final_octave_down_for_sound_and_display) begin // Octave Up
+        // Target count for half period is halved (approx), so frequency doubles.
+        // (N+1)/2 - 1 for new count, where N is old count.
+        final_target_count_max = (base_note_target_count + 1) / 2 - 1;
+    end else if (!final_octave_up_for_sound_and_display && final_octave_down_for_sound_and_display) begin // Octave Down
+        // Target count for half period is doubled (approx), so frequency halves.
+        // (N+1)*2 - 1 for new count.
         final_target_count_max = (base_note_target_count + 1) * 2 - 1;
-    end else begin
-        // Normal Octave
+    end else begin // Middle Octave (or both octave keys pressed - treat as middle)
         final_target_count_max = base_note_target_count;
     end
 end
 
-// Buzzer output generation logic
 initial begin
     buzzer_out = 1'b0;
     buzzer_counter_reg = 18'd0;
@@ -232,43 +280,59 @@ always @(posedge clk_50mhz or negedge rst_n_internal) begin
         buzzer_counter_reg <= 18'd0;
         buzzer_out <= 1'b0;
     end else begin
-        if (final_key_is_pressed_for_sound_and_display) begin
+        // Only generate sound if a key is considered pressed and it's not the REST note (ID 0)
+        if (final_key_is_pressed_for_sound_and_display && final_key_id_for_sound_and_display != 4'd0) begin
             if (buzzer_counter_reg >= final_target_count_max) begin
                 buzzer_counter_reg <= 18'd0;
-                buzzer_out <= ~buzzer_out; // Toggle to create square wave
+                buzzer_out <= ~buzzer_out;
             end else begin
                 buzzer_counter_reg <= buzzer_counter_reg + 1'b1;
             end
         end else begin
-            // No key pressed, silence the buzzer
-            buzzer_counter_reg <= 18'd0;
-            buzzer_out <= 1'b0;
+            buzzer_counter_reg <= 18'd0; // Reset counter when no valid key is pressed
+            buzzer_out <= 1'b0;          // Ensure silence
         end
     end
 end
-// --- End of Buzzer Logic ---
-
 
 // --- Instantiate Seven Segment Controller ---
-// For now, semitones (IDs 8-12) will show as blank on the 7-segment display
-// as the controller is only set up for 1-7. We pass only the low 3 bits of the key ID.
+// Note: seven_segment_controller currently takes [2:0] for key_id,
+// which is only 0-7. If you want to display semitones or more info,
+// this module will need changes. For now, it will truncate the key ID.
+// Consider how to display C# (ID 8) etc.
+// A simple way: display 'C' for C#, 'd' for D#, etc., or use a dot.
+// For now, passing the lower 3 bits for basic 1-7 display.
+wire [2:0] display_key_id_truncated;
+// Example: C#(8)->1, D#(9)->2, F#(10)->4, G#(11)->5, A#(12)->6
+// This mapping helps show the root note on the 1-7 display.
+// You can make this more sophisticated.
+assign display_key_id_truncated =
+    (final_key_id_for_sound_and_display == 4'd8)  ? 3'd1 : // C# -> 1 (C)
+    (final_key_id_for_sound_and_display == 4'd9)  ? 3'd2 : // D# (Eb) -> 2 (D)
+    (final_key_id_for_sound_and_display == 4'd10) ? 3'd4 : // F# -> 4 (F)
+    (final_key_id_for_sound_and_display == 4'd11) ? 3'd5 : // G# (Ab) -> 5 (G)
+    (final_key_id_for_sound_and_display == 4'd12) ? 3'd6 : // A# (Bb) -> 6 (A)
+    (final_key_id_for_sound_and_display >= 4'd1 && final_key_id_for_sound_and_display <= 4'd7) ? final_key_id_for_sound_and_display[2:0] :
+    3'd0; // Default to 0 (blank) if not a standard note or defined semitone
+
 seven_segment_controller seven_segment_display_inst (
     .clk(clk_50mhz),
     .rst_n(rst_n_internal),
-    // Pass only the lower 3 bits for key ID so 1-7 display correctly.
-    // For IDs 8-12, this will result in 000, 001, etc., which will either be blank
-    // or show 0, 1 etc. based on seven_segment_controller's default for invalid IDs.
-    // Ideally, seven_segment_controller should map these to blank.
-    .current_active_key_id(final_key_id_for_sound_and_display[2:0]),
-    .current_key_is_pressed_flag(final_key_is_pressed_for_sound_and_display),
+    .current_active_key_id(display_key_id_truncated), // Pass truncated/mapped ID
+    .current_key_is_pressed_flag(final_key_is_pressed_for_sound_and_display && final_key_id_for_sound_and_display != 4'd0), // Only show if valid note
     .octave_up_active(final_octave_up_for_sound_and_display),
     .octave_down_active(final_octave_down_for_sound_and_display),
 
-    // 7-Segment Outputs
     .seg_a(seven_seg_a), .seg_b(seven_seg_b), .seg_c(seven_seg_c), .seg_d(seven_seg_d),
     .seg_e(seven_seg_e), .seg_f(seven_seg_f), .seg_g(seven_seg_g), .seg_dp(seven_seg_dp),
     .digit_selects(seven_seg_digit_selects)
 );
+
+// --- Optional LED Indicators ---
+// assign led_is_recording = is_recording_status;
+// assign led_is_playing_recording = is_playing_status && !is_song_playing_status; // Only recording playback
+// assign led_is_playing_song = is_song_playing_status;
+
 endmodule
 ```
 ### debouncer.v
@@ -660,4 +724,228 @@ always @(posedge clk or negedge rst_n) begin
     end
 end
 endmodule
+```
+### song_player.v
+```verilog
+// File: song_player.v
+module song_player #(
+    parameter CLK_FREQ_HZ = 50_000_000,
+    parameter KEY_ID_BITS = 4,         // For C, C#, D ... B (12 notes + REST)
+    parameter OCTAVE_BITS = 2          // To represent Low, Middle, High octaves
+) (
+    input clk,
+    input rst_n,
+    input play_active_level,          // 高电平播放，低电平停止
+
+    output reg [KEY_ID_BITS-1:0] song_key_id,
+    output reg song_key_is_pressed,
+    output reg song_octave_up_feed,    // New output for octave up
+    output reg song_octave_down_feed,  // New output for octave down
+    output reg is_song_playing        // 歌曲正在播放的状态指示
+);
+
+    // --- 音符定义 (KEY_ID 1-12) ---
+    localparam NOTE_C   = 4'd1; localparam NOTE_CS  = 4'd8;  // C, C#
+    localparam NOTE_D   = 4'd2; localparam NOTE_DS  = 4'd9;  // D, D# (Eb)
+    localparam NOTE_E   = 4'd3;                             // E
+    localparam NOTE_F   = 4'd4; localparam NOTE_FS  = 4'd10; // F, F#
+    localparam NOTE_G   = 4'd5; localparam NOTE_GS  = 4'd11; // G, G# (Ab)
+    localparam NOTE_A   = 4'd6; localparam NOTE_AS  = 4'd12; // A, A# (Bb)
+    localparam NOTE_B   = 4'd7;                             // B
+    localparam REST     = 4'd0; // 休止符
+
+    // --- 八度定义 ---
+    localparam OCTAVE_LOW  = 2'b10; // Signal to activate octave_down
+    localparam OCTAVE_MID  = 2'b00; // Signal for normal (middle) octave
+    localparam OCTAVE_HIGH = 2'b01; // Signal to activate octave_up
+
+    // --- 时长和乐谱数据定义 ---
+    localparam DURATION_BITS = 4;     // 用于表示时长单位的位数
+    localparam SONG_DATA_WIDTH = OCTAVE_BITS + KEY_ID_BITS + DURATION_BITS;
+
+    // !!! REPLACE THIS WITH THE CORRECT SONG_LENGTH FROM YOUR MIDI CONVERSION !!!
+    localparam SONG_LENGTH = 232; // EXAMPLE - Use the actual length from your transcription
+
+    // --- 节拍和基础时长单位 ---
+    // !!! ENSURE THIS MATCHES THE VALUE USED FOR YOUR MIDI TRANSCRIPTION !!!
+    localparam BASIC_NOTE_DURATION_MS = 70;
+    localparam BASIC_NOTE_DURATION_CYCLES = (BASIC_NOTE_DURATION_MS * (CLK_FREQ_HZ / 1000));
+    localparam MAX_DURATION_UNITS_VAL = (1 << DURATION_BITS) - 1;
+
+    // --- 状态机定义 ---
+    localparam S_IDLE   = 1'b0;
+    localparam S_PLAYING= 1'b1;
+
+    // --- 内部寄存器声明 ---
+    reg [SONG_DATA_WIDTH-1:0] song_rom [0:SONG_LENGTH-1];
+
+    reg [$clog2(SONG_LENGTH)-1:0] current_note_index;
+    reg [$clog2(BASIC_NOTE_DURATION_CYCLES * MAX_DURATION_UNITS_VAL + 1)-1:0] note_duration_timer;
+    reg [DURATION_BITS-1:0] current_note_duration_units;
+    reg [KEY_ID_BITS-1:0] current_note_id_from_rom;
+    reg [OCTAVE_BITS-1:0] current_octave_code_from_rom;
+    reg state;
+    reg play_active_level_prev;
+
+
+    // ########################################################################## //
+    // #                                                                        # //
+    // #    <<<<< REPLACE THE ENTIRE 'initial begin ... end' BLOCK BELOW >>>>>  # //
+    // #    <<<<< WITH THE ONE CONTAINING YOUR TRANSCRIBED song_rom DATA >>>>>  # //
+    // #                                                                        # //
+    // ########################################################################## //
+    initial begin
+        // THIS IS A PLACEHOLDER - REPLACE IT WITH YOUR ACTUAL SONG_ROM INITIALIZATION
+        // Example:
+        // song_rom[0]  = {OCTAVE_LOW,  NOTE_D,   4'd2};
+        // song_rom[1]  = {OCTAVE_MID,  REST,     4'd2};
+        // ... many more lines ...
+        // song_rom[SONG_LENGTH-1] = {OCTAVE_MID, REST, 4'd4}; // Last note or rest
+
+        // Ensure all song_rom entries are initialized, especially if your
+        // transcription doesn't fill the entire SONG_LENGTH.
+        integer i;
+        for (i = 0; i < SONG_LENGTH; i = i + 1) begin
+            // If you provide all entries explicitly, this loop can be minimal or removed
+            // If your transcription is shorter than SONG_LENGTH, fill the rest:
+            if (i >= 232) begin // Assuming your transcription has 232 entries (0 to 231)
+                 song_rom[i] = {OCTAVE_MID, REST, 4'd1}; // Default fill
+            end
+            // If your transcription has fewer entries than the example (232), adjust the 'if' condition.
+            // Or, just ensure your transcription defines ALL song_rom[0] through song_rom[SONG_LENGTH-1].
+        end
+        // Make sure song_rom[0] to song_rom[231] (or however many entries you have) are defined
+        // by the MIDI transcription part. For example:
+        song_rom[0]  = {OCTAVE_LOW,  NOTE_D,   4'd2}; // MIDI 50 (D3), Dur: 0.1429s
+        song_rom[1]  = {OCTAVE_MID,  REST,     4'd2}; // Rest dur: 0.1413s
+        song_rom[2]  = {OCTAVE_LOW,  NOTE_G,   4'd2}; // MIDI 55 (G3), Dur: 0.1429s
+        // ... (The 232 lines of song_rom data you generated previously) ...
+        song_rom[231] = {OCTAVE_LOW, NOTE_FS,  4'd8}; // MIDI 54 (F#3), Dur: 0.5715s
+
+        // Initialize outputs and internal state registers (This part should be AT THE END of your initial block)
+        song_key_id = {KEY_ID_BITS{1'b0}};
+        song_key_is_pressed = 1'b0;
+        song_octave_up_feed = 1'b0;
+        song_octave_down_feed = 1'b0;
+        is_song_playing = 1'b0;
+        state = S_IDLE;
+        current_note_index = 0;
+        note_duration_timer = 0;
+        current_note_duration_units = 0;
+        current_note_id_from_rom = {KEY_ID_BITS{1'b0}};
+        current_octave_code_from_rom = OCTAVE_MID;
+        play_active_level_prev = 1'b0;
+    end
+    // ################# END OF BLOCK TO BE REPLACED ######################## //
+
+
+    // --- 主要状态机和逻辑 ---
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            // 复位状态
+            song_key_id <= {KEY_ID_BITS{1'b0}};
+            song_key_is_pressed <= 1'b0;
+            song_octave_up_feed <= 1'b0;
+            song_octave_down_feed <= 1'b0;
+            is_song_playing <= 1'b0;
+            state <= S_IDLE;
+            current_note_index <= 0;
+            note_duration_timer <= 0;
+            current_note_duration_units <= 0;
+            current_note_id_from_rom <= {KEY_ID_BITS{1'b0}};
+            current_octave_code_from_rom <= OCTAVE_MID;
+            play_active_level_prev <= 1'b0;
+        end else begin
+            play_active_level_prev <= play_active_level; // 存储当前按键电平，用于下一周期检测边沿
+
+            // 首要停止条件: 如果播放按键变为低电平且当前正在播放，则立即停止
+            if (!play_active_level && state == S_PLAYING) begin
+                state <= S_IDLE;
+                song_key_is_pressed <= 1'b0; // 静音
+                song_octave_up_feed <= 1'b0;   // Reset on stop
+                song_octave_down_feed <= 1'b0; // Reset on stop
+                is_song_playing <= 1'b0;   // 更新状态
+            end
+
+            // 状态机逻辑
+            case (state)
+                S_IDLE: begin
+                    song_key_is_pressed <= 1'b0; // 在IDLE状态确保静音
+                    song_octave_up_feed <= 1'b0;
+                    song_octave_down_feed <= 1'b0;
+                    is_song_playing <= 1'b0;   // 在IDLE状态确保播放状态为否
+
+                    // 如果播放按键按下 (检测上升沿)
+                    if (play_active_level && !play_active_level_prev) begin
+                        if (SONG_LENGTH > 0) begin // Only play if there's a song
+                            state <= S_PLAYING;     // 进入播放状态
+                            current_note_index <= 0;  // 从乐谱开头播放
+                            // 读取第一个音符
+                            {current_octave_code_from_rom, current_note_id_from_rom, current_note_duration_units} = song_rom[0];
+
+                            song_key_id <= current_note_id_from_rom;
+                            song_key_is_pressed <= (current_note_id_from_rom != REST);
+                            song_octave_up_feed <= (current_octave_code_from_rom == OCTAVE_HIGH);
+                            song_octave_down_feed <= (current_octave_code_from_rom == OCTAVE_LOW);
+
+                            note_duration_timer <= 0; // 重置音符时长计时器
+                            is_song_playing <= 1'b1;  // 设置播放状态为是
+                        end
+                    end
+                end // S_IDLE 结束
+
+                S_PLAYING: begin
+                    // 只有当播放按键仍然按下时才继续处理播放逻辑
+                    if (play_active_level) begin
+                        is_song_playing <= 1'b1; // 保持播放状态为是
+
+                        if (current_note_duration_units == 0) begin // If current note has 0 duration (should ideally not happen from good ROM)
+                            // Defensive: skip to next note or stop if at end
+                            if (current_note_index < SONG_LENGTH - 1) begin
+                                current_note_index <= current_note_index + 1;
+                                {current_octave_code_from_rom, current_note_id_from_rom, current_note_duration_units} = song_rom[current_note_index + 1];
+                                song_key_id <= current_note_id_from_rom;
+                                song_key_is_pressed <= (current_note_id_from_rom != REST);
+                                song_octave_up_feed <= (current_octave_code_from_rom == OCTAVE_HIGH);
+                                song_octave_down_feed <= (current_octave_code_from_rom == OCTAVE_LOW);
+                                note_duration_timer <= 0;
+                            end else begin // 已经是最后一个音符，歌曲结束 (or invalid duration on last note)
+                                state <= S_IDLE;
+                            end
+                        end else if (note_duration_timer >= (BASIC_NOTE_DURATION_CYCLES * current_note_duration_units) - 1'b1 ) begin // 当前音符播放时长已到
+                            // 切换到下一个音符
+                            if (current_note_index < SONG_LENGTH - 1) begin
+                                current_note_index <= current_note_index + 1;
+                                // Read next note including octave for the *next* cycle
+                                {current_octave_code_from_rom, current_note_id_from_rom, current_note_duration_units} = song_rom[current_note_index + 1]; // This reads for the upcoming note
+
+                                song_key_id <= current_note_id_from_rom;
+                                song_key_is_pressed <= (current_note_id_from_rom != REST);
+                                song_octave_up_feed <= (current_octave_code_from_rom == OCTAVE_HIGH);
+                                song_octave_down_feed <= (current_octave_code_from_rom == OCTAVE_LOW);
+                                note_duration_timer <= 0; // Reset timer for the new note
+                            end else begin // 已经是最后一个音符，歌曲结束
+                                state <= S_IDLE;
+                                // Optional: keep the last note sounding until button release or explicitly silence here.
+                                // Current logic will go to IDLE, which silences.
+                            end
+                        end else begin // 当前音符还未播完
+                            note_duration_timer <= note_duration_timer + 1; // 继续计时
+                            // Outputs (key_id, is_pressed, octave_feeds) remain for the current note
+                        end
+                    end else begin
+                        // 如果在S_PLAYING状态时play_active_level变为低
+                        state <= S_IDLE;          // 强制回到IDLE
+                        song_key_is_pressed <= 1'b0; // 静音
+                        song_octave_up_feed <= 1'b0;
+                        song_octave_down_feed <= 1'b0;
+                        is_song_playing <= 1'b0;    // 更新状态
+                    end
+                end // S_PLAYING 结束
+
+                default: state <= S_IDLE; // 意外状态则回到IDLE
+            endcase // case(state) 结束
+        end // else (if !rst_n) 结束
+    end // always 结束
+endmodule // 模块结束
 ```
