@@ -1,5 +1,5 @@
 Flow report for fpga
-Thu Jun 05 16:26:07 2025
+Thu Jun 05 19:00:51 2025
 Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
 
 
@@ -40,17 +40,17 @@ refer to the applicable agreement for further details.
 +----------------------------------------------------------------------------------+
 ; Flow Summary                                                                     ;
 +------------------------------------+---------------------------------------------+
-; Flow Status                        ; Successful - Thu Jun 05 16:26:02 2025       ;
+; Flow Status                        ; Successful - Thu Jun 05 19:00:47 2025       ;
 ; Quartus Prime Version              ; 18.1.0 Build 625 09/12/2018 SJ Lite Edition ;
 ; Revision Name                      ; fpga                                        ;
 ; Top-level Entity Name              ; fpga                                        ;
 ; Family                             ; Cyclone IV E                                ;
 ; Device                             ; EP4CE10E22C8                                ;
 ; Timing Models                      ; Final                                       ;
-; Total logic elements               ; 1,239 / 10,320 ( 12 % )                     ;
-;     Total combinational functions  ; 1,197 / 10,320 ( 12 % )                     ;
-;     Dedicated logic registers      ; 561 / 10,320 ( 5 % )                        ;
-; Total registers                    ; 561                                         ;
+; Total logic elements               ; 1,243 / 10,320 ( 12 % )                     ;
+;     Total combinational functions  ; 1,207 / 10,320 ( 12 % )                     ;
+;     Dedicated logic registers      ; 562 / 10,320 ( 5 % )                        ;
+; Total registers                    ; 562                                         ;
 ; Total pins                         ; 36 / 92 ( 39 % )                            ;
 ; Total virtual pins                 ; 0                                           ;
 ; Total memory bits                  ; 3,584 / 423,936 ( < 1 % )                   ;
@@ -64,7 +64,7 @@ refer to the applicable agreement for further details.
 +-------------------+---------------------+
 ; Option            ; Setting             ;
 +-------------------+---------------------+
-; Start date & time ; 06/05/2025 16:25:33 ;
+; Start date & time ; 06/05/2025 19:00:15 ;
 ; Main task         ; Compilation         ;
 ; Revision Name     ; fpga                ;
 +-------------------+---------------------+
@@ -75,7 +75,7 @@ refer to the applicable agreement for further details.
 +-------------------------------------+----------------------------------------+---------------+-------------+------------+
 ; Assignment Name                     ; Value                                  ; Default Value ; Entity Name ; Section Id ;
 +-------------------------------------+----------------------------------------+---------------+-------------+------------+
-; COMPILER_SIGNATURE_ID               ; 71205089810806.174911193303176         ; --            ; --          ; --         ;
+; COMPILER_SIGNATURE_ID               ; 71205089810806.174912121514724         ; --            ; --          ; --         ;
 ; MAX_CORE_JUNCTION_TEMP              ; 85                                     ; --            ; --          ; --         ;
 ; MIN_CORE_JUNCTION_TEMP              ; 0                                      ; --            ; --          ; --         ;
 ; NOMINAL_CORE_SUPPLY_VOLTAGE         ; 1.2V                                   ; --            ; --          ; --         ;
@@ -95,11 +95,11 @@ refer to the applicable agreement for further details.
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
 ; Module Name          ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Analysis & Synthesis ; 00:00:17     ; 1.0                     ; 4840 MB             ; 00:00:25                           ;
-; Fitter               ; 00:00:08     ; 1.2                     ; 5950 MB             ; 00:00:17                           ;
-; Assembler            ; 00:00:01     ; 1.0                     ; 4674 MB             ; 00:00:01                           ;
-; Timing Analyzer      ; 00:00:03     ; 1.3                     ; 4841 MB             ; 00:00:03                           ;
-; Total                ; 00:00:29     ; --                      ; --                  ; 00:00:46                           ;
+; Analysis & Synthesis ; 00:00:17     ; 1.0                     ; 4834 MB             ; 00:00:24                           ;
+; Fitter               ; 00:00:09     ; 1.2                     ; 5960 MB             ; 00:00:18                           ;
+; Assembler            ; 00:00:02     ; 1.0                     ; 4676 MB             ; 00:00:01                           ;
+; Timing Analyzer      ; 00:00:03     ; 1.4                     ; 4842 MB             ; 00:00:02                           ;
+; Total                ; 00:00:31     ; --                      ; --                  ; 00:00:45                           ;
 +----------------------+--------------+-------------------------+---------------------+------------------------------------+
 
 

@@ -1,4 +1,4 @@
-// File: song_player.v
+	// File: song_player.v
 module song_player #(
     parameter CLK_FREQ_HZ = 50_000_000,
     parameter KEY_ID_BITS = 4,         // For C, C#, D ... B (12 notes + REST)

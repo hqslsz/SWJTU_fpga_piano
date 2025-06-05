@@ -1,4 +1,4 @@
-// File: fpga.v (Modified for song player octave support)
+// File: fpga.v (Corrected: display signals are now reg type for procedural assignment)
 // Top-level module for the FPGA Piano with recording, semitones, and song playback with octaves
 
 module fpga (
@@ -31,7 +31,7 @@ module fpga (
     // Outputs for 7-Segment Display
     output seven_seg_a, output seven_seg_b, output seven_seg_c, output seven_seg_d,
     output seven_seg_e, output seven_seg_f, output seven_seg_g, output seven_seg_dp,
-    output [7:0] seven_seg_digit_selects// For SEG0-SEG7
+    output [7:0] seven_seg_digit_selects // For SEG0-SEG7 (we'll use [0],[1],[2])
 
     // Optional LED Outputs (uncomment and assign pins if used)
     // output led_is_recording,
@@ -137,7 +137,7 @@ piano_recorder #(
     .RECORD_INTERVAL_MS(20),
     .MAX_RECORD_SAMPLES(512),
     .KEY_ID_BITS(RECORDER_KEY_ID_BITS),
-    .OCTAVE_BITS(RECORDER_OCTAVE_BITS) // Use defined parameter
+    .OCTAVE_BITS(RECORDER_OCTAVE_BITS)
 ) piano_recorder_inst (
     .clk(clk_50mhz),
     .rst_n(rst_n_internal),
@@ -158,26 +158,26 @@ piano_recorder #(
 // --- Instantiate Song Player ---
 wire [RECORDER_KEY_ID_BITS-1:0] song_player_key_id_feed;
 wire song_player_key_is_pressed_feed;
-wire song_player_octave_up_internal;    // New wire for song's octave up
-wire song_player_octave_down_internal;  // New wire for song's octave down
+wire song_player_octave_up_internal;
+wire song_player_octave_down_internal;
 wire is_song_playing_status;
 
 song_player #(
     .CLK_FREQ_HZ(50_000_000),
-    .KEY_ID_BITS(RECORDER_KEY_ID_BITS), // Match recorder's key ID bits
-    .OCTAVE_BITS(RECORDER_OCTAVE_BITS)  // Match recorder's octave bits for consistency
+    .KEY_ID_BITS(RECORDER_KEY_ID_BITS),
+    .OCTAVE_BITS(RECORDER_OCTAVE_BITS)
 ) song_player_inst (
     .clk(clk_50mhz),
     .rst_n(rst_n_internal),
     .play_active_level(key14_play_song_debounced_internal),
     .song_key_id(song_player_key_id_feed),
     .song_key_is_pressed(song_player_key_is_pressed_feed),
-    .song_octave_up_feed(song_player_octave_up_internal),     // Connect to new output
-    .song_octave_down_feed(song_player_octave_down_internal), // Connect to new output
+    .song_octave_up_feed(song_player_octave_up_internal),
+    .song_octave_down_feed(song_player_octave_down_internal),
     .is_song_playing(is_song_playing_status)
 );
 
-// --- Buzzer and Display Input Selection Logic ---
+// --- Buzzer and Display Input Selection Logic (Multiplexer for Sound/Display Source) ---
 wire [RECORDER_KEY_ID_BITS-1:0] final_key_id_for_sound_and_display;
 wire final_key_is_pressed_for_sound_and_display;
 wire final_octave_up_for_sound_and_display;
@@ -193,73 +193,48 @@ assign final_key_is_pressed_for_sound_and_display =
     (is_playing_status ? playback_key_is_pressed_feed :
     current_key_is_pressed_flag_internal);
 
-// MODIFIED Octave Selection: Song player now dictates octave during its playback
 assign final_octave_up_for_sound_and_display =
-    is_song_playing_status ? song_player_octave_up_internal : // Use song's octave up
+    is_song_playing_status ? song_player_octave_up_internal :
     (is_playing_status ? playback_octave_up_feed :
     sw15_octave_up_debounced_internal);
 
 assign final_octave_down_for_sound_and_display =
-    is_song_playing_status ? song_player_octave_down_internal : // Use song's octave down
+    is_song_playing_status ? song_player_octave_down_internal :
     (is_playing_status ? playback_octave_down_feed :
     sw13_octave_down_debounced_internal);
 
 // --- Buzzer Frequency Generation ---
-// These are counts for half period for Middle C (C4) Octave
-// N_half_period_counts = (50_000_000 Hz / (2 * F_note)) - 1
-localparam CNT_C4  = 17'd95566; // 261.63 Hz
-localparam CNT_CS4 = 17'd90194; // 277.18 Hz
-localparam CNT_D4  = 17'd85135; // 293.66 Hz
-localparam CNT_DS4 = 17'd80346; // 311.13 Hz (Eb)
-localparam CNT_E4  = 17'd75830; // 329.63 Hz
-localparam CNT_F4  = 17'd71569; // 349.23 Hz
-localparam CNT_FS4 = 17'd67569; // 369.99 Hz
-localparam CNT_G4  = 17'd63775; // 392.00 Hz
-localparam CNT_GS4 = 17'd60197; // 415.30 Hz (Ab)
-localparam CNT_A4  = 17'd56817; // 440.00 Hz
-localparam CNT_AS4 = 17'd53627; // 466.16 Hz (Bb)
-localparam CNT_B4  = 17'd50619; // 493.88 Hz
+localparam CNT_C4  = 17'd95566; localparam CNT_CS4 = 17'd90194; // C, C#
+localparam CNT_D4  = 17'd85135; localparam CNT_DS4 = 17'd80346; // D, D# (Eb)
+localparam CNT_E4  = 17'd75830;                                // E
+localparam CNT_F4  = 17'd71569; localparam CNT_FS4 = 17'd67569; // F, F#
+localparam CNT_G4  = 17'd63775; localparam CNT_GS4 = 17'd60197; // G, G# (Ab)
+localparam CNT_A4  = 17'd56817; localparam CNT_AS4 = 17'd53627; // A, A# (Bb)
+localparam CNT_B4  = 17'd50619;                                // B
 
 reg [17:0] buzzer_counter_reg;
-reg [17:0] base_note_target_count;    // Target count for middle octave (C4 based)
-reg [17:0] final_target_count_max; // Final target after octave adjustment
+reg [17:0] base_note_target_count;
+reg [17:0] final_target_count_max;
 
-// Determine base note target count from key ID (middle octave reference)
-always @(*) begin
-    case (final_key_id_for_sound_and_display) // final_key_id is 4 bits (0-12)
-        4'd1:    base_note_target_count = CNT_C4;
-        4'd2:    base_note_target_count = CNT_D4;
-        4'd3:    base_note_target_count = CNT_E4;
-        4'd4:    base_note_target_count = CNT_F4;
-        4'd5:    base_note_target_count = CNT_G4;
-        4'd6:    base_note_target_count = CNT_A4;
-        4'd7:    base_note_target_count = CNT_B4;
-        4'd8:    base_note_target_count = CNT_CS4; // C#
-        4'd9:    base_note_target_count = CNT_DS4; // D# (Eb)
-        4'd10:   base_note_target_count = CNT_FS4; // F#
-        4'd11:   base_note_target_count = CNT_GS4; // G# (Ab)
-        4'd12:   base_note_target_count = CNT_AS4; // A# (Bb)
-        default: base_note_target_count = 18'h3FFFF; // Effectively silent (very low freq or ensure buzzer_out stays low)
-                                                    // Or use a very high count if 0 should be silent.
-                                                    // CNT_C4 is ~95k, so 2^18-1 is much higher -> lower freq.
-                                                    // Let's stick to a known high value for silence if key_id is 0.
+always @(*) begin // Determine base note target count (middle octave reference)
+    case (final_key_id_for_sound_and_display)
+        4'd1:  base_note_target_count = CNT_C4;  4'd8:  base_note_target_count = CNT_CS4;
+        4'd2:  base_note_target_count = CNT_D4;  4'd9:  base_note_target_count = CNT_DS4;
+        4'd3:  base_note_target_count = CNT_E4;
+        4'd4:  base_note_target_count = CNT_F4;  4'd10: base_note_target_count = CNT_FS4;
+        4'd5:  base_note_target_count = CNT_G4;  4'd11: base_note_target_count = CNT_GS4;
+        4'd6:  base_note_target_count = CNT_A4;  4'd12: base_note_target_count = CNT_AS4;
+        4'd7:  base_note_target_count = CNT_B4;
+        default: base_note_target_count = 18'h3FFFF; // Effectively silent
     endcase
 end
 
-// Adjust target count based on octave signals
-always @(*) begin
-    // Ensure base_note_target_count is valid before division
-    // If base_note_target_count could be very small or zero from a default case,
-    // this could be an issue. Given our CNT values, it's fine.
+always @(*) begin // Adjust target count based on octave signals
     if (final_octave_up_for_sound_and_display && !final_octave_down_for_sound_and_display) begin // Octave Up
-        // Target count for half period is halved (approx), so frequency doubles.
-        // (N+1)/2 - 1 for new count, where N is old count.
         final_target_count_max = (base_note_target_count + 1) / 2 - 1;
     end else if (!final_octave_up_for_sound_and_display && final_octave_down_for_sound_and_display) begin // Octave Down
-        // Target count for half period is doubled (approx), so frequency halves.
-        // (N+1)*2 - 1 for new count.
         final_target_count_max = (base_note_target_count + 1) * 2 - 1;
-    end else begin // Middle Octave (or both octave keys pressed - treat as middle)
+    end else begin // Middle Octave
         final_target_count_max = base_note_target_count;
     end
 end
@@ -274,7 +249,6 @@ always @(posedge clk_50mhz or negedge rst_n_internal) begin
         buzzer_counter_reg <= 18'd0;
         buzzer_out <= 1'b0;
     end else begin
-        // Only generate sound if a key is considered pressed and it's not the REST note (ID 0)
         if (final_key_is_pressed_for_sound_and_display && final_key_id_for_sound_and_display != 4'd0) begin
             if (buzzer_counter_reg >= final_target_count_max) begin
                 buzzer_counter_reg <= 18'd0;
@@ -283,39 +257,61 @@ always @(posedge clk_50mhz or negedge rst_n_internal) begin
                 buzzer_counter_reg <= buzzer_counter_reg + 1'b1;
             end
         end else begin
-            buzzer_counter_reg <= 18'd0; // Reset counter when no valid key is pressed
-            buzzer_out <= 1'b0;          // Ensure silence
+            buzzer_counter_reg <= 18'd0;
+            buzzer_out <= 1'b0;
         end
     end
 end
 
-// --- Instantiate Seven Segment Controller ---
-// Note: seven_segment_controller currently takes [2:0] for key_id,
-// which is only 0-7. If you want to display semitones or more info,
-// this module will need changes. For now, it will truncate the key ID.
-// Consider how to display C# (ID 8) etc.
-// A simple way: display 'C' for C#, 'd' for D#, etc., or use a dot.
-// For now, passing the lower 3 bits for basic 1-7 display.
-wire [2:0] display_key_id_truncated;
-// Example: C#(8)->1, D#(9)->2, F#(10)->4, G#(11)->5, A#(12)->6
-// This mapping helps show the root note on the 1-7 display.
-// You can make this more sophisticated.
-assign display_key_id_truncated =
-    (final_key_id_for_sound_and_display == 4'd8)  ? 3'd1 : // C# -> 1 (C)
-    (final_key_id_for_sound_and_display == 4'd9)  ? 3'd2 : // D# (Eb) -> 2 (D)
-    (final_key_id_for_sound_and_display == 4'd10) ? 3'd4 : // F# -> 4 (F)
-    (final_key_id_for_sound_and_display == 4'd11) ? 3'd5 : // G# (Ab) -> 5 (G)
-    (final_key_id_for_sound_and_display == 4'd12) ? 3'd6 : // A# (Bb) -> 6 (A)
-    (final_key_id_for_sound_and_display >= 4'd1 && final_key_id_for_sound_and_display <= 4'd7) ? final_key_id_for_sound_and_display[2:0] :
-    3'd0; // Default to 0 (blank) if not a standard note or defined semitone
+// --- Data Preparation for Modified Seven Segment Controller ---
+// ******** CORRECTED: Changed wire to reg for procedural assignment ********
+reg [2:0] display_base_note_id_internal;       // For 1-7 display on SEG1
+reg [1:0] display_semitone_type_internal;    // 00: none, 01: sharp (#), 10: flat (b) for SEG0
+reg       display_active_flag_internal;      // True if a valid note (not rest) is active for display
+// *************************************************************************
 
+always @(*) begin
+    // Default assignments
+    display_base_note_id_internal = 3'd0;
+    display_semitone_type_internal = 2'b00;
+    display_active_flag_internal = 1'b0;
+
+    if (final_key_is_pressed_for_sound_and_display && final_key_id_for_sound_and_display != 4'd0) begin
+        display_active_flag_internal = 1'b1; // A valid note is active for display
+        case (final_key_id_for_sound_and_display)
+            // Natural notes
+            4'd1:  begin display_base_note_id_internal = 3'd1; display_semitone_type_internal = 2'b00; end // C  (1)
+            4'd2:  begin display_base_note_id_internal = 3'd2; display_semitone_type_internal = 2'b00; end // D  (2)
+            4'd3:  begin display_base_note_id_internal = 3'd3; display_semitone_type_internal = 2'b00; end // E  (3)
+            4'd4:  begin display_base_note_id_internal = 3'd4; display_semitone_type_internal = 2'b00; end // F  (4)
+            4'd5:  begin display_base_note_id_internal = 3'd5; display_semitone_type_internal = 2'b00; end // G  (5)
+            4'd6:  begin display_base_note_id_internal = 3'd6; display_semitone_type_internal = 2'b00; end // A  (6)
+            4'd7:  begin display_base_note_id_internal = 3'd7; display_semitone_type_internal = 2'b00; end // B  (7)
+            // Semitones as requested: KeyID -> Display Base Note + Suffix Type
+            4'd8:  begin display_base_note_id_internal = 3'd1; display_semitone_type_internal = 2'b01; end // C# (ID 8) -> 1 # (H)
+            4'd9:  begin display_base_note_id_internal = 3'd3; display_semitone_type_internal = 2'b10; end // Eb (ID 9) -> 3 b
+            4'd10: begin display_base_note_id_internal = 3'd4; display_semitone_type_internal = 2'b01; end // F# (ID 10)-> 4 # (H)
+            4'd11: begin display_base_note_id_internal = 3'd5; display_semitone_type_internal = 2'b01; end // G# (ID 11)-> 5 # (H)
+            4'd12: begin display_base_note_id_internal = 3'd7; display_semitone_type_internal = 2'b10; end // Bb (ID 12)-> 7 b
+            default: begin // Should not be hit for valid key_ids 1-12
+                // Keep default assignments (blank, no suffix)
+                // but mark display_active_flag_internal as false explicitly if needed
+                display_active_flag_internal = 1'b0;
+            end
+        endcase
+    end
+    // If not pressed or is a rest (ID 0), defaults (blank, no suffix, inactive flag) from top of always block remain.
+end
+
+// --- Instantiate Seven Segment Controller (New Interface) ---
 seven_segment_controller seven_segment_display_inst (
     .clk(clk_50mhz),
     .rst_n(rst_n_internal),
-    .current_active_key_id(display_key_id_truncated), // Pass truncated/mapped ID
-    .current_key_is_pressed_flag(final_key_is_pressed_for_sound_and_display && final_key_id_for_sound_and_display != 4'd0), // Only show if valid note
-    .octave_up_active(final_octave_up_for_sound_and_display),
-    .octave_down_active(final_octave_down_for_sound_and_display),
+    .base_note_id_in(display_base_note_id_internal),      // For SEG1 (Note Digit)
+    .semitone_type_in(display_semitone_type_internal),   // For SEG0 (Suffix #/b)
+    .display_active_flag(display_active_flag_internal),  // Controls if SEG0/SEG1 show note data
+    .octave_up_active(final_octave_up_for_sound_and_display),    // For SEG2 (Octave)
+    .octave_down_active(final_octave_down_for_sound_and_display),// For SEG2 (Octave)
 
     .seg_a(seven_seg_a), .seg_b(seven_seg_b), .seg_c(seven_seg_c), .seg_d(seven_seg_d),
     .seg_e(seven_seg_e), .seg_f(seven_seg_f), .seg_g(seven_seg_g), .seg_dp(seven_seg_dp),
@@ -324,7 +320,7 @@ seven_segment_controller seven_segment_display_inst (
 
 // --- Optional LED Indicators ---
 // assign led_is_recording = is_recording_status;
-// assign led_is_playing_recording = is_playing_status && !is_song_playing_status; // Only recording playback
+// assign led_is_playing_recording = is_playing_status && !is_song_playing_status;
 // assign led_is_playing_song = is_song_playing_status;
 
 endmodule

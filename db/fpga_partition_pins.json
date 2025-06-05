@@ -36,6 +36,10 @@
 					"strict" : false
 				},
 				{
+					"name" : "seven_seg_digit_selects[0]",
+					"strict" : false
+				},
+				{
 					"name" : "seven_seg_digit_selects[1]",
 					"strict" : false
 				},
