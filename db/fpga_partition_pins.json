@@ -76,14 +76,6 @@
 					"strict" : false
 				},
 				{
-					"name" : "sw13_octave_down_raw",
-					"strict" : false
-				},
-				{
-					"name" : "sw15_octave_up_raw",
-					"strict" : false
-				},
-				{
 					"name" : "key12_flat7_raw",
 					"strict" : false
 				},
@@ -132,15 +124,23 @@
 					"strict" : false
 				},
 				{
+					"name" : "sw15_octave_up_raw",
+					"strict" : false
+				},
+				{
+					"name" : "sw13_octave_down_raw",
+					"strict" : false
+				},
+				{
+					"name" : "key14_play_song_raw",
+					"strict" : false
+				},
+				{
 					"name" : "sw17_playback_raw",
 					"strict" : false
 				},
 				{
 					"name" : "sw16_record_raw",
-					"strict" : false
-				},
-				{
-					"name" : "key14_play_song_raw",
 					"strict" : false
 				}
 			]
