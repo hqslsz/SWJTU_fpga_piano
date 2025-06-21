@@ -50,13 +50,10 @@ set_global_assignment -name DEVICE_FILTER_PIN_COUNT 144
 set_global_assignment -name DEVICE_FILTER_SPEED_GRADE 8
 set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
 set_global_assignment -name NOMINAL_CORE_SUPPLY_VOLTAGE 1.2V
-set_global_assignment -name VERILOG_FILE fpga.v
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_location_assignment PIN_128 -to buzzer_out
-set_global_assignment -name VERILOG_FILE debouncer.v
-set_global_assignment -name VERILOG_FILE keyboard_scanner.v
 set_location_assignment PIN_24 -to sw0_physical_reset
 set_location_assignment PIN_31 -to note_keys_physical_in[0]
 set_location_assignment PIN_30 -to note_keys_physical_in[1]
@@ -80,7 +77,6 @@ set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
-set_global_assignment -name VERILOG_FILE seven_segment_decoder.v
 set_location_assignment PIN_112 -to seven_seg_a
 set_location_assignment PIN_100 -to seven_seg_b
 set_location_assignment PIN_104 -to seven_seg_c
@@ -97,7 +93,6 @@ set_location_assignment PIN_125 -to seven_seg_digit_selects[3]
 set_location_assignment PIN_114 -to seven_seg_digit_selects[4]
 set_location_assignment PIN_121 -to seven_seg_digit_selects[5]
 set_location_assignment PIN_86 -to seven_seg_dp
-set_global_assignment -name VERILOG_FILE piano_recorder.v
 set_location_assignment PIN_142 -to sw16_record_raw
 set_location_assignment PIN_137 -to sw17_playback_raw
 set_location_assignment PIN_43 -to key8_sharp1_raw
@@ -105,13 +100,18 @@ set_location_assignment PIN_13 -to key9_flat3_raw
 set_location_assignment PIN_6 -to key10_sharp4_raw
 set_location_assignment PIN_144 -to key11_sharp5_raw
 set_location_assignment PIN_8 -to key12_flat7_raw
-set_global_assignment -name VERILOG_FILE song_player.v
 set_location_assignment PIN_11 -to key14_play_song_raw
-set_global_assignment -name VERILOG_FILE output_files/scrolling_display_buffer.v
-set_global_assignment -name VERILOG_FILE mode_sequencer.v
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name VHDL_INPUT_VERSION VHDL_2008
 set_global_assignment -name VHDL_SHOW_LMF_MAPPING_MESSAGES OFF
+set_global_assignment -name VERILOG_FILE scrolling_display_buffer.v
+set_global_assignment -name VERILOG_FILE fpga.v
+set_global_assignment -name VERILOG_FILE debouncer.v
+set_global_assignment -name VERILOG_FILE keyboard_scanner.v
+set_global_assignment -name VERILOG_FILE seven_segment_decoder.v
+set_global_assignment -name VERILOG_FILE piano_recorder.v
+set_global_assignment -name VERILOG_FILE song_player.v
+set_global_assignment -name VERILOG_FILE mode_sequencer.v
 set_global_assignment -name VERILOG_FILE practice_player.v
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

@@ -1,7 +1,46 @@
-# fpga
-SWJTU数电课设电子琴
+# FPGA电子琴课设
 
-## 核心代码
+## 简介
+
+SWJTU数电课设电子琴。引脚分配适用于SWJTU数电实验室MFB-5自主实验器(EP4CE6E22)
+
+![structure](/readme/structure.png)
+
+大部分代码是vibe coding的垃圾，给大家伙玩个乐(
+
+### 功能介绍
+
+**基本功能：**
+
+A. 自动演奏功能
+
+B. 用按键模拟琴键，36键弹奏，数码管显示弹奏的音符
+
+C. 录音回放回放
+
+D. 乐曲练习功能
+
+**扩展功能：**
+
+E. 练习模式与弹奏模式的数码管滚动与回滚
+
+F. 输入固定音符进入练习模式的模式切换方式
+
+G. Python脚本自动扒midi文件生成verilog谱
+
+### 使用说明：
+
+**1.**   **基本按键发声与八度切换测试:** Key1-Key7（对应C,D,E,F,G,A,B基本音阶）和Key8-Key12（对应C#,Eb,F#,G#,Bb半音）。SW15（八度增加键）和SW13（八度降低键）。按下一个音乐按键，蜂鸣器发出对应音高的声音。
+
+**2.**   **录音与回放：** SW16掷1（录音键），开始录音，直到SW16掷0停止。
+
+按下SW17开始播放。
+
+**3.**   **预设歌曲播放功能测试：**SW14掷1时播放指定的音乐。
+
+**4.**   **练习模式相关：**快速输入2317616即可进入练习模式，可以练习指定的曲子。按复位键退出。
+
+## 代码内容(方便写报告用的)
 ### 1.fpga.v
 ```verilog
 // 文件: fpga.v (已修改以集成练习模式)
@@ -521,7 +560,7 @@ always @(*) begin
         case (semitone_type_in)
             2'b01:  seg_data_suffix = PATTERN_H; // 升号 (#)
             2'b10:  seg_data_suffix = PATTERN_b; // 降号 (b)
-            2'b11:  seg_data_suffix = PATTERN_P; // 练习模式指示 'P' (学长修改)
+            2'b11:  seg_data_suffix = PATTERN_P; // 练习模式指示 'P'
             default: seg_data_suffix = PATTERN_BLANK; // 2'b00 (无半音) 或其他未定义情况
         endcase
     end
